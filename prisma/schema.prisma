@@ -36,28 +36,30 @@ model FoodhasTypes {
 }
 
 model FoodType {
-  id          String         @id @default(uuid())
-  updatedAt   DateTime       @updatedAt
-  name        String         @unique
-  description String?
+  id          String          @id @default(uuid())
+  updatedAt   DateTime        @updatedAt
+  name        String          @unique
+  descriptor  String?
+  avatarUrl   String?
   foods       FoodhasTypes[]
+  stores      StoreHasTypes[]
 }
 
 model Store {
-  id                 String               @id @default(uuid())
+  id                 String          @id @default(uuid())
   name               String
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  registrationNumber String               @unique
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  registrationNumber String          @unique
   avatarUrl          String?
   orderCapacity      Int?
-  currentDiscount    Float                @default(0)
-  minOrderPrice      Decimal              @default(0)
+  currentDiscount    Float           @default(0)
+  minOrderPrice      Decimal         @default(0)
   address            String
-  active             Boolean              @default(false)
+  active             Boolean         @default(false)
   delivery           String
   foods              StoreHasFoods[]
-  categories         StoreHasCategories[]
+  categories         StoreHasTypes[]
   orders             Order[]
 }
 
@@ -75,22 +77,14 @@ model StoreHasFoods {
   @@id([foodId, storeId])
 }
 
-model StoreHasCategories {
-  store           Store         @relation(fields: [storeId], references: [id])
+model StoreHasTypes {
+  store           Store    @relation(fields: [storeId], references: [id])
   storeId         String
-  storeCategories StoreCategory @relation(fields: [storeCategoryId], references: [id])
+  storeCategories FoodType @relation(fields: [storeCategoryId], references: [id])
   storeCategoryId String
   main            Boolean
 
   @@id([storeCategoryId, storeId])
-}
-
-model StoreCategory {
-  id          String               @id @default(uuid())
-  name        String
-  updatedAt   DateTime             @updatedAt
-  description String
-  stores      StoreHasCategories[]
 }
 
 model User {
