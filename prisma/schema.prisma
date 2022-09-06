@@ -56,6 +56,8 @@ model Store {
   currentDiscount    Float           @default(0)
   minOrderPrice      Decimal         @default(0)
   address            String
+  score             Float @default(0)
+  commentCount      Int @default(0)
   active             Boolean         @default(false)
   delivery           String
   foods              StoreHasFoods[]
