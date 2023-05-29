@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import { Item, PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 async function main() {
@@ -56,6 +56,7 @@ async function main() {
       },
     ],
   })
+
   await prisma.city.createMany({
     data: [
       { name: "تهران", latinName: "tehran" },
@@ -195,6 +196,7 @@ async function main() {
       { name: "چابهار", latinName: "" },
     ],
   })
+
   await prisma.itemCategory.createMany({
     data: [
       {
@@ -263,7 +265,7 @@ async function main() {
     ],
   })
 
-  await prisma.address.create({
+  const address = await prisma.address.create({
     data: {
       address:
         "خیابان فرهنگ شهر، ایستگاه ۱۵، جنب کتلت آناهیتا، نبش کوچه ایمانی، کترینگ پرس",
@@ -271,9 +273,12 @@ async function main() {
       cityName: "شیراز",
     },
   })
-  await prisma.item.createMany({
-    data: [
-      {
+
+  let items: Item[] = []
+
+  items.push(
+    await prisma.item.create({
+      data: {
         name: "چلو جوجه کباب زعفرانی",
         description:
           "یک سیخ جوجه کباب زعفرانی، ۲۶۰ گرم برنج خارجی، دورچین: گوجه کبابی، فلفل کبابی، لیمو، کره",
@@ -282,18 +287,25 @@ async function main() {
           "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb855bcb2ec.jpg",
         itemCategoryName: "ایرانی",
       },
+    }),
+  )
 
-      {
+  items.push(
+    await prisma.item.create({
+      data: {
         name: "زرشک پلو با مرغ",
-        description: `یک عدد ران مرغ ۴۰۰ گرمی سس پز، ۴۵۰ گرم برنج خارجی، دورچین: لیموترش
-
-  `,
+        description: `یک عدد ران مرغ ۴۰۰ گرمی سس پز، ۴۵۰ گرم برنج خارجی، دورچین: لیموترش`,
         basePrice: 1550000,
         avatarUrl:
           "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb8ada4c81c.jpg",
         itemCategoryName: "ایرانی",
       },
-      {
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
         name: "دوغ قوطی پارسی",
         description: "۳۳۰ میلی لیتر",
         basePrice: 8000,
@@ -301,47 +313,37 @@ async function main() {
         itemCategoryName: "نوشیدنی",
       },
       // {name:"", description:"", basePrice:,avatarUrl:"",},
-    ],
-  })
+    }),
+  )
 
-  await prisma.store.create({
+  const store = await prisma.store.create({
     data: {
       name: "کترینگ پُرس",
       avatarUrl:
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
       minOrderPrice: 20000,
       storeKindId: "رستوران",
-      addressId: 1,
+      addressId: address.id,
     },
   })
 
-  await prisma.storeHasItems.createMany({
-    data: [
-      {
-        storeId: 1,
-        itemId: 1,
-        price: 175000,
-        remainingCount: 100,
-      },
-      {
-        storeId: 1,
-        itemId: 2,
-        price: 155000,
-        remainingCount: 100,
-      },
-      {
-        storeId: 1,
-        itemId: 3,
-        price: 8000,
-        remainingCount: 100,
-      },
-    ],
-  })
+  await Promise.all(
+    items.map(item =>
+      prisma.storeHasItems.create({
+        data: {
+          storeId: store.id,
+          itemId: item.id,
+          price: item.basePrice!,
+          remainingCount: 100,
+        },
+      }),
+    ),
+  )
 
   await prisma.storeHasItemCategories.createMany({
     data: [
-      { storeId: 1, itemCategoryName: "ایرانی" },
-      { storeId: 1, itemCategoryName: "نوشیدنی" },
+      { storeId: store.id, itemCategoryName: "ایرانی" },
+      { storeId: store.id, itemCategoryName: "نوشیدنی" },
     ],
   })
 }
