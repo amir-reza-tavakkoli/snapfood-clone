@@ -2,209 +2,347 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 async function main() {
-  await prisma.user.createMany({
-    data: [
-      {
-        firstName: "امیر",
-        lastName: "توکلی",
-        email: "ahmad-tavakoli@gmail.com",
-        address: "شیراز فرهنگ شهر کوچه 35 کوچه 5",
-      },
-      {
-        firstName: "احمد",
-        lastName: "توکلی",
-        email: "ahmad-tavakoli@gmail.com",
-        address: "قزوین ساختمان شهرداری",
-      },
-      {
-        firstName: "عباس",
-        lastName: "شرابی نابی",
-        email: "saghi@hotmail.com",
-        address: "کرمان خیابان تاکستان کوچه کشمش ",
-      },
-    ],
-  })
-
-  // await prisma.foodType.createMany({
-  //   data: [
-  //     { name: "فست فود", description: "آماده سریع" },
-  //     { name: "رستوران", description: "مختلف" },
-  //     { name: "کباب", description: "گوشتی" },
-  //     { name: "ایرانی", description: "سنتی" },
-  //     { name: "میوه", description: "مرکبات" },
-  //     { name: "کافه", description: "قهوه" },
-  //     { name: "بستنی فروشی", description: "بستنی" },
-  //     { name: "محلی", description: "محلی" },
-  //     { name: "خشکبار", description: "آجیل" },
-  //     { name: "پروتِین فروشی", description: "گوشت" },
-  //     { name: "نانوایی", description: "نان" },
-  //   ],
-  // })
-
-  await prisma.foodType.createMany({
+  await prisma.storeKind.createMany({
     data: [
       {
         name: "رستوران",
-        descriptor: "رستورانی",
         avatarUrl:
           "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_1_603508bf202d8_img_st_food.png",
       },
       {
-        name: "سوپرمارکت",
-        descriptor: "سوپری",
-        avatarUrl:
-          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_4_603508a14ab73_img_st_supermarket.png",
-      },
-      {
-        name: "کافه",
-        descriptor: "کافه",
-        avatarUrl:
-          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_2_603508b330711_img_st_cafe.png",
-      },
-      {
         name: "شیرینی",
-        descriptor: "شیرینی قروشی",
         avatarUrl:
           "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_3_603508a95b9be_img_st_sweet.png",
       },
       {
+        name: "سوپر مارکت",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_4_603508a14ab73_img_st_supermarket.png",
+      },
+      {
         name: "میوه",
-        descriptor: "میوه فروشی",
         avatarUrl:
           "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_6_6035088cbcde4_img_st_fruit.png",
       },
       {
-        name: "نان",
-        descriptor: "نانوایی",
+        name: "کافه",
         avatarUrl:
-          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_5_60350898c61b5_img_st_bakery.png",
+          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_2_603508b330711_img_st_cafe.png",
       },
       {
-        name: " آبمیوه و بستنی",
-        descriptor: "بستنی . آبمیوه فروشی",
+        name: "آبمیوه بستنی",
         avatarUrl:
           "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_8_6035087b463a3_img_st_icecream.png",
       },
       {
-        name: "پروتعین",
-        descriptor: "پروتعین فروشی",
-        avatarUrl:
-          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_11_603507afc9a32_img_st_meat.png",
-      },
-      { name: "محلی", descriptor: "محصولات محلی" },
-      {
         name: "آجیل",
-        descriptor: "خشکبار",
         avatarUrl:
           "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_7_60350883d6e43_img_st_nut.png",
       },
-      { name: "فست فود", descriptor: "فست فودی" },
-      { name: "ساندویچ", descriptor: "ساندویچی" },
-      { name: "پیتزا", descriptor: "پیتزا فروشی" },
-      { name: "خورشت", descriptor: "سنتی" },
-      { name: "پیش غذا" },
-      { name: "سوخاری", descriptor: "سوخاری" },
-      { name: "سنتی", descriptor: "سنتی" },
-      { name: "برگر", descriptor: "برگری" },
-      { name: "نوشیدنی" },
-      { name: "", descriptor: "" },
+      {
+        name: "پروتِین فروشی",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_11_603507afc9a32_img_st_meat.png",
+      },
+      {
+        name: "نانوایی",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_5_60350898c61b5_img_st_bakery.png",
+      },
+      {
+        name: "سایر",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/review-app/icons/count/desktop_9_603b811b1d540_img_st_other2.png",
+      },
     ],
   })
-
-  await prisma.store.createMany({
+  await prisma.city.createMany({
+    data: [
+      { name: "تهران", latinName: "tehran" },
+      { name: "مشهد", latinName: "mashad" },
+      { name: "کرج", latinName: "karaj" },
+      { name: "اصفهان", latinName: "isfahan" },
+      { name: "شیراز", latinName: "shiraz" },
+      { name: "تبریز", latinName: "tabriz" },
+      { name: "قم", latinName: "qom" },
+      { name: "اهواز", latinName: "ahvaz" },
+      { name: "رشت", latinName: "rasht" },
+      { name: "ارومیه", latinName: "urumie" },
+      { name: "یزد", latinName: "yaz" },
+      { name: "قزوین", latinName: "qazvin" },
+      { name: "کرمان", latinName: "kerman" },
+      { name: "همدان", latinName: "hamedan" },
+      { name: "اردبیل", latinName: "ardabil" },
+      { name: "ساری", latinName: "sari" },
+      { name: "زنجان", latinName: "zanjan" },
+      { name: "کرمانشاه", latinName: "" },
+      { name: "گرگان", latinName: "" },
+      { name: "اسلامشهر", latinName: "" },
+      { name: "شهر ری", latinName: "" },
+      { name: "اراک", latinName: "" },
+      { name: "بوشهر", latinName: "" },
+      { name: "بندرعباس", latinName: "" },
+      { name: "بجنورد", latinName: "" },
+      { name: "شاهین شهر", latinName: "" },
+      { name: "خرم آباد", latinName: "" },
+      { name: "مرودشت", latinName: "" },
+      { name: "کاشان", latinName: "" },
+      { name: "نیشابور", latinName: "" },
+      { name: "یاسوج", latinName: "" },
+      { name: "بابل", latinName: "" },
+      { name: "دزفول", latinName: "" },
+      { name: "نجف آباد", latinName: "" },
+      { name: "بابلسر", latinName: "" },
+      { name: "سنندج", latinName: "" },
+      { name: "قائم‌ شهر", latinName: "" },
+      { name: "پردیس", latinName: "" },
+      { name: "بیرجند", latinName: "" },
+      { name: "آبادان", latinName: "" },
+      { name: "ورامین", latinName: "" },
+      { name: "آمل", latinName: "" },
+      { name: "لاهیجان", latinName: "" },
+      { name: "مراغه", latinName: "" },
+      { name: "سبزوار", latinName: "" },
+      { name: "خمینی شهر", latinName: "" },
+      { name: "گنبد کاووس", latinName: "" },
+      { name: "کیش", latinName: "" },
+      { name: "شهریار", latinName: "" },
+      { name: "پاکدشت", latinName: "" },
+      { name: "زاهدان", latinName: "" },
+      { name: "اندیمشک", latinName: "" },
+      { name: "سمنان", latinName: "" },
+      { name: "تربت حیدریه", latinName: "" },
+      { name: "شاهرود", latinName: "" },
+      { name: "سپاهان شهر", latinName: "" },
+      { name: "شهرکرد", latinName: "" },
+      { name: "ساوه", latinName: "" },
+      { name: "رباط کریم", latinName: "" },
+      { name: "بندر انزلی", latinName: "" },
+      { name: "پرند", latinName: "" },
+      { name: "شهر قدس", latinName: "" },
+      { name: "اندیشه", latinName: "" },
+      { name: "بروجرد", latinName: "" },
+      { name: "ایلام", latinName: "" },
+      { name: "هشتگرد", latinName: "" },
+      { name: "لنگرود", latinName: "" },
+      { name: "مرند", latinName: "" },
+      { name: "قرچک", latinName: "" },
+      { name: "نسیم شهر", latinName: "" },
+      { name: "صدرا", latinName: "" },
+      { name: "بهارستان", latinName: "" },
+      { name: "محمود آباد", latinName: "" },
+      { name: "لواسان", latinName: "" },
+      { name: "فولادشهر", latinName: "" },
+      { name: "نوشهر", latinName: "" },
+      { name: "بومهن", latinName: "" },
+      { name: "سلمان شهر", latinName: "" },
+      { name: "دماوند", latinName: "" },
+      { name: "سهند", latinName: "" },
+      { name: "رودهن", latinName: "" },
+      { name: "چالوس", latinName: "" },
+      { name: "قوچان", latinName: "" },
+      { name: "رامسر", latinName: "" },
+      { name: "گرمدره", latinName: "" },
+      { name: "کازرون", latinName: "" },
+      { name: "نور", latinName: "" },
+      { name: "سرخ رود", latinName: "" },
+      { name: "درود", latinName: "" },
+      { name: "تنکابن", latinName: "" },
+      { name: "فریدونکنار", latinName: "" },
+      { name: "بهشهر", latinName: "" },
+      { name: "شهرضا", latinName: "" },
+      { name: "مبارکه", latinName: "" },
+      { name: "خوی", latinName: "" },
+      { name: "ملارد", latinName: "" },
+      { name: "خرمشهر", latinName: "" },
+      { name: "زرین شهر", latinName: "" },
+      { name: "داراب", latinName: "" },
+      { name: "ملایر", latinName: "" },
+      { name: "قشم", latinName: "" },
+      { name: "رویان", latinName: "" },
+      { name: "بروجن", latinName: "" },
+      { name: "سیرجان", latinName: "" },
+      { name: "میاندوآب", latinName: "" },
+      { name: "فلاورجان", latinName: "" },
+      { name: "لار", latinName: "" },
+      { name: "رفسنجان", latinName: "" },
+      { name: "مارلیک", latinName: "" },
+      { name: "ایزدشهر", latinName: "" },
+      { name: "فومن", latinName: "" },
+      { name: "نکا", latinName: "" },
+      { name: "تربت جام", latinName: "" },
+      { name: "آران بیدگل", latinName: "" },
+      { name: "کلارآباد", latinName: "" },
+      { name: "بم", latinName: "" },
+      { name: "فسا", latinName: "" },
+      { name: "ماسال", latinName: "" },
+      { name: "صومعه سرا", latinName: "" },
+      { name: "زابل", latinName: "" },
+      { name: "طرقبه", latinName: "" },
+      { name: "میبد", latinName: "" },
+      { name: "باقر شهر", latinName: "" },
+      { name: "خمین", latinName: "" },
+      { name: "گرمسار", latinName: "" },
+      { name: "رودسر", latinName: "" },
+      { name: "سنگر", latinName: "" },
+      { name: "سراب", latinName: "" },
+      { name: "چهارمحال بختیاری", latinName: "" },
+      { name: "طبس", latinName: "" },
+      { name: "شیرگاه", latinName: "" },
+      { name: "نقده", latinName: "" },
+      { name: "تفت", latinName: "" },
+      { name: "جاجرود", latinName: "" },
+      { name: "چابهار", latinName: "" },
+    ],
+  })
+  await prisma.itemCategory.createMany({
     data: [
       {
-        name: "رستوران طوبی",
-        address: "شیراز فرهنگ شهر",
-        registrationNumber: "12345679",
+        name: "ایرانی",
         avatarUrl:
-          "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/59fb1a2537df6.jpg",
-        orderCapacity: 500,
-        currentDiscount: 0,
-        minOrderPrice: "50000",
-        active: true,
-        delivery: "اسنپ اکسپرس",
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_irani_1.jpg",
       },
       {
-        name: "سرزمین سوخاری",
-        address: "شیراز مطهری خیابان 2",
-        registrationNumber: "13613434",
+        name: "فست فود",
         avatarUrl:
-          "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/628396c17afdf.jpg",
-        orderCapacity: 500,
-        currentDiscount: 0,
-        minOrderPrice: 300000,
-        active: true,
-        delivery: "پیک فروشنده",
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_fastfood_1.jpg",
       },
       {
-        name: "خانه هات داگ",
-        address: "شیراز فلکه گاز",
-        registrationNumber: "18643222",
+        name: "کباب",
         avatarUrl:
-          "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
-        orderCapacity: 500,
-        currentDiscount: 10,
-        minOrderPrice: 750000,
-        active: true,
-        delivery: "اسنپ اکسپرس",
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_kebab_1.jpg",
+      },
+      {
+        name: "پیتزا",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_pizza_1.jpg",
+      },
+      {
+        name: "برگر",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_burger_1.jpg",
+      },
+      {
+        name: "ساندویچ",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_sandwich_1.jpg",
+      },
+      {
+        name: "سوخاری",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_sokhari_1.jpg",
+      },
+      {
+        name: "پاستا",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_italy_1.jpg",
+      },
+      {
+        name: "سالاد",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_salad_1.jpg",
+      },
+      {
+        name: "دریایی",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_seafood_1.jpg",
+      },
+      {
+        name: "بین الملل",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_asian_1.jpg",
+      },
+      {
+        name: "گیلانی",
+        avatarUrl:
+          "https://cdn.snappfood.ir/uploads/images/tags/website_image_gilani_1.jpg",
+      },
+      {
+        name: "نوشیدنی",
       },
     ],
   })
 
-  await prisma.food.create({
+  await prisma.address.create({
     data: {
-      name: "چلو خورشت فسنجون",
-      avatarUrl:
-        "https://cdn.snappfood.ir/300x200/uploads/images/vendor-cover-app-review/2/13.jpg",
-      ingredients: "گردو - سبزی - لیمو - برنج",
-      score: 4.3,
-      basePrice: 69000,
+      address:
+        "خیابان فرهنگ شهر، ایستگاه ۱۵، جنب کتلت آناهیتا، نبش کوچه ایمانی، کترینگ پرس",
+      unit: 2,
+      cityName: "شیراز",
     },
   })
-  prisma.food.create({
-    data: {
-      name: "چلو گردن",
-      avatarUrl:
-        "https://cdn.snappfood.ir/200x201/cdn/21/63/20/vendor/61dd5ed94e61a.jpeg",
-      ingredients: "برنج - گوشت گردن - پیاز کاراملی",
-      score: 2.2,
-      basePrice: 95000,
-      foodTypes: {
-        create: [],
+  await prisma.item.createMany({
+    data: [
+      {
+        name: "چلو جوجه کباب زعفرانی",
+        description:
+          "یک سیخ جوجه کباب زعفرانی، ۲۶۰ گرم برنج خارجی، دورچین: گوجه کبابی، فلفل کبابی، لیمو، کره",
+        basePrice: 1750000,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb855bcb2ec.jpg",
+        itemCategoryName: "ایرانی",
       },
-    },
+
+      {
+        name: "زرشک پلو با مرغ",
+        description: `یک عدد ران مرغ ۴۰۰ گرمی سس پز، ۴۵۰ گرم برنج خارجی، دورچین: لیموترش
+
+  `,
+        basePrice: 1550000,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb8ada4c81c.jpg",
+        itemCategoryName: "ایرانی",
+      },
+      {
+        name: "دوغ قوطی پارسی",
+        description: "۳۳۰ میلی لیتر",
+        basePrice: 8000,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/5d4416dec86cf.jpg`,
+        itemCategoryName: "نوشیدنی",
+      },
+      // {name:"", description:"", basePrice:,avatarUrl:"",},
+    ],
   })
-  prisma.food.create({
+
+  await prisma.store.create({
     data: {
-      name: "پیتزا ایتالیایی",
+      name: "کترینگ پُرس",
       avatarUrl:
-        "https://cdn.snappfood.ir/200x201/cdn/26/04/63/vendor/62e95c2cefbe8.jpeg",
-      ingredients: "نان - استیک - پنیر - سس",
-      score: 4,
-      basePrice: 40000,
-    },
-  })
-  prisma.food.create({
-    data: {
-      name: "نوشابه فانتا",
-      avatarUrl:
-        "https://cdn.snappfood.ir/200x201/cdn/26/04/63/product_image/zoodfood/62e6471198cac.jpg",
-      ingredients: "",
-      score: 1.7,
-      basePrice: 4200,
+        "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
+      minOrderPrice: 20000,
+      storeKindId: "رستوران",
+      addressId: 1,
     },
   })
 
-  prisma.food.create({
-    data: {
-      name: "هات داگ مخصوص",
-      avatarUrl:
-        "https://cdn.snappfood.ir/641x641/cdn/26/04/63/vendor/62eacec46785c.jpeg",
-      ingredients: "هات داگ - نان - سس - پنیر",
-      score: 3.7,
-      basePrice: 55500,
-    },
+  await prisma.storeHasItems.createMany({
+    data: [
+      {
+        storeId: 1,
+        itemId: 1,
+        price: 175000,
+        remainingCount: 100,
+      },
+      {
+        storeId: 1,
+        itemId: 2,
+        price: 155000,
+        remainingCount: 100,
+      },
+      {
+        storeId: 1,
+        itemId: 3,
+        price: 8000,
+        remainingCount: 100,
+      },
+    ],
+  })
+
+  await prisma.storeHasItemCategories.createMany({
+    data: [
+      { storeId: 1, itemCategoryName: "ایرانی" },
+      { storeId: 1, itemCategoryName: "نوشیدنی" },
+    ],
   })
 }
 
