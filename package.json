@@ -10,8 +10,9 @@
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|json|jsx|tsx|css|ts)\"",
     "prepare": "husky install",
     "prisma-format": "npx prisma format",
-    "seed": "ts-node --require tsconfig-paths/register prisma/seed.ts",
-    "prisma-push": "npx prisma db push"
+    "seed": "ts-node --esm prisma/seed.ts",
+    "prisma-push": "npx prisma db push",
+    "prisma-reset": "npx prisma db push --force-reset"
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",
