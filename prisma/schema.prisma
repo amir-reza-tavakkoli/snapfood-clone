@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model City {
+  name        String    @id
+  latinName   String?
+  isAvailible Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  addresses   Address[]
+}
+
+model Address {
+  id          Int                   @id @default(autoincrement())
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  address     String
+  title       String?
+  unit        Int
+  details     String?
+  isAvailible Boolean               @default(true)
+  isValid     Boolean               @default(true)
+  cityName    String
+  city        City                  @relation(fields: [cityName], references: [name])
+  stores      Store[]
+  point       Unsupported("point")?
+}
+
+model Store {
+  id                     Int                      @id @default(autoincrement())
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  name                   String
+  branchName             String?
+  description            String?
+  avatarUrl              String?
+  minOrderPrice          Float
+  isAvailible            Boolean                  @default(true)
+  isVerified             Boolean                  @default(true)
+  addressId              Int
+  address                Address                  @relation(fields: [addressId], references: [id])
+  storeHasItems          StoreHasItems[]
+  storeHasItemCategories StoreHasItemCategories[]
+  storeKindId            String
+  storeKind              StoreKind                @relation(fields: [storeKindId], references: [name])
+}
+
+model StoreKind {
+  name        String   @id
+  isAvailible Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  avatarUrl   String
+  stores      Store[]
+}
+
+model Item {
+  id             Int             @id @default(autoincrement())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  name           String
+  description    String?
+  isAvailible    Boolean         @default(true)
+  isVerified     Boolean         @default(true)
+  avatarUrl      String?
+  basePrice      Float?
+  itemCategoryName String
+  itemCategory   ItemCategory    @relation(fields: [itemCategoryName], references: [name])
+  storeHasItems  StoreHasItems[]
+}
+
+model ItemCategory {
+  name      String @id
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  avatarUrl String?
+
+  items                  Item[]
+  storeHasItemCategories StoreHasItemCategories[]
+}
+
+model StoreHasItems {
+  storeId         Int
+  store           Store    @relation(fields: [storeId], references: [id])
+  itemId          Int
+  item            Item     @relation(fields: [itemId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  isAvailible     Boolean  @default(true)
+  isVerified      Boolean  @default(true)
+  price           Float
+  discountPercent Float?
+  remainingCount  Int
+
+  @@unique([storeId, itemId])
+}
+
+model StoreHasItemCategories {
+  storeId         Int
+  store           Store        @relation(fields: [storeId], references: [id])
+  itemCategoryName  String
+  itemCategory    ItemCategory @relation(fields: [itemCategoryName], references: [name])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  isAvailible     Boolean      @default(true)
+  isVerified      Boolean      @default(true)
+  discountPercent Int?
+
+  @@unique([storeId, itemCategoryName])
+}
