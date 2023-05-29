@@ -20,7 +20,7 @@ model City {
 }
 
 model Address {
-  id          String                @id @default(uuid())
+  id          Int                   @id @default(autoincrement())
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
   address     String
@@ -36,7 +36,7 @@ model Address {
 }
 
 model Store {
-  id                     String                   @id @default(uuid())
+  id                     Int                      @id @default(autoincrement())
   createdAt              DateTime                 @default(now())
   updatedAt              DateTime                 @updatedAt
   name                   String
@@ -44,65 +44,58 @@ model Store {
   description            String?
   avatarUrl              String?
   minOrderPrice          Float
-  isAvaulible            Boolean                  @default(true)
+  isAvailible            Boolean                  @default(true)
   isVerified             Boolean                  @default(true)
-  addressId              String
+  addressId              Int
   address                Address                  @relation(fields: [addressId], references: [id])
-  categories             StoreHasCategories[]
   storeHasItems          StoreHasItems[]
   storeHasItemCategories StoreHasItemCategories[]
+  storeKindId            String
+  storeKind              StoreKind                @relation(fields: [storeKindId], references: [name])
 }
 
-model StoreCategory {
-  name       String               @id
-  avatarUrl  String
-  isVerified Boolean              @default(true)
-  createdAt  DateTime             @default(now())
-  updatedAt  DateTime             @updatedAt
-  stores     StoreHasCategories[]
-}
-
-model StoreHasCategories {
-  storeId           String
-  store             Store         @relation(fields: [storeId], references: [id])
-  storeCategoryName String
-  category          StoreCategory @relation(fields: [storeCategoryName], references: [name])
-
-  @@id([storeId, storeCategoryName])
+model StoreKind {
+  name        String   @id
+  isAvailible Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  avatarUrl   String
+  stores      Store[]
 }
 
 model Item {
-  id             String          @id @default(uuid())
+  id             Int             @id @default(autoincrement())
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   name           String
   description    String?
-  isAvaulible    Boolean         @default(true)
+  isAvailible    Boolean         @default(true)
   isVerified     Boolean         @default(true)
   avatarUrl      String?
   basePrice      Float?
-  itemCategoryId String
-  itemCategory   ItemCategory    @relation(fields: [itemCategoryId], references: [id])
+  itemCategoryName String
+  itemCategory   ItemCategory    @relation(fields: [itemCategoryName], references: [name])
   storeHasItems  StoreHasItems[]
 }
 
 model ItemCategory {
-  id                     String                   @id @default(uuid())
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
-  name                   String
+  name      String @id
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  avatarUrl String?
+
   items                  Item[]
   storeHasItemCategories StoreHasItemCategories[]
 }
 
 model StoreHasItems {
-  storeId         String
+  storeId         Int
   store           Store    @relation(fields: [storeId], references: [id])
-  itemId          String
+  itemId          Int
   item            Item     @relation(fields: [itemId], references: [id])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  isAvaulible     Boolean  @default(true)
+  isAvailible     Boolean  @default(true)
   isVerified      Boolean  @default(true)
   price           Float
   discountPercent Float?
@@ -112,146 +105,15 @@ model StoreHasItems {
 }
 
 model StoreHasItemCategories {
-  storeId         String
+  storeId         Int
   store           Store        @relation(fields: [storeId], references: [id])
-  itemCategoryId  String
-  itemCategory    ItemCategory @relation(fields: [itemCategoryId], references: [id])
+  itemCategoryName  String
+  itemCategory    ItemCategory @relation(fields: [itemCategoryName], references: [name])
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
-  isAvaulible     Boolean      @default(true)
+  isAvailible     Boolean      @default(true)
   isVerified      Boolean      @default(true)
   discountPercent Int?
 
-  @@unique([storeId, itemCategoryId])
+  @@unique([storeId, itemCategoryName])
 }
-
-// model Food {
-//   id          String          @id @default(uuid())
-//   createdAt   DateTime        @default(now())
-//   updatedAt   DateTime        @updatedAt
-//   name        String
-//   ingredients String?
-//   avatarUrl   String?
-//   basePrice   Decimal         @default(0)
-//   description String?
-//   score       Float           @default(0)
-//   foodTypes   FoodhasTypes[]
-//   stores      StoreHasFoods[]
-//   orders      OrderHasFoods[]
-// }
-
-// model FoodhasTypes {
-// food       Food     @relation(fields: [foodId], references: [id])
-// foodId     String
-//   foodType   FoodType @relation(fields: [foodTypeId], references: [id])
-//   foodTypeId String
-//   main       Boolean  @default(false)
-
-//   @@id([foodTypeId, foodId])
-// }
-
-// model FoodType {
-//   id          String          @id @default(uuid())
-//   updatedAt   DateTime        @updatedAt
-//   name        String          @unique
-//   descriptor  String?
-//   avatarUrl   String?
-//   foods       FoodhasTypes[]
-//   stores      StoreHasTypes[]
-// }
-
-// model Store {
-//   id                 String          @id @default(uuid())
-//   name               String
-//   createdAt          DateTime        @default(now())
-//   updatedAt          DateTime        @updatedAt
-//   registrationNumber String          @unique
-//   avatarUrl          String?
-//   orderCapacity      Int?
-//   currentDiscount    Float           @default(0)
-//   minOrderPrice      Decimal         @default(0)
-//   address            String
-//   score             Float @default(0)
-//   commentCount      Int @default(0)
-//   active             Boolean         @default(false)
-//   delivery           String
-//   foods              StoreHasFoods[]
-//   categories         StoreHasTypes[]
-//   orders             Order[]
-// }
-
-// model StoreHasFoods {
-//   store          Store   @relation(fields: [storeId], references: [id])
-//   storeId        String
-//   food           Food    @relation(fields: [foodId], references: [id])
-//   foodId         String
-//   capacityPerDay Int?
-//   isAvailible    Boolean @default(false)
-//   discount       Float   @default(0)
-//   price          Decimal
-//   maxPerOrder    Int?
-
-//   @@id([foodId, storeId])
-// }
-
-// model StoreHasTypes {
-//   store           Store    @relation(fields: [storeId], references: [id])
-//   storeId         String
-//   storeCategories FoodType @relation(fields: [storeCategoryId], references: [id])
-//   storeCategoryId String
-//   main            Boolean
-
-//   @@id([storeCategoryId, storeId])
-// }
-
-// model User {
-//   id        String   @id @default(uuid())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   firstName String?
-//   lastName  String
-//   address   String?
-//   email     String   @unique
-//   avatarUrl String?
-//   orders    Order[]
-// }
-
-// model Order {
-//   id            String          @id @default(uuid())
-//   createdAt     DateTime        @default(now())
-//   updatedAt     DateTime        @updatedAt
-//   user          User            @relation(fields: [userId], references: [id])
-//   userId        String
-//   store         Store           @relation(fields: [storeId], references: [id])
-//   storeId       String
-//   rate          Float?
-//   comment       String?
-//   satisfied     Boolean         @default(false)
-//   deliveyPrice  Decimal         @default(0)
-//   tax           Decimal         @default(0)
-//   packaging     Decimal         @default(0)
-//   appliedCoupon String?
-//   foods         OrderHasFoods[]
-//   orderStatus   OrderStatus     @relation(fields: [orderStatusId], references: [id])
-//   orderStatusId String
-// }
-
-// model OrderHasFoods {
-//   order      Order   @relation(fields: [orderId], references: [id])
-//   orderId    String
-//   food       Food    @relation(fields: [foodId], references: [id])
-//   foodId     String
-//   finalPrice Decimal
-//   count      Int
-//   free       Boolean @default(false)
-
-//   @@id([foodId, orderId])
-// }
-
-// model OrderStatus {
-//   id         String   @id @default(uuid())
-//   name       String
-//   updatedAt  DateTime @updatedAt
-//   successful Boolean  @default(false)
-//   orders     Order[]
-// }
