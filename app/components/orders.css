@@ -1,0 +1,135 @@
+:where(.orders) {
+  display: flex;
+  flex-direction: column;
+  inline-size: max(35%, 350px);
+  background-color: var(--color-primary);
+  min-block-size: max(100%, 100vh);
+  padding-inline: var(--length-16);
+  padding-block: var(--length-12);
+  overflow-y: auto;
+  /* background-color: aqua; */
+}
+
+:where(.orders > p) {
+  font-size: var(--length-fluid-text);
+  padding-inline: var(--length-8);
+  padding-block: var(--length-8);
+  color: var(--color-text-2);
+  font-weight: 700;
+}
+
+:where(.orders ol) {
+  border-radius: 0.75rem 0.75rem 0px 0px;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  border: solid var(--color-faded-6) var(--border-normal);
+  /* padding-inline: var(--length-6); */
+}
+
+:where(.orders li) {
+  display: flex;
+  flex-direction: column;
+  padding-inline: var(--length-8);
+  padding-block: var(--length-8);
+  border-bottom: solid 0.5px var(--color-faded-5);
+}
+
+:where(.orders li[data-last]) {
+  border-bottom: none;
+}
+
+:where(.orders ._datetime) {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+:where(.orders ._identity) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding-inline: var(--length-8);
+}
+
+:where(.orders li p) {
+  font-size: var(--length-14);
+  line-height: 1.25rem;
+  font-weight: 700;
+}
+
+:where(.orders li > *) {
+  margin-block: var(--length-8);
+}
+
+:where(.orders li > div) {
+  display: flex;
+  padding-inline: var(--length-6);
+}
+
+:where(.orders img) {
+  inline-size: var(--length-64);
+  block-size: var(--length-64);
+  aspect-ratio: 1/1;
+  border-radius: var(--length-4);
+}
+
+:where(.orders ._comment p *) {
+  display: block;
+}
+
+:where(.orders ._comment p) {
+  inline-size: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: var(--length-10);
+  font-weight: 400;
+}
+
+:where(.orders ._comment) {
+  /* display: flex;
+    justify-content: space-between; */
+  font-size: var(--length-10);
+  background-color: var(--color-action-4);
+  padding-inline: var(--length-8);
+  margin-inline: var(--length-6);
+  padding-block: var(--length-6);
+  border-radius: var(--length-4);
+  white-space: nowrap;
+}
+
+:where(.orders ._space) {
+  padding: 5px;
+}
+
+:where(.orders ._comment button) {
+  border: none;
+  background-color: transparent;
+  color: var(--color-action);
+  font-weight: 700;
+  font-size: var(--length-12);
+  margin-left: auto;
+}
+
+:where(.orders ._buttons) {
+  display: flex;
+  padding-inline: var(--length-4);
+}
+
+:where(.orders ._buttons button) {
+  padding-inline: var(--length-8);
+  margin-inline: var(--length-4);
+  padding-block: var(--length-4);
+  border-radius: 0.375rem;
+  border: none;
+}
+
+:where(.orders > button) {
+  margin-top: 6px;
+  border: 0.09375rem solid rgba(0, 133, 66, 0.06);
+  padding-inline: 6px;
+  color: var(--color-action);
+  font-weight: 700;
+  inline-size: max-content;
+  align-self: center;
+  box-shadow: rgb(58 61 66 / 6%) 0px 1px 0px, rgb(0 0 0 / 20%) 0px 4px 16px -8px;
+}
