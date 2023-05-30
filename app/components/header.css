@@ -1,0 +1,204 @@
+:where(.header) {
+  position: fixed;
+  top: 0px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  padding-block: min(var(--length-6), 12px);
+  padding-inline: min(var(--length-16), 20px);
+  box-shadow: var(--box-shadow-light);
+  overflow: auto;
+}
+
+:where(.header ._backup-button) {
+  display: none;
+}
+
+:where(.header > a:first-of-type) {
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin-block-start: max(-10px, -0.5rem);
+}
+
+:where(.header ._identity) {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  align-self: center;
+  max-inline-size: 33.3%;
+  text-align: center;
+}
+
+:where(.header ._identity > button) {
+  flex-grow: 0;
+  flex-basis: 0;
+  padding-inline: 0px;
+  padding-block: 0px;
+  margin-block-start: min(var(--length-4), 8px);
+}
+
+:where(.header > ._identity button svg) {
+  inline-size: min(var(--length-12), 20px);
+  block-size: min(var(--length-12), 20px);
+  transform: rotate(-90deg);
+}
+
+:where(.header ._identity > svg) {
+  inline-size: min(var(--length-16), 28px);
+  min-inline-size: min(var(--length-16), 28px);
+  block-size: min(var(--length-16), 28px);
+  margin-inline-start: min(var(--length-16), 20px);
+  margin-inline-end: min(var(--length-8), 12px);
+  margin-block-start: calc(var(--length-2) * -1);
+  text-align: center;
+}
+
+:where(.header ._identity > p) {
+  flex-grow: 1;
+  max-inline-size: 50%;
+  inline-size: max-content;
+  font-size: var(--length-10);
+  text-overflow: ellipsis;
+  color: var(--color-text);
+  opacity: 0.7;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+:where(.header form) {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  justify-content: flex-start;
+  margin-inline-start: auto;
+}
+
+:where(.header form > *) {
+  flex-grow: 1;
+}
+
+:where(.header form label) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 400px;
+  margin-inline-start: calc(var(--length-80) * -1);
+  padding-inline-end: min(var(--length-12), 16px);
+  border-radius: min(var(--length-12), 14px);
+  background-color: var(--color-faded-2);
+  outline: none;
+  border: none;
+  transition: width 1s ease-in-out;
+}
+
+:where(.header form button) {
+  flex-basis: 0px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  border: none;
+  background-color: transparent;
+  width: max-content;
+  margin-inline-start: max(-4rem, -100px);
+}
+
+:where(.header ._buttons button:last-child span) {
+  padding-inline-start: var(--length-6);
+}
+
+:where(.header form input) {
+  flex-grow: 1;
+  display: flex;
+  inline-size: 100%;
+  block-size: var(--length-48);
+  padding-inline: min(var(--length-16), 20px);
+  padding-block: min(var(--length-16), 28px);
+  background-color: var(--color-faded-2);
+  border-radius: min(var(--length-10), 12px);
+  border: none;
+  outline: none;
+}
+
+:where(.header ._buttons) {
+  flex-shrink: 0;
+  display: flex;
+}
+
+:where(.header ._buttons svg) {
+  inline-size: min(var(--length-16), 28px);
+  block-size: min(var(--length-16), 28px);
+  margin-inline: 0px;
+}
+
+:where(.header ._buttons button:last-child span:first-of-type) {
+  margin-top: -4px;
+}
+
+@media (max-width: 34.375rem) {
+  :where(.header > a:first-of-type) {
+    display: none;
+  }
+}
+
+@media (max-width: 68.75rem) {
+  :where(.header form) {
+    justify-content: flex-end;
+    flex-grow: 0;
+    margin-inline: 0px;
+    margin-left: auto;
+  }
+
+  :where(.header ._backup-button svg) {
+    margin-inline-end: 6px;
+  }
+
+  :where(.header ._backup-button) {
+    display: inline-flex;
+    padding-inline: 0px;
+  }
+
+  :where(form ._submit) {
+    display: none;
+  }
+
+  :where(.header form button) {
+    margin-inline: 0px;
+    text-align: center;
+    padding: 0px;
+  }
+
+  :where(.header div) {
+    flex-grow: 2;
+  }
+
+  :where(.header label) {
+    display: none;
+    width: max-content;
+    min-width: max-content;
+    padding-inline: 16px;
+    margin-inline: 0px;
+  }
+
+  /*
+  :where(form:focus input) {
+    display: flex;
+  } */
+
+  :where(.header > div:only-of-type) {
+    max-inline-size: 55%;
+  }
+
+  :where(.header > div:only-of-type > p) {
+    max-inline-size: 65%;
+  }
+
+  :where(.header ._buttons button) {
+    padding-inline: min(var(--length-8), 12px);
+  }
+
+  :where(.header ._buttons button:last-of-type span:first-of-type) {
+    display: none;
+  }
+}

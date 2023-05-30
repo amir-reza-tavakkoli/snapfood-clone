@@ -1,144 +1,174 @@
-:where(.store-card) {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  inline-size: 100%;
-  min-inline-size: min-content;
-}
-
-:where(.store-card > div:first-child) {
-  flex-grow: 1;
-  flex-shrink: 1;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-:where(.store-card > div:last-child) {
-  flex-grow: 0;
-  flex-shrink: 0;
-  margin-block-start: min(var(--length-16), 32px);
-}
-
-:where(.store-card ._identity) {
-  align-self: flex-end;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-self: stretch;
-  order: 1;
-}
-
-:where(.store-card ._identity dl) {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  block-size: 100%;
-  align-self: stretch;
-}
-
-:where(.store-card ._identity > *) {
-  order: 2;
-}
-
-:where(.store-card ._name) {
-  order: 3;
-  padding-inline-start: min(24px, var(--length-16));
-  font-size: var(--length-fluid-extra-small);
-  font-weight: 700;
-  overflow-wrap: normal;
-  margin-block-end: min(var(--length-10), 20px);
-}
-
-:where(.store-card ._image) {
-  align-self: flex-start;
-  inline-size: 25%;
-  min-inline-size: min-content;
-}
-
-:where(.store-card ._image img) {
-  flex-shrink: 0;
-  align-self: flex-start;
-  inline-size: 100%;
-  min-inline-size: min(var(--length-80), 160px);
-  margin-inline-end: min(var(--length-20), 36px);
-  padding-inline: var(--length-1);
-  padding-block: var(--length-1);
-  aspect-ratio: 1/1;
-  border: var(--border-extra-thick) solid var(--color-faded-4);
-  border-radius: min(var(--length-12), 16px);
-}
-
-:where(.store-card ._rating) {
-  order: 1;
-  padding-inline-start: min(24px, var(--length-16));
-  margin-block-start: min(var(--length-10), 20px);
-  margin-inline-start: calc(var(--length-6) * -1);
-  white-space: nowrap;
-}
-
-:where(.store-card ._rating > dl) {
+:where(.vendor-card) {
   display: flex;
   justify-content: center;
-  flex-direction: row;
+  align-items: center;
+  flex-direction: column;
+  inline-size: 100%;
+  border: solid var(--color-faded-4) var(--border-normal);
+  border-radius: min(var(--length-8), 12px);
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  overflow-x: hidden;
+  box-shadow: var(--box-shadow-light);
+}
+
+:where(.vendor-card > dd) {
+  order: 12;
+}
+
+:where(.vendor-card ._name) {
+  padding-block-start: min(48px, var(--length-32));
+  padding-inline: min(32px, var(--length-32));
+  margin-block-end: min(12px, var(--length-8));
+  text-align: center;
+  font-size: var(--length-fluid-extra-small);
+  font-weight: 700;
+  order: 1;
+}
+
+:where(.vendor-card ._images) {
+  position: relative;
+  inline-size: 100%;
+  order: 0;
+}
+
+:where(.vendor-card ._image > img) {
+  display: inline-block;
+  inline-size: 100%;
+  border-start-start-radius: min(16px, var(--length-12));
+  border-start-end-radius: min(16px, var(--length-12));
+  aspect-ratio: 2/1;
+  object-fit: cover;
+}
+
+:where(.vendor-card ._image ._image-replace) {
+  aspect-ratio: 2/1;
+}
+
+:where(.vendor-card ._discount) {
+  position: absolute;
+  padding-block: var(--length-2);
+  padding-inline: min(24px, var(--length-12));
+  border-start-end-radius: min(12px, var(--length-12));
+  inset-inline-start: 0px;
+  inset-block-end: 0px;
+  background-color: var(--color-primary);
+  color: var(--color-accent-3);
+  font-size: var(--length-14);
+  transform: translateY(1px);
+}
+
+:where(.vendor-card ._logo) {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  inline-size: 100%;
+  inset-block-end: calc(var(--length-16) * -1);
+  border-radius: min(16px, var(--length-12));
+}
+
+:where(.vendor-card ._logo img),
+:where(.vendor-card ._logo svg) {
+  display: inline-block;
+  inline-size: 25%;
+  block-size: 25%;
+  aspect-ratio: 1/1;
+  border: min(var(--length-4), 4px) solid var(--color-faded-4);
+  border-radius: min(16px, var(--length-12));
+  background-color: var(--color-primary);
+  box-shadow: var(--box-shadow-normal);
+}
+
+:where(.vendor-card ._rating) {
+  order: 3;
+}
+
+:where(.vendor-card ._rating > dl) {
+  display: flex;
+  justify-content: center;
   align-items: center;
   margin-block-end: calc(var(--length-4) * -1);
 }
 
-:where(.store-card ._rating > dl > dd) {
+:where(.vendor-card ._rating > dl > dd) {
   font-size: var(--length-12);
 }
 
-:where(.store-card ._rating > dl > dd:first-of-type) {
+:where(.vendor-card ._rating > dl > dd:first-of-type) {
   font-weight: 700;
 }
 
-:where(.store-card ._rating ._rating-count) {
-  margin-block: min(12px, var(--length-6));
-  margin-inline: min(10px, var(--length-6));
+:where(.vendor-card ._rating ._rating-count) {
+  margin-block: min(16px, var(--length-8));
+  margin-inline: min(16px, var(--length-8));
   color: var(--color-faded);
 }
 
-:where(.store-card ._rating ._star-icon svg) {
+:where(.vendor-card ._rating ._star-icon svg) {
   inline-size: var(--length-12);
   block-size: var(--length-12);
   aspect-ratio: 1/1;
-  margin-block-start: var(--length-1);
-  margin-block-end: min(8px, var(--length-4));
-  margin-inline: min(8px, var(--length-4));
+  margin-block-start: 0;
+  margin-block-end: var(--length-4);
+  margin-inline: min(var(--length-4), 8px);
 }
 
-:where(.store-card button) {
-  margin-block-start: min(16px, var(--length-8));
-  color: var(--color-action);
-  border: var(--border-thick) solid var(--color-action-4);
-  box-shadow: var(--box-shadow-thick);
-  padding-block: min(8px, var(--length-4));
+:where(.vendor-card ._categories) {
+  display: inline-block;
+  padding-inline: min(32px, var(--length-24));
+  margin-block-end: var(--length-12);
+  font-size: var(--length-12);
+  color: var(--color-faded);
+  order: 2;
 }
 
-:where(.store-card button svg) {
-  margin-block-start: min(8px, var(--length-4));
+:where(.vendor-card ._delivery) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-block: min(18px, var(--length-10));
+  padding-inline: min(28px, var(--length-14));
+  margin-block: min(36px, var(--length-24));
+  background-color: var(--color-primary);
+  font-size: var(--length-12);
+  line-height: var(--length-20);
+  border-radius: var(--length-64);
+  color: var(--color-text);
+  box-shadow: var(--box-shadow-light);
+  overflow: hidden;
 }
 
-:where(.store-card button:hover) {
-  color: var(--color-action-2);
-  border-color: var(--color-action-4);
+:where(.vendor-card ._delivery > div) {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-:where(.store-card button:active) {
-  color: var(--color-action-2);
-  background-color: var(--color-action-4);
-  border-color: var(--color-action-4);
+:where(.vendor-card ._delivery > div > span) {
+  padding-inline: min(var(--length-2), 6px);
+  padding-block: var(--length-2);
+  margin-block-end: calc(var(--length-4) * -1);
+}
+
+:where(.vendor-card ._delivery.faded) {
+  background-color: var(--color-faded-2);
+}
+
+:where(.vendor-card ._delivery svg:first-of-type) {
+  inline-size: var(--length-14);
+  block-size: var(--length-14);
+  margin-inline: min(var(--length-2), 12px);
+  margin-block: var(--length-6);
+}
+
+:where(html[dir="rtl"] .vendor-card) {
+  direction: rtl;
 }
 
 @media (prefers-contrast: more) {
-  :where(.store-card ._rating-count) {
+  :where(.vendor-card *:not(._discount)) {
     color: var(--color-text);
-  }
-
-  :where(.store-card button) {
-    color: var(--color-action-2);
-    opacity: 0.98;
   }
 }
