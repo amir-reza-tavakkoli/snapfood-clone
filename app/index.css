@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "IRANSans";
-  src: url("IRANSans.woff2");
+  src: url("./../public/IRANSans.woff2");
   font-display: swap;
 }
 

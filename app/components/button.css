@@ -43,7 +43,10 @@
   border-color: var(--color-faded-3);
 }
 
-:where(.button[data-variant="faded"]:disabled:hover, .button[data-variant="faded"]:disabled:active) {
+:where(
+    .button[data-variant="faded"]:disabled:hover,
+    .button[data-variant="faded"]:disabled:active
+  ) {
   background-color: var(--color-faded);
   border-color: var(--color-faded);
 }
@@ -65,7 +68,10 @@
   border-color: var(--primary-button-active-color);
 }
 
-:where(.button[data-variant="primary"]:disabled:hover, .button[data-variant="primary"]:disabled:active) {
+:where(
+    .button[data-variant="primary"]:disabled:hover,
+    .button[data-variant="primary"]:disabled:active
+  ) {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
 }
@@ -87,7 +93,10 @@
   border-color: var(--color-accent-3);
 }
 
-:where(.button[data-variant="accent"]:disabled:hover, .button[data-variant="accent"]:disabled:active) {
+:where(
+    .button[data-variant="accent"]:disabled:hover,
+    .button[data-variant="accent"]:disabled:active
+  ) {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
 }

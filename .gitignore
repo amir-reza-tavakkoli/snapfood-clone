@@ -1,4 +1,10 @@
-# Logs
+node_modules
+
+/.cache
+/build
+/public/build
+.env
+ # Logs
 logs
 *.log
 npm-debug.log*
@@ -7,9 +13,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
 dist
-build
 dist-ssr
 build
 *.local
@@ -25,3 +29,5 @@ build
 *.njsproj
 *.sln
 *.sw?
+
+prisma/migrations
