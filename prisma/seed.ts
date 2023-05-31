@@ -409,7 +409,8 @@ async function main() {
       isPositive: true,
       score: 4,
       description: "بد نبود",
-  }})
+    },
+  })
 }
 
 main()
