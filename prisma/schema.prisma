@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,74 +8,97 @@ datasource db {
 }
 
 model City {
-  name        String    @id
-  latinName   String?
-  isAvailible Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  addresses   Address[]
+  name      String   @id
+  latinName String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  isAvailible Boolean @default(true)
+
+  addresses Address[]
 }
 
 model Address {
-  id          Int                   @id @default(autoincrement())
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
-  address     String
-  title       String?
-  unit        Int
-  details     String?
-  isAvailible Boolean               @default(true)
-  isValid     Boolean               @default(true)
-  cityName    String
-  city        City                  @relation(fields: [cityName], references: [name])
-  stores      Store[]
-  point       Unsupported("point")?
+  id        Int                   @id @default(autoincrement())
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  address   String
+  title     String?
+  unit      Int
+  details   String?
+  point     Unsupported("point")?
+
+  isAvailible Boolean @default(true)
+  isValid     Boolean @default(true)
+
+  cityName        String
+  city            City   @relation(fields: [cityName], references: [name])
+  userPhoneNumber String
+  userPhone       User   @relation(fields: [userPhoneNumber], references: [phoneNumber])
+
+  stores Store[]
+  orders Order[]
 }
 
 model Store {
-  id                     Int                      @id @default(autoincrement())
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
-  name                   String
-  branchName             String?
-  description            String?
-  avatarUrl              String?
-  minOrderPrice          Float
-  isAvailible            Boolean                  @default(true)
-  isVerified             Boolean                  @default(true)
-  addressId              Int
-  address                Address                  @relation(fields: [addressId], references: [id])
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String
+  branchName    String?
+  description   String?
+  avatarUrl     String?
+  minOrderPrice Float
+  shipmentPrice Float @default(0)
+  desliveryRange Unsupported("circle")?
+
+  isAvailible Boolean @default(true)
+  isVerified  Boolean @default(true)
+
+  addressId       Int
+  address         Address   @relation(fields: [addressId], references: [id])
+  storeKindId     String
+  storeKind       StoreKind @relation(fields: [storeKindId], references: [name])
+  userPhoneNumber String
+  userPhone       User      @relation(fields: [userPhoneNumber], references: [phoneNumber])
+
   storeHasItems          StoreHasItems[]
   storeHasItemCategories StoreHasItemCategories[]
-  storeKindId            String
-  storeKind              StoreKind                @relation(fields: [storeKindId], references: [name])
+  Schedules               storeSchedule[]
+  orders                  Order[]
 }
 
 model StoreKind {
-  name        String   @id
-  isAvailible Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  avatarUrl   String
-  stores      Store[]
+  name      String   @id
+  createdAt DateTime @default(now())
+  avatarUrl String
+
+  stores Store[]
+
+  isAvailible Boolean @default(true)
 }
 
 model Item {
-  id             Int             @id @default(autoincrement())
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  name           String
-  description    String?
-  isAvailible    Boolean         @default(true)
-  isVerified     Boolean         @default(true)
-  avatarUrl      String?
-  basePrice      Float?
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  avatarUrl   String?
+  basePrice   Float?
+
+  isAvailible Boolean @default(true)
+  isVerified  Boolean @default(true)
+
   itemCategoryName String
-  itemCategory   ItemCategory    @relation(fields: [itemCategoryName], references: [name])
-  storeHasItems  StoreHasItems[]
+  itemCategory     ItemCategory @relation(fields: [itemCategoryName], references: [name])
+
+  storeHasItems StoreHasItems[]
+  orderHasItems OrderHasItems[]
 }
 
 model ItemCategory {
-  name      String @id
+  name String @id
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,31 +109,122 @@ model ItemCategory {
 }
 
 model StoreHasItems {
-  storeId         Int
-  store           Store    @relation(fields: [storeId], references: [id])
-  itemId          Int
-  item            Item     @relation(fields: [itemId], references: [id])
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+  itemId  Int
+  item    Item  @relation(fields: [itemId], references: [id])
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  isAvailible     Boolean  @default(true)
-  isVerified      Boolean  @default(true)
   price           Float
   discountPercent Float?
   remainingCount  Int
+  estimatedReadyTime Int @default(10)
+
+  isAvailible Boolean @default(true)
+  isVerified  Boolean @default(true)
 
   @@unique([storeId, itemId])
 }
 
 model StoreHasItemCategories {
-  storeId         Int
-  store           Store        @relation(fields: [storeId], references: [id])
-  itemCategoryName  String
-  itemCategory    ItemCategory @relation(fields: [itemCategoryName], references: [name])
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  isAvailible     Boolean      @default(true)
-  isVerified      Boolean      @default(true)
+  storeId          Int
+  store            Store        @relation(fields: [storeId], references: [id])
+  itemCategoryName String
+  itemCategory     ItemCategory @relation(fields: [itemCategoryName], references: [name])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   discountPercent Int?
 
+  isAvailible Boolean @default(true)
+  isVerified  Boolean @default(true)
+
   @@unique([storeId, itemCategoryName])
+}
+
+model storeSchedule {
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  dayNumber Int
+  startTime Float
+  endTime   Float
+
+  @@id([storeId, startTime, endTime, dayNumber])
+}
+
+model User {
+  phoneNumber    String    @id
+  userName       String?   @unique
+  hashedPassword String?
+  firstName      String?
+  lastName       String?
+  birthday       DateTime?
+  gender         String?
+  email          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  isVerified  Boolean @default(true)
+  isSuspended Boolean @default(false)
+
+  addresses Address[]
+  stores    Store[]
+  orders     Order[]
+}
+
+model Order {
+  id                    Int      @id @default(autoincrement())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  totalPrice            Float
+  shipmentPrice         Float
+  taxPercent            Int
+  packagingPrice        Float
+  estimatedDeliveryTime Int
+
+  isBilled          Boolean @default(true)
+  isInCart          Boolean @default(false)
+  isVerifiedByAdmin Boolean @default(true)
+  isVerifiedByStore Boolean @default(true)
+  isShipped         Boolean @default(false)
+  isDelivered       Boolean @default(false)
+  isCanceled        Boolean @default(false)
+  isDelayedByStore  Boolean @default(false)
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+  userPhoneNumber String
+  user            User   @relation(fields: [userPhoneNumber], references: [phoneNumber])
+  addressId Int
+  address Address @relation(fields: [addressId], references: [id])
+
+  comments       Comment[]
+  orderHasItems OrderHasItems[]
+}
+
+model OrderHasItems {
+  count Int
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+
+  item   Item @relation(fields: [itemId], references: [id])
+  itemId Int
+
+  @@id([itemId, orderId])
+}
+
+model Comment {
+  score       Int
+  description String?
+  response    String?
+
+  isPositive Boolean
+  isVerified Boolean @default(true)
+  isVisible  Boolean @default(true)
+
+  orderId Int   @id
+  order   Order @relation(fields: [orderId], references: [id])
 }
