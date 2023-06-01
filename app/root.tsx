@@ -25,7 +25,6 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <p>ddd</p>
       </body>
     </html>
   )
