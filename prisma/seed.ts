@@ -265,12 +265,42 @@ async function main() {
     ],
   })
 
-  const address = await prisma.address.create({
+  const user = await prisma.user.create({
+    data: {
+      phoneNumber: "09900249950",
+      userName: "Amir",
+      hashedPassword: "1234",
+      firstName: "Amir",
+      lastName: "Tavakkoli",
+    },
+  })
+
+  const storeOwner = await prisma.user.create({
+    data: {
+      phoneNumber: "09121234567",
+      userName: "Ahmad",
+      hashedPassword: "1234",
+      firstName: "Ahmad",
+      lastName: "Sadeghi",
+    },
+  })
+
+  const storeAddress = await prisma.address.create({
     data: {
       address:
         "خیابان فرهنگ شهر، ایستگاه ۱۵، جنب کتلت آناهیتا، نبش کوچه ایمانی، کترینگ پرس",
       unit: 2,
       cityName: "شیراز",
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const userAddress = await prisma.address.create({
+    data: {
+      address: "شیراز فرهنگ شهر کوچه 35",
+      unit: 4,
+      cityName: "شیراز",
+      userPhoneNumber: user.phoneNumber,
     },
   })
 
@@ -323,11 +353,12 @@ async function main() {
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
       minOrderPrice: 20000,
       storeKindId: "رستوران",
-      addressId: address.id,
+      addressId: storeAddress.id,
+      userPhoneNumber: storeOwner.phoneNumber,
     },
   })
 
-  await Promise.all(
+  const itemsInStore = await Promise.all(
     items.map(item =>
       prisma.storeHasItems.create({
         data: {
@@ -345,6 +376,40 @@ async function main() {
       { storeId: store.id, itemCategoryName: "ایرانی" },
       { storeId: store.id, itemCategoryName: "نوشیدنی" },
     ],
+  })
+
+  const order = await prisma.order.create({
+    data: {
+      packagingPrice: 0,
+      storeId: store.id,
+      userPhoneNumber: user.phoneNumber,
+      addressId: userAddress.id,
+      taxPercent: 0,
+      estimatedDeliveryTime: 90,
+      shipmentPrice: 0,
+      totalPrice: 0,
+    },
+  })
+
+  const itemsInOrder = await Promise.all(
+    items.map(item =>
+      prisma.orderHasItems.create({
+        data: {
+          count: 1,
+          itemId: item.id,
+          orderId: order.id,
+        },
+      }),
+    ),
+  )
+
+  const comment = await prisma.comment.create({
+    data: {
+      orderId: order.id,
+      isPositive: true,
+      score: 4,
+      description: "بد نبود",
+    },
   })
 }
 
