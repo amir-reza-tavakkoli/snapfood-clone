@@ -26,13 +26,15 @@ function getUserSession(request: Request) {
 export async function getPhoneNumber(request: Request) {
   const session = await getUserSession(request)
   const phoneNumber = session.get("phoneNumber")
+  console.log("konii", session.data, "konii")
+
   if (!phoneNumber || typeof phoneNumber !== "string") {
     return null
   }
   return phoneNumber
 }
 
-export async function requireUserId(
+export async function requirePhoneNumber(
   request: Request,
   redirectTo: string = new URL(request.url).pathname,
 ) {
@@ -49,6 +51,8 @@ export async function createUserSession(
   phoneNumber: string,
   redirectTo: string,
 ) {
+  console.log("kos khar", phoneNumber)
+
   const session = await storage.getSession()
   session.set("phoneNumber", phoneNumber)
   return redirect(redirectTo, {
@@ -60,6 +64,8 @@ export async function createUserSession(
 
 export async function logout(request: Request) {
   const session = await getUserSession(request)
+  console.log("logouttttttttttttt")
+
   return redirect("/login", {
     headers: {
       "Set-Cookie": await storage.destroySession(session),
@@ -67,14 +73,14 @@ export async function logout(request: Request) {
   })
 }
 
-export async function getUserName(request: Request) {
+export async function getUser(request: Request) {
   const phoneNumber = await getPhoneNumber(request)
+  console.log(phoneNumber, "kir to kon")
   if (typeof phoneNumber !== "string") {
     return null
   }
 
   const user = await db.user.findUnique({
-    select: { firstName: true, lastName: true },
     where: { phoneNumber: phoneNumber },
   })
 
@@ -82,5 +88,5 @@ export async function getUserName(request: Request) {
     throw logout(request)
   }
 
-  return user.firstName ?? "" + user.lastName ?? ""
+  return user
 }

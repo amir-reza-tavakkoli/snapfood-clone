@@ -1,6 +1,5 @@
 import type { ActionArgs, LinksFunction } from "@remix-run/node"
 import { Link, useActionData, useSearchParams } from "@remix-run/react"
-import { createSecureServer } from "http2"
 
 import { useEffect, useState } from "react"
 
@@ -34,8 +33,9 @@ function validateUrl(url: string) {
 
 export const action = async ({ request }: any) => {
   const form = await request.formData()
-  const phoneNumber = form.get("phoneNumber")
   const state = form.get("state")
+
+  const phoneNumber = form.get("phoneNumber")
   const fieldErrors = {
     phoneNumber: validatePhoneNumber(phoneNumber),
   }
@@ -65,6 +65,7 @@ export const action = async ({ request }: any) => {
 
   if (state === "verification") {
     const submittedCode: String = form.get("verification")
+    const phoneNumber: String = form.get("userPhone")
     const redirectTo = validateUrl((form.get("redirectTo") as string) || "/ggg")
 
     if (user.verificationCode! !== submittedCode) {
@@ -73,7 +74,7 @@ export const action = async ({ request }: any) => {
       }
     }
 
-    console.log("ooo")
+    console.log("ooo", user.phoneNumber)
     return createUserSession(user.phoneNumber, redirectTo)
 
     if (Object.values(fieldErrors).some(Boolean)) {
@@ -93,7 +94,7 @@ export const action = async ({ request }: any) => {
     })
   }
 
-  console.log("hhhhhh")
+  // console.log("hhhhhh")
 
   console.log(user)
   const isSuspended = user.isSuspended
@@ -118,21 +119,48 @@ export const action = async ({ request }: any) => {
   }
 }
 
+function getCookie(name: string) {
+  var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"))
+  if (match) return match[2]
+}
+
+function setCookie(cname: string, cvalue: string, exdays: number) {
+  const d = new Date()
+  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000)
+  let expires = "expires=" + d.toUTCString()
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"
+}
 export default function Login() {
   const actionData = useActionData()
   const [searchParams] = useSearchParams()
 
-  const [phoneNumber, setPhoneNumber] = useState<String>("")
+  const [phoneNumber, setPhoneNumber] = useState<string>("")
+  const [verificationCode, setVerificationCode] = useState<String>("")
 
   const [state, setState] = useState<"phoneNumber" | "verification">(
     "phoneNumber",
   )
-  console.log(actionData)
+  // console.log(actionData)
 
   useEffect(() => {
     if (state === "phoneNumber" && actionData?.codeSent)
       setState("verification")
   }, [actionData?.codeSent])
+
+  useEffect(() => {
+    if (state === "verification")
+      setPhoneNumber(sessionStorage.getItem("phoneNumber")!)
+    console.log(phoneNumber, "kiriririr")
+  }, [verificationCode])
+
+  useEffect(() => {
+    if (state === "phoneNumber") {
+      if (phoneNumber == "") {
+        return
+      }
+      sessionStorage.setItem("phoneNumber", phoneNumber)
+    }
+  }, [phoneNumber])
 
   return (
     <div>
@@ -153,7 +181,9 @@ export default function Login() {
               // }
               onChange={e => {
                 e.preventDefault()
-                setPhoneNumber(e.target.value)
+                if (e.target.value) {
+                  setPhoneNumber(e.target.value)
+                }
               }}
             />
             {actionData?.fieldErrors?.phoneNumber ? (
@@ -196,9 +226,12 @@ export default function Login() {
 
             <input
               type="hidden"
-              name="phoneNumber"
-              value={String(phoneNumber)}
+              name="userPhone"
+              // value={typeof phoneNumber === "string" ? phoneNumber : "0990"  }
+              value={"09900249950"}
             />
+
+            <input type="hidden" name="phoneNumber" value={phoneNumber} />
 
             <input type="hidden" name="state" value={"verification"} />
 
@@ -213,6 +246,12 @@ export default function Login() {
               // aria-errormessage={
               //   actionData?.fieldErrors?.username ? "username-error" : undefined
               // }
+              onChange={e => {
+                e.preventDefault()
+                if (e.target.value) {
+                  setVerificationCode(e.target.value)
+                }
+              }}
             />
             {actionData?.fieldErrors?.verificationCode ? (
               <p
