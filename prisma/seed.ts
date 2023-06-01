@@ -268,8 +268,6 @@ async function main() {
   const user = await prisma.user.create({
     data: {
       phoneNumber: "09900249950",
-      userName: "Amir",
-      hashedPassword: "1234",
       firstName: "Amir",
       lastName: "Tavakkoli",
     },
@@ -278,8 +276,6 @@ async function main() {
   const storeOwner = await prisma.user.create({
     data: {
       phoneNumber: "09121234567",
-      userName: "Ahmad",
-      hashedPassword: "1234",
       firstName: "Ahmad",
       lastName: "Sadeghi",
     },

@@ -156,8 +156,6 @@ model storeSchedule {
 
 model User {
   phoneNumber    String    @id
-  userName       String?   @unique
-  hashedPassword String?
   firstName      String?
   lastName       String?
   birthday       DateTime?
@@ -165,6 +163,8 @@ model User {
   email          String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  verificationCode  String?
+  verificationCodeExpiry DateTime?
 
   isVerified  Boolean @default(true)
   isSuspended Boolean @default(false)
