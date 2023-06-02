@@ -31,13 +31,18 @@ function validateUrl(url: string) {
   return "/"
 }
 
+type FieldErrors = {
+  phoneNumber?: string | undefined
+  verificationCode?: string | undefined
+}
+
 export const action = async ({ request }: any) => {
   const form = await request.formData()
   const state = form.get("state")
 
   const phoneNumber = form.get("phoneNumber")
-  const fieldErrors = {
-    phoneNumber: validatePhoneNumber(phoneNumber),
+  const fieldErrors: FieldErrors = {
+    phoneNumber: phoneNumber ? validatePhoneNumber(phoneNumber) : undefined,
   }
   if (typeof phoneNumber !== "string") {
     return badRequest({
@@ -46,6 +51,7 @@ export const action = async ({ request }: any) => {
       formError: "Form not submitted correctly.",
     })
   }
+  console.log("pn is", phoneNumber)
 
   const fields = { phoneNumber }
 
@@ -55,27 +61,23 @@ export const action = async ({ request }: any) => {
     },
   })
 
-  if (!user) {
-    user = await db.user.create({
-      data: {
-        phoneNumber: phoneNumber,
-      },
-    })
-  }
-
   if (state === "verification") {
+    if (!user) {
+      fieldErrors.verificationCode = "internal error"
+      return badRequest({
+        fieldErrors,
+        fields,
+        formError: null,
+      })
+    }
     const submittedCode: String = form.get("verification")
-    const phoneNumber: String = form.get("userPhone")
     const redirectTo = validateUrl((form.get("redirectTo") as string) || "/ggg")
 
-    if (user.verificationCode! !== submittedCode) {
-      const fieldErrors = {
-        verificationCode: true,
-      }
-    }
+    console.log("heyy", user.verificationCode!, submittedCode)
 
-    console.log("ooo", user.phoneNumber)
-    return createUserSession(user.phoneNumber, redirectTo)
+    if (user.verificationCode! !== submittedCode) {
+      fieldErrors.verificationCode = "verification code wrong"
+    }
 
     if (Object.values(fieldErrors).some(Boolean)) {
       return badRequest({
@@ -84,6 +86,7 @@ export const action = async ({ request }: any) => {
         formError: null,
       })
     }
+    return createUserSession(user.phoneNumber, redirectTo)
   }
 
   if (Object.values(fieldErrors).some(Boolean)) {
@@ -91,6 +94,14 @@ export const action = async ({ request }: any) => {
       fieldErrors,
       fields,
       formError: null,
+    })
+  }
+
+  if (!user) {
+    user = await db.user.create({
+      data: {
+        phoneNumber: phoneNumber,
+      },
     })
   }
 
@@ -103,6 +114,8 @@ export const action = async ({ request }: any) => {
   const verificationCodeExpiry = new Date(
     new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + 5),
   )
+
+  console.log(user)
 
   await db.user.update({
     where: {
@@ -119,17 +132,8 @@ export const action = async ({ request }: any) => {
   }
 }
 
-function getCookie(name: string) {
-  var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"))
-  if (match) return match[2]
-}
+type State = "phoneNumber" | "verification"
 
-function setCookie(cname: string, cvalue: string, exdays: number) {
-  const d = new Date()
-  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000)
-  let expires = "expires=" + d.toUTCString()
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"
-}
 export default function Login() {
   const actionData = useActionData()
   const [searchParams] = useSearchParams()
@@ -137,10 +141,7 @@ export default function Login() {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
   const [verificationCode, setVerificationCode] = useState<String>("")
 
-  const [state, setState] = useState<"phoneNumber" | "verification">(
-    "phoneNumber",
-  )
-  // console.log(actionData)
+  const [state, setState] = useState<State>("phoneNumber")
 
   useEffect(() => {
     if (state === "phoneNumber" && actionData?.codeSent)
@@ -150,7 +151,6 @@ export default function Login() {
   useEffect(() => {
     if (state === "verification")
       setPhoneNumber(sessionStorage.getItem("phoneNumber")!)
-    console.log(phoneNumber, "kiriririr")
   }, [verificationCode])
 
   useEffect(() => {
@@ -162,23 +162,27 @@ export default function Login() {
     }
   }, [phoneNumber])
 
+  // console.log(phoneNumber,actionData)
+
   return (
     <div>
       <h1>Login</h1>
-      {state === "phoneNumber" ? (
-        <>
-          <form method="post">
+      <form method="post">
+        {state === "phoneNumber" ? (
+          <>
             <label htmlFor="phoneNumber">phone number</label>
             <input
               type="text"
               id="phoneNumber"
               name="phoneNumber"
               defaultValue=""
-              placeholder="090******"
-              // aria-invalid={Boolean(actionData?.fieldErrors?.username)}
-              // aria-errormessage={
-              //   actionData?.fieldErrors?.username ? "username-error" : undefined
-              // }
+              placeholder="09******"
+              aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
+              aria-errormessage={
+                actionData?.fieldErrors?.phoneNumber
+                  ? "Phone number error"
+                  : undefined
+              }
               onChange={e => {
                 e.preventDefault()
                 if (e.target.value) {
@@ -186,53 +190,35 @@ export default function Login() {
                 }
               }}
             />
+            <input type="hidden" name="state" value={"phoneNumber"} />
+
             {actionData?.fieldErrors?.phoneNumber ? (
-              <p
-                className="form-validation-error"
-                role="alert"
-                id="username-error"
-              >
+              <p className="form-validation-error" role="alert">
                 {actionData.fieldErrors.phoneNumber}
               </p>
             ) : null}
-            <div id="form-error-message">
+            <div>
               {actionData?.formError ? (
                 <p className="form-validation-error" role="alert">
                   {actionData.formError}
                 </p>
               ) : null}
             </div>
-            <div
-            // onClick={() => {
-            //   if (state === "phoneNumber" && actionData?.codeSent)
-            //     setState("verification")
-            // }}
-            >
+            <div>
               <button type="submit" className="button">
                 Submit
               </button>
             </div>
-          </form>
-        </>
-      ) : (
-        <>
-          {" "}
-          <form method="post">
+          </>
+        ) : (
+          <>
             <input
               type="hidden"
               name="redirectTo"
               value={searchParams.get("redirectTo") ?? undefined}
             />
 
-            <input
-              type="hidden"
-              name="userPhone"
-              // value={typeof phoneNumber === "string" ? phoneNumber : "0990"  }
-              value={"09900249950"}
-            />
-
             <input type="hidden" name="phoneNumber" value={phoneNumber} />
-
             <input type="hidden" name="state" value={"verification"} />
 
             <label htmlFor="verification">verification code</label>
@@ -242,10 +228,12 @@ export default function Login() {
               name="verification"
               defaultValue=""
               placeholder="1234"
-              // aria-invalid={Boolean(actionData?.fieldErrors?.username)}
-              // aria-errormessage={
-              //   actionData?.fieldErrors?.username ? "username-error" : undefined
-              // }
+              aria-invalid={Boolean(actionData?.fieldErrors?.verificationCode)}
+              aria-errormessage={
+                actionData?.fieldErrors?.verificationCode
+                  ? "verification code error"
+                  : undefined
+              }
               onChange={e => {
                 e.preventDefault()
                 if (e.target.value) {
@@ -262,26 +250,19 @@ export default function Login() {
                 {actionData.fieldErrors.verificationCode}
               </p>
             ) : null}
-            <div id="form-error-message">
-              {actionData?.formError ? (
-                <p className="form-validation-error" role="alert">
-                  {actionData.formError}
-                </p>
-              ) : null}
-            </div>
             <button type="submit" className="button">
               Submit
             </button>
-          </form>
-          <div id="form-error-message">
-            {actionData?.formError ? (
-              <p className="form-validation-error" role="alert">
-                {actionData.formError}
-              </p>
-            ) : null}
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </form>
+      <div id="form-error-message">
+        {actionData?.formError ? (
+          <p className="form-validation-error" role="alert">
+            {actionData.formError}
+          </p>
+        ) : null}
+      </div>
     </div>
   )
 }
