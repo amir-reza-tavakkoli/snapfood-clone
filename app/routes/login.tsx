@@ -1,4 +1,3 @@
-import type { ActionArgs, LinksFunction } from "@remix-run/node"
 import { Link, useActionData, useSearchParams } from "@remix-run/react"
 
 import { useEffect, useState } from "react"
@@ -7,12 +6,12 @@ import { db } from "~/utils/db.server"
 import { badRequest } from "~/utils/request.server"
 import { createUserSession } from "~/utils/session.server"
 
-// export const links: LinksFunction = () => [
-//   { rel: "stylesheet", href: stylesUrl },
-// ]
-
 function validatePhoneNumber(phoneNumber: string) {
-  if (phoneNumber?.length != 11) {
+  if (
+    phoneNumber?.length != 11 ||
+    !phoneNumber.match(/\d{11}/) ||
+    !Boolean(parseInt(phoneNumber))
+  ) {
     return "PhoneNumber must only be 11 characters long"
   }
 }
@@ -24,7 +23,7 @@ function getRandomString(min: number, max: number): string {
 }
 
 function validateUrl(url: string) {
-  const urls = ["/home", "/", "/stores"]
+  const urls = ["/home", "/", "/stores", "/orders"]
   if (urls.includes(url)) {
     return url
   }
@@ -38,29 +37,44 @@ type FieldErrors = {
 
 export const action = async ({ request }: any) => {
   const form = await request.formData()
-  const state = form.get("state")
 
-  const phoneNumber = form.get("phoneNumber")
+  const state: string | undefined = form.get("state")
+  const submittedphone: string | undefined = form.get("phoneNumber")
+
   const fieldErrors: FieldErrors = {
-    phoneNumber: phoneNumber ? validatePhoneNumber(phoneNumber) : undefined,
+    phoneNumber: submittedphone
+      ? validatePhoneNumber(submittedphone)
+      : undefined,
   }
-  if (typeof phoneNumber !== "string") {
+
+  if (typeof submittedphone !== "string") {
     return badRequest({
       fieldErrors: null,
       fields: null,
       formError: "Form not submitted correctly.",
     })
   }
-  console.log("pn is", phoneNumber)
 
-  const fields = { phoneNumber }
+  if (fieldErrors.phoneNumber) {
+    return {
+      fieldErrors,
+    }
+  }
 
-  let user = await db.user.findUnique({
-    where: {
-      phoneNumber: phoneNumber,
-    },
-  })
+  const fields = { phoneNumber: submittedphone }
 
+  let user
+  try {
+    user = await db.user.findUnique({
+      where: {
+        phoneNumber: submittedphone,
+      },
+    })
+  } catch {
+    return {
+      formError: "internal error",
+    }
+  }
   if (state === "verification") {
     if (!user) {
       fieldErrors.verificationCode = "internal error"
@@ -70,7 +84,16 @@ export const action = async ({ request }: any) => {
         formError: null,
       })
     }
+
     const submittedCode: String = form.get("verification")
+    if (typeof submittedCode !== "string") {
+      return badRequest({
+        fieldErrors: null,
+        fields: null,
+        formError: "Form not submitted correctly.",
+      })
+    }
+
     const redirectTo = validateUrl((form.get("redirectTo") as string) || "/ggg")
 
     console.log("heyy", user.verificationCode!, submittedCode)
@@ -80,13 +103,32 @@ export const action = async ({ request }: any) => {
     }
 
     if (Object.values(fieldErrors).some(Boolean)) {
-      return badRequest({
+      return {
         fieldErrors,
         fields,
         formError: null,
-      })
+        state: "verification",
+      }
     }
     return createUserSession(user.phoneNumber, redirectTo)
+  }
+
+  if (!user) {
+    try {
+      user = await db.user.create({
+        data: {
+          phoneNumber: submittedphone,
+        },
+      })
+    } catch {
+      return {
+        formError: "internal error",
+      }
+    }
+  }
+
+  if (user.isSuspended) {
+    fieldErrors.phoneNumber = "user is suspended"
   }
 
   if (Object.values(fieldErrors).some(Boolean)) {
@@ -97,35 +139,30 @@ export const action = async ({ request }: any) => {
     })
   }
 
-  if (!user) {
-    user = await db.user.create({
-      data: {
-        phoneNumber: phoneNumber,
-      },
-    })
-  }
-
-  // console.log("hhhhhh")
-
   console.log(user)
-  const isSuspended = user.isSuspended
 
   const verificationCode = getRandomString(1000, 9999) // 4 figures
   const verificationCodeExpiry = new Date(
     new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + 5),
   )
 
-  console.log(user)
+  try {
+    user = await db.user.update({
+      where: {
+        phoneNumber: submittedphone,
+      },
+      data: {
+        verificationCode,
+        verificationCodeExpiry,
+      },
+    })
+  } catch {
+    return {
+      formError: "internal error",
+    }
+  }
 
-  await db.user.update({
-    where: {
-      phoneNumber: phoneNumber,
-    },
-    data: {
-      verificationCode,
-      verificationCodeExpiry,
-    },
-  })
+  console.log(user)
 
   return {
     codeSent: true,
@@ -141,7 +178,7 @@ export default function Login() {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
   const [verificationCode, setVerificationCode] = useState<String>("")
 
-  const [state, setState] = useState<State>("phoneNumber")
+  const [state, setState] = useState<State>(actionData?.state ?? "phoneNumber")
 
   useEffect(() => {
     if (state === "phoneNumber" && actionData?.codeSent)
@@ -162,7 +199,7 @@ export default function Login() {
     }
   }, [phoneNumber])
 
-  // console.log(phoneNumber,actionData)
+  console.log(searchParams.get("redirectTo"))
 
   return (
     <div>
