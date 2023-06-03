@@ -1,29 +1,58 @@
-import { Link, useActionData, useSearchParams } from "@remix-run/react"
-
 import { useEffect, useState } from "react"
-
-import { db } from "~/utils/db.server"
+import { useActionData, useLoaderData, useSearchParams } from "@remix-run/react"
+import {
+  createOrUpdateUser,
+  getUserByPhone,
+  updateVerificationCode,
+} from "~/utils/query.server"
 import { badRequest } from "~/utils/request.server"
 import { createUserSession } from "~/utils/session.server"
+import { LoaderArgs } from "@remix-run/server-runtime"
+
+const ALLOWED_PHONE_PREFIX = "09"
+const VERIFICATION_CODE_FIGURES = 4
+const VERIFICATION_CODE_EXPIRY_TIME = 5
+const ALLOWED_URLS = ["/home", "/", "/stores", "/orders", "/login"]
 
 function validatePhoneNumber(phoneNumber: string) {
   if (
     phoneNumber?.length != 11 ||
     !phoneNumber.match(/\d{11}/) ||
-    !Boolean(parseInt(phoneNumber))
+    !Boolean(parseInt(phoneNumber)) ||
+    !phoneNumber.startsWith(ALLOWED_PHONE_PREFIX)
   ) {
-    return "PhoneNumber must only be 11 characters long"
+    return "Wrong PhoneNumber Format"
   }
 }
 
-function getRandomString(min: number, max: number): string {
+function generateVerificationCode(figures: number) {
+  const mins = [1]
+  const maxs = [9]
+
+  for (let index = 0; index < figures - 1; index++) {
+    mins.push(0)
+    maxs.push(9)
+  }
+
+  let min = Number(mins.join(""))
+  let max = Number(maxs.join(""))
+
   min = Math.ceil(min)
   max = Math.floor(max)
+
   return String(Math.floor(Math.random() * (max - min) + min))
 }
 
-function validateUrl(url: string) {
-  const urls = ["/home", "/", "/stores", "/orders"]
+function generateVerificationExpiry(mins: number): Date {
+  const defaultMinutes = 4
+  mins = mins ?? defaultMinutes
+
+  return new Date(
+    new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + mins),
+  )
+}
+
+function validateUrl(url: string, urls: string[]) {
   if (urls.includes(url)) {
     return url
   }
@@ -37,7 +66,6 @@ type FieldErrors = {
 
 export const action = async ({ request }: any) => {
   const form = await request.formData()
-
   const state: string | undefined = form.get("state")
   const submittedphone: string | undefined = form.get("phoneNumber")
 
@@ -47,11 +75,11 @@ export const action = async ({ request }: any) => {
       : undefined,
   }
 
-  if (typeof submittedphone !== "string") {
+  if (typeof submittedphone !== "string" || !state) {
     return badRequest({
       fieldErrors: null,
       fields: null,
-      formError: "Form not submitted correctly.",
+      formError: "Form Not Submitted Correctly.",
     })
   }
 
@@ -65,41 +93,40 @@ export const action = async ({ request }: any) => {
 
   let user
   try {
-    user = await db.user.findUnique({
-      where: {
-        phoneNumber: submittedphone,
-      },
-    })
+    user = await getUserByPhone({ phoneNumber: submittedphone })
   } catch {
     return {
-      formError: "internal error",
+      formError: "Internal Error",
     }
   }
+
   if (state === "verification") {
     if (!user) {
-      fieldErrors.verificationCode = "internal error"
-      return badRequest({
-        fieldErrors,
-        fields,
-        formError: null,
-      })
+      return {
+        formError: "Internal Error",
+      }
     }
 
     const submittedCode: String = form.get("verification")
-    if (typeof submittedCode !== "string") {
+
+    if (typeof submittedCode !== "string" || !submittedCode) {
       return badRequest({
         fieldErrors: null,
         fields: null,
-        formError: "Form not submitted correctly.",
+        formError: "Form Not Submitted Correctly.",
       })
     }
 
-    const redirectTo = validateUrl((form.get("redirectTo") as string) || "/ggg")
+    const redirectTo = validateUrl(
+      (form.get("redirectTo") as string) || "/home",
+      ALLOWED_URLS,
+    )
 
-    console.log("heyy", user.verificationCode!, submittedCode)
-
-    if (user.verificationCode! !== submittedCode) {
-      fieldErrors.verificationCode = "verification code wrong"
+    if (
+      user.verificationCode! !== submittedCode ||
+      user.verificationCodeExpiry! < new Date(Date.now())
+    ) {
+      fieldErrors.verificationCode = "Verification Code Wrong, Try Again"
     }
 
     if (Object.values(fieldErrors).some(Boolean)) {
@@ -110,59 +137,46 @@ export const action = async ({ request }: any) => {
         state: "verification",
       }
     }
+
     return createUserSession(user.phoneNumber, redirectTo)
   }
 
   if (!user) {
     try {
-      user = await db.user.create({
-        data: {
-          phoneNumber: submittedphone,
-        },
-      })
+      user = await createOrUpdateUser({ phoneNumber: submittedphone })
     } catch {
       return {
-        formError: "internal error",
+        formError: "Internal Error",
       }
     }
   }
 
   if (user.isSuspended) {
-    fieldErrors.phoneNumber = "user is suspended"
+    fieldErrors.phoneNumber = "User Is Suspended"
   }
 
   if (Object.values(fieldErrors).some(Boolean)) {
-    return badRequest({
-      fieldErrors,
-      fields,
-      formError: null,
-    })
-  }
-
-  console.log(user)
-
-  const verificationCode = getRandomString(1000, 9999) // 4 figures
-  const verificationCodeExpiry = new Date(
-    new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + 5),
-  )
-
-  try {
-    user = await db.user.update({
-      where: {
-        phoneNumber: submittedphone,
-      },
-      data: {
-        verificationCode,
-        verificationCodeExpiry,
-      },
-    })
-  } catch {
     return {
-      formError: "internal error",
+      fieldErrors,
     }
   }
 
-  console.log(user)
+  const verificationCode = generateVerificationCode(VERIFICATION_CODE_FIGURES)
+  const verificationCodeExpiry = generateVerificationExpiry(
+    VERIFICATION_CODE_EXPIRY_TIME,
+  )
+
+  try {
+    user = await updateVerificationCode(
+      submittedphone,
+      verificationCode,
+      verificationCodeExpiry,
+    )
+  } catch {
+    return {
+      formError: "Internal Error",
+    }
+  }
 
   return {
     codeSent: true,
@@ -173,12 +187,18 @@ type State = "phoneNumber" | "verification"
 
 export default function Login() {
   const actionData = useActionData()
+  // const loaderData = useLoaderData<typeof loader>()
+  const loaderData = { isLoggedIn: false }
+
   const [searchParams] = useSearchParams()
 
   const [phoneNumber, setPhoneNumber] = useState<string>("")
+
   const [verificationCode, setVerificationCode] = useState<String>("")
 
   const [state, setState] = useState<State>(actionData?.state ?? "phoneNumber")
+
+  // console.log(phoneNumber,"ph", );
 
   useEffect(() => {
     if (state === "phoneNumber" && actionData?.codeSent)
@@ -195,111 +215,103 @@ export default function Login() {
       if (phoneNumber == "") {
         return
       }
+
       sessionStorage.setItem("phoneNumber", phoneNumber)
     }
   }, [phoneNumber])
 
-  console.log(searchParams.get("redirectTo"))
-
   return (
     <div>
       <h1>Login</h1>
-      <form method="post">
-        {state === "phoneNumber" ? (
-          <>
-            <label htmlFor="phoneNumber">phone number</label>
-            <input
-              type="text"
-              id="phoneNumber"
-              name="phoneNumber"
-              defaultValue=""
-              placeholder="09******"
-              aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
-              aria-errormessage={
-                actionData?.fieldErrors?.phoneNumber
-                  ? "Phone number error"
-                  : undefined
-              }
-              onChange={e => {
-                e.preventDefault()
-                if (e.target.value) {
-                  setPhoneNumber(e.target.value)
-                }
-              }}
-            />
-            <input type="hidden" name="state" value={"phoneNumber"} />
+      {loaderData.isLoggedIn ? (
+        <p>Already Logged In</p>
+      ) : (
+        <>
+          <form method="post">
+            {state === "phoneNumber" ? (
+              <>
+                <label htmlFor="phoneNumber">Phone Number</label>
+                <input
+                  type="text"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  defaultValue=""
+                  placeholder="09******"
+                  aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
+                  aria-errormessage={
+                    actionData?.fieldErrors?.phoneNumber
+                      ? "Phone Number Error"
+                      : undefined
+                  }
+                  onChange={e => {
+                    e.preventDefault()
+                    if (e.target.value) {
+                      setPhoneNumber(e.target.value)
+                    }
+                  }}
+                />
+                <input type="hidden" name="state" value={"phoneNumber"} />
 
-            {actionData?.fieldErrors?.phoneNumber ? (
-              <p className="form-validation-error" role="alert">
-                {actionData.fieldErrors.phoneNumber}
-              </p>
+                {actionData?.fieldErrors?.phoneNumber ? (
+                  <p role="alert">{actionData.fieldErrors.phoneNumber}</p>
+                ) : null}
+                <div>
+                  {actionData?.formError ? (
+                    <p role="alert">{actionData.formError}</p>
+                  ) : null}
+                </div>
+                <div>
+                  <button type="submit">Submit</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <input
+                  type="hidden"
+                  name="redirectTo"
+                  value={searchParams.get("redirectTo") ?? undefined}
+                />
+
+                <input type="hidden" name="phoneNumber" value={phoneNumber} />
+                <input type="hidden" name="state" value={"verification"} />
+
+                <label htmlFor="verification">Verification Code</label>
+                <input
+                  type="text"
+                  id="verification"
+                  name="verification"
+                  defaultValue=""
+                  placeholder="1234"
+                  aria-invalid={Boolean(
+                    actionData?.fieldErrors?.verificationCode,
+                  )}
+                  aria-errormessage={
+                    actionData?.fieldErrors?.verificationCode
+                      ? "Verification Code Error"
+                      : undefined
+                  }
+                  onChange={e => {
+                    e.preventDefault()
+                    if (e.target.value) {
+                      setVerificationCode(e.target.value)
+                    }
+                  }}
+                />
+                {actionData?.fieldErrors?.verificationCode ? (
+                  <p role="alert">{actionData.fieldErrors.verificationCode}</p>
+                ) : null}
+                <button type="submit">Submit</button>
+              </>
+            )}
+          </form>
+
+          <div>
+            {actionData?.formError ? (
+              <p role="alert">{actionData.formError}</p>
             ) : null}
-            <div>
-              {actionData?.formError ? (
-                <p className="form-validation-error" role="alert">
-                  {actionData.formError}
-                </p>
-              ) : null}
-            </div>
-            <div>
-              <button type="submit" className="button">
-                Submit
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <input
-              type="hidden"
-              name="redirectTo"
-              value={searchParams.get("redirectTo") ?? undefined}
-            />
-
-            <input type="hidden" name="phoneNumber" value={phoneNumber} />
-            <input type="hidden" name="state" value={"verification"} />
-
-            <label htmlFor="verification">verification code</label>
-            <input
-              type="text"
-              id="verification"
-              name="verification"
-              defaultValue=""
-              placeholder="1234"
-              aria-invalid={Boolean(actionData?.fieldErrors?.verificationCode)}
-              aria-errormessage={
-                actionData?.fieldErrors?.verificationCode
-                  ? "verification code error"
-                  : undefined
-              }
-              onChange={e => {
-                e.preventDefault()
-                if (e.target.value) {
-                  setVerificationCode(e.target.value)
-                }
-              }}
-            />
-            {actionData?.fieldErrors?.verificationCode ? (
-              <p
-                className="form-validation-error"
-                role="alert"
-                id="username-error"
-              >
-                {actionData.fieldErrors.verificationCode}
-              </p>
-            ) : null}
-            <button type="submit" className="button">
-              Submit
-            </button>
-          </>
-        )}
-      </form>
-      <div id="form-error-message">
-        {actionData?.formError ? (
-          <p className="form-validation-error" role="alert">
-            {actionData.formError}
-          </p>
-        ) : null}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

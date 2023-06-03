@@ -1,6 +1,5 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node"
-
-import { db } from "./db.server"
+import { getUserByPhone } from "./query.server"
 
 const sessionSecret = process.env.SESSION_SECRET
 if (!sessionSecret) {
@@ -9,7 +8,7 @@ if (!sessionSecret) {
 
 const storage = createCookieSessionStorage({
   cookie: {
-    name: "RJ_session",
+    name: "SF_SESSION",
     secure: process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
@@ -26,11 +25,11 @@ function getUserSession(request: Request) {
 export async function getPhoneNumber(request: Request) {
   const session = await getUserSession(request)
   const phoneNumber = session.get("phoneNumber")
-  console.log("konii", session.data, "konii")
 
   if (!phoneNumber || typeof phoneNumber !== "string") {
     return null
   }
+
   return phoneNumber
 }
 
@@ -40,10 +39,12 @@ export async function requirePhoneNumber(
 ) {
   const session = await getUserSession(request)
   const phoneNumber = session.get("phoneNumber")
+
   if (!phoneNumber || typeof phoneNumber !== "string") {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]])
     throw redirect(`/login?${searchParams}`)
   }
+
   return phoneNumber
 }
 
@@ -51,10 +52,11 @@ export async function createUserSession(
   phoneNumber: string,
   redirectTo: string,
 ) {
-  console.log("kos khar", phoneNumber)
+  console.log("createUserSession", phoneNumber)
 
   const session = await storage.getSession()
   session.set("phoneNumber", phoneNumber)
+
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await storage.commitSession(session),
@@ -64,7 +66,9 @@ export async function createUserSession(
 
 export async function logout(request: Request) {
   const session = await getUserSession(request)
-  console.log("logouttttttttttttt")
+
+  session.unset("phoneNumber")
+  session.unset("SF_SESSION")
 
   return redirect("/login", {
     headers: {
@@ -75,15 +79,12 @@ export async function logout(request: Request) {
 
 export async function getUser(request: Request) {
   const phoneNumber = await getPhoneNumber(request)
-  console.log(phoneNumber, "kir to kon")
-  if (typeof phoneNumber !== "string") {
+
+  if (typeof phoneNumber !== "string" || !phoneNumber) {
     return null
   }
 
-  const user = await db.user.findUnique({
-    where: { phoneNumber: phoneNumber },
-  })
-
+  const user = await getUserByPhone({ phoneNumber })
   if (!user) {
     throw logout(request)
   }
