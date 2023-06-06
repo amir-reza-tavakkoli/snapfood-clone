@@ -53,17 +53,16 @@ export async function createOrUpdateUser({
   email,
   isSuspended,
   isVerified,
-}: Pick<
-  User,
-  | "phoneNumber"
-  | "firstName"
-  | "lastName"
-  | "gender"
-  | "birthday"
-  | "email"
-  | "isSuspended"
-  | "isVerified"
->) {
+}: {
+  phoneNumber: string
+  firstName?: string
+  lastName?: string
+  gender?: string
+  birthday?: string
+  email?: string
+  isSuspended?: boolean
+  isVerified?: boolean
+}) {
   try {
     if (await getUserByPhone({ phoneNumber })) {
       const user = await db.user.update({
