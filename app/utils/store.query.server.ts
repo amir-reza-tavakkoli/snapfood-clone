@@ -148,3 +148,33 @@ export async function getFullStoreItems({
     throw error
   }
 }
+
+export async function getStoreCategories({
+  storeId,
+}: {
+  storeId: number
+}): Promise<string[]> {
+  try {
+    const store = await getStore({ storeId })
+
+    if (!store) {
+      throw new Error("No Such Store")
+    }
+
+    const { items } = await getStoreItems({ storeId })
+
+    const storeCategories: string[] = []
+
+    items.forEach(item =>
+      item &&
+      item.itemCategoryName &&
+      !storeCategories.includes(item.itemCategoryName)
+        ? storeCategories.push(item.itemCategoryName)
+        : undefined,
+    )
+
+    return storeCategories
+  } catch (error) {
+    throw error
+  }
+}
