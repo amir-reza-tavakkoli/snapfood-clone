@@ -48,6 +48,7 @@ model Store {
   branchName    String?
   description   String?
   avatarUrl     String?
+  cityName      String //DENORMALIZATION
   minOrderPrice Float
   shipmentPrice Float @default(0)
   desliveryRange Unsupported("circle")?
@@ -169,6 +170,7 @@ model User {
   isVerified  Boolean @default(true)
   isSuspended Boolean @default(false)
 
+  credit  Float @default(0)
   addresses Address[]
   stores    Store[]
   orders     Order[]

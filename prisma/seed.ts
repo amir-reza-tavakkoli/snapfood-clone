@@ -349,6 +349,7 @@ async function main() {
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
       minOrderPrice: 20000,
       storeKindId: "رستوران",
+      cityName: storeAddress.cityName,
       addressId: storeAddress.id,
       userPhoneNumber: storeOwner.phoneNumber,
     },
