@@ -1,34 +1,27 @@
 import { useLoaderData } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
 
-import { getOrders, getUserByPhone } from "~/utils/query.server"
+import { getOrders } from "~/utils/order.query.server"
+
 import { requirePhoneNumber } from "~/utils/session.server"
+import { getUserByPhone } from "~/utils/user.query.server"
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const phoneNumber = await requirePhoneNumber(request)
-
   try {
-    const user = await getUserByPhone({ phoneNumber })
+    const phoneNumber = await requirePhoneNumber(request)
 
-    let isSignedIn
-    if (!user) {
-      isSignedIn = false
-    }
+    const user = await getUserByPhone({ phoneNumber })
 
     const orders = await getOrders({ phoneNumber })
 
-    return { user, orders, isSignedIn }
+    return { user, orders }
   } catch (error) {
     throw error
   }
 }
 
 export default function Orders() {
-  const data = useLoaderData<typeof loader>()
+  const { user, orders } = useLoaderData<typeof loader>()
 
-  return (
-    <p>
-      {data.isSignedIn && data.orders ? data.orders[0].addressId : undefined}
-    </p>
-  )
+  return <p></p>
 }

@@ -3,7 +3,7 @@ import { LoaderArgs } from "@remix-run/server-runtime"
 
 import { Form } from "@remix-run/react"
 
-import { createOrUpdateUser, getUserByPhone } from "~/utils/query.server"
+import { createOrUpdateUser, getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { useState } from "react"
 
@@ -17,8 +17,7 @@ export const action = async ({ request }: any) => {
     const lastName = form.get("lastName")
     const gender = form.get("gender")
     const birthday = form.get("birthday")
-    const email = form.get("email")
-    console.log(gender)
+    const email = form.get("email")(gender)
 
     const user = await createOrUpdateUser({
       phoneNumber,

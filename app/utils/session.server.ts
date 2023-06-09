@@ -1,5 +1,5 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node"
-import { getUserByPhone } from "./query.server"
+import { getUserByPhone } from "./user.query.server"
 
 const sessionSecret = process.env.SESSION_SECRET
 if (!sessionSecret) {
@@ -52,8 +52,6 @@ export async function createUserSession(
   phoneNumber: string,
   redirectTo: string,
 ) {
-  console.log("createUserSession", phoneNumber)
-
   const session = await storage.getSession()
   session.set("phoneNumber", phoneNumber)
 

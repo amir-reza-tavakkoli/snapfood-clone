@@ -10,8 +10,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   //     take: 5,
   //   })
 
-  const user = await getUser(request)
-  console.log(user, "kos")
+  const user = await getUser(request)(user, "kos")
 
   return json({ user: user })
 }

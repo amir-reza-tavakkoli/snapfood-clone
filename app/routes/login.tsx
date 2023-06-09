@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react"
 import { useActionData, useLoaderData, useSearchParams } from "@remix-run/react"
 import {
-  calculateOrder,
-  changeOrderItems,
   createOrUpdateUser,
   getUserByPhone,
   updateVerificationCode,
-} from "~/utils/query.server"
+} from "~/utils/user.query.server"
+import { calculateOrder } from "~/utils/order.query.server"
 import { badRequest } from "~/utils/request.server"
 import { createUserSession } from "~/utils/session.server"
 import { LoaderArgs } from "@remix-run/server-runtime"
 import { Form } from "@remix-run/react"
-
-changeOrderItems({ orderId: 1, itemId: 3, state: "add", count: 8 })
 
 const ALLOWED_PHONE_PREFIX = "09"
 const VERIFICATION_CODE_FIGURES = 4
@@ -72,9 +69,10 @@ type FieldErrors = {
 export const action = async ({ request }: any) => {
   const form = await request.formData()
   const state: string | undefined = form.get("state")
-  const submittedphone: string | undefined = form.get("phoneNumber")
-
-  console.log("price", await calculateOrder({ orderId: 1 }))
+  const submittedphone: string | undefined = form.get("phoneNumber")(
+    "price",
+    await calculateOrder({ orderId: 1 }),
+  )
 
   const fieldErrors: FieldErrors = {
     phoneNumber: submittedphone
@@ -205,7 +203,7 @@ export default function Login() {
 
   const [state, setState] = useState<State>(actionData?.state ?? "phoneNumber")
 
-  // console.log(phoneNumber,"ph", );
+  // (phoneNumber,"ph", );
 
   useEffect(() => {
     if (state === "phoneNumber" && actionData?.codeSent)
