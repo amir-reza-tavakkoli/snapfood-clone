@@ -1,22 +1,24 @@
-import { Address, Comment, Item, Order, User } from "@prisma/client"
+import type {
+  Address,
+  Comment,
+  Item,
+  Order,
+  Store,
+  OrderHasItems,
+  StoreHasItems,
+} from "@prisma/client"
+import { getAddressById } from "./address.query.server"
+import { getOrdersInCart } from "./cart.query.server"
 import { db } from "./db.server"
-import { getUser } from "./session.server"
+import { getItem } from "./item.query.server"
+import { getStore, getStoreItems } from "./store.query.server"
+import { getUserByPhone } from "./user.query.server"
 
-export async function getUserByPhone({ phoneNumber }: { phoneNumber: string }) {
-  try {
-    const user = await db.user.findUnique({
-      where: {
-        phoneNumber,
-      },
-    })
-
-    return user
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function getOrder({ orderId }: { orderId: number }) {
+export async function getOrder({
+  orderId,
+}: {
+  orderId: number
+}): Promise<Order | null> {
   try {
     const item = await db.order.findUnique({
       where: {
@@ -30,190 +32,13 @@ export async function getOrder({ orderId }: { orderId: number }) {
   }
 }
 
-export async function getItem({ itemId }: { itemId: number }) {
-  try {
-    const item = await db.item.findUnique({
-      where: {
-        id: itemId,
-      },
-    })
-
-    return item
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function createOrUpdateUser({
-  phoneNumber,
-  firstName,
-  lastName,
-  gender,
-  birthday,
-  email,
-  isSuspended,
-  isVerified,
-}: {
-  phoneNumber: string
-  firstName?: string
-  lastName?: string
-  gender?: string
-  birthday?: string
-  email?: string
-  isSuspended?: boolean
-  isVerified?: boolean
-}) {
-  try {
-    if (await getUserByPhone({ phoneNumber })) {
-      const user = await db.user.update({
-        where: {
-          phoneNumber,
-        },
-        data: {
-          firstName,
-          lastName,
-          gender,
-          birthday,
-          email,
-          isSuspended,
-          isVerified,
-        },
-      })
-      return user
-    }
-
-    const user = await db.user.create({
-      data: {
-        phoneNumber,
-        firstName,
-        lastName,
-        gender,
-        birthday,
-        email,
-        isSuspended,
-        isVerified,
-      },
-    })
-    return user
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function getUserAddresses(phoneNumber: string) {
-  try {
-    const addresses = await db.address.findMany({
-      where: {
-        userPhoneNumber: phoneNumber,
-      },
-    })
-
-    return addresses
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function addOrUpdateAddress({
-  id,
-  userPhoneNumber,
-  address,
-  cityName,
-  details,
-  isAvailible,
-  isValid,
-  title,
-  unit,
-}: Address) {
-  try {
-    const isCreated = (await getAddressById(id))!!
-
-    if (isCreated) {
-      const newAddress: Address = await db.address.update({
-        where: {
-          id,
-        },
-        data: {
-          userPhoneNumber,
-          address,
-          cityName,
-          details,
-          isAvailible,
-          isValid,
-          title,
-          unit,
-        },
-      })
-      return newAddress
-    }
-
-    const newAddress: Address = await db.address.create({
-      data: {
-        id,
-        userPhoneNumber,
-        address,
-        cityName,
-        details,
-        isAvailible,
-        isValid,
-        title,
-        unit,
-      },
-    })
-
-    return newAddress
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function getAddressById(addressId: number) {
-  try {
-    const address = await db.address.findUnique({
-      where: {
-        id: addressId,
-      },
-    })
-
-    return address
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function updateVerificationCode(
-  phoneNumber: string,
-  verificationCode: string,
-  verificationCodeExpiry: Date,
-) {
-  try {
-    const user = await getUserByPhone({ phoneNumber })
-
-    if (!user || user.isSuspended) {
-      throw new Error("User Not Found")
-    }
-
-    return await db.user.update({
-      where: {
-        phoneNumber,
-      },
-      data: {
-        verificationCode,
-        verificationCodeExpiry,
-      },
-    })
-  } catch (error) {
-    throw error
-  }
-}
-
 export async function getOrders({
   phoneNumber,
   storeId,
 }: {
   phoneNumber?: string
   storeId?: number
-}) {
+}): Promise<Order[] | null> {
   try {
     const orders = await db.order.findMany({
       where: {
@@ -231,106 +56,110 @@ export async function getOrders({
   }
 }
 
-export async function getitems({
-  orderId,
+export async function createOrder({
+  userPhoneNumber,
   storeId,
+  addressId,
+  estimatedDeliveryTime,
+  isBilled,
+  isCanceled,
+  isDelayedByStore,
+  isDelivered,
+  isInCart,
+  isShipped,
+  isVerifiedByAdmin,
+  isVerifiedByStore,
+  packagingPrice,
+  shipmentPrice,
+  taxPercent,
+  totalPrice,
 }: {
-  orderId: number
+  userPhoneNumber: string
   storeId: number
-}) {
+  addressId: number
+  estimatedDeliveryTime: number
+  isBilled?: boolean
+  isCanceled?: boolean
+  isDelayedByStore?: boolean
+  isDelivered?: boolean
+  isInCart?: boolean
+  isShipped?: boolean
+  isVerifiedByAdmin?: boolean
+  isVerifiedByStore?: boolean
+  packagingPrice: number
+  shipmentPrice: number
+  taxPercent: number
+  totalPrice: number
+}): Promise<Order> {
   try {
-    const items = await db.order.findMany({
-      where: {
-        id: orderId,
-        storeId,
-      },
-    })
+    // const order = await getOrder({ orderId: id })
 
-    return items
-  } catch (error) {
-    throw error
-  }
-}
+    // if (order) {
+    //   throw new Error("Order Already Exists")
+    // }
 
-export async function updateOrCreateItem({
-  id,
-  avatarUrl,
-  basePrice,
-  createdAt,
-  description,
-  isAvailible,
-  isVerified,
-  itemCategoryName,
-  name,
-}: Item) {
-  try {
-    if (!(await db.item.findUnique({ where: { id } }))) {
-      const item = await db.item.create({
-        data: {
-          id,
-          avatarUrl,
-          basePrice,
-          createdAt,
-          description,
-          isAvailible,
-          isVerified,
-          itemCategoryName,
-          name,
-        },
-      })
+    const store = await getStore({ storeId })
 
-      return item
+    if (!store || !store.isAvailible || !store.isVerified) {
+      throw new Error("Store Unavailible")
     }
 
-    const item = await db.item.update({
-      where: {
-        id,
-      },
+    const address = await getAddressById({ addressId })
+
+    if (!address || !address.isAvailible || !address.isValid) {
+      throw new Error("Address Unavailible")
+    }
+
+    if (address.cityName !== store.cityName) {
+      throw new Error("Must Ne In The Same City")
+    }
+
+    // need to evaluate shipment price dynamically and check for availibility of distance
+
+    const user = await getUserByPhone({ phoneNumber: userPhoneNumber })
+
+    if (!user || user.isSuspended || !address.isAvailible) {
+      throw new Error("User Unavailible")
+    }
+
+    const ordersInCart = await getOrdersInCart({
+      phoneNumber: user.phoneNumber,
+    })
+
+    if (
+      ordersInCart &&
+      ordersInCart.find(orderInCart => orderInCart.storeId == storeId)
+    ) {
+      throw new Error("An Order Is Already In Progress")
+    }
+
+    const newOrder = await db.order.create({
       data: {
-        avatarUrl,
-        basePrice,
-        createdAt,
-        description,
-        isAvailible,
-        isVerified,
-        itemCategoryName,
-        name,
+        userPhoneNumber,
+        storeId,
+        addressId,
+        estimatedDeliveryTime,
+        isBilled,
+        isCanceled,
+        isDelayedByStore,
+        isDelivered,
+        isInCart,
+        isShipped,
+        isVerifiedByAdmin,
+        isVerifiedByStore,
+        packagingPrice,
+        shipmentPrice,
+        taxPercent,
+        totalPrice,
       },
     })
-
-    return item
+    return newOrder
   } catch (error) {
     throw error
   }
 }
 
-export async function getCartItems({ phoneNumber }: { phoneNumber: string }) {
-  try {
-    const orders = await getOrders({ phoneNumber })
-
-    orders.map(order => (order.isInCart ? order : undefined))
-
-    return orders
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function getStore({ storeId }: { storeId?: number }) {
-  try {
-    const store = await db.store.findUnique({
-      where: {
-        id: storeId,
-      },
-    })
-
-    return store
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function createOrder({
+export async function updateOrder({
   id,
   userPhoneNumber,
   storeId,
@@ -348,57 +177,57 @@ export async function createOrder({
   shipmentPrice,
   taxPercent,
   totalPrice,
-}: Order) {
+}: {
+  id: number
+  userPhoneNumber?: string
+  storeId?: number
+  addressId?: number
+  estimatedDeliveryTime?: number
+  isBilled?: boolean
+  isCanceled?: boolean
+  isDelayedByStore?: boolean
+  isDelivered?: boolean
+  isInCart?: boolean
+  isShipped?: boolean
+  isVerifiedByAdmin?: boolean
+  isVerifiedByStore?: boolean
+  packagingPrice?: number
+  shipmentPrice?: number
+  taxPercent?: number
+  totalPrice?: number
+}): Promise<Order> {
   try {
-    let order = await db.order.findUnique({
-      where: {
-        id,
-      },
-    })
+    const order = await getOrder({ orderId: id })
 
-    const store = await getStore({ storeId })
+    if (!order) {
+      throw new Error("Order Does Bot Exist")
+    }
+
+    const store = await getStore({ storeId: order.storeId })
 
     if (!store || !store.isAvailible || !store.isVerified) {
       throw new Error("Store Unavailible")
     }
 
-    const address = await getAddressById(addressId)
+    const address = await getAddressById({ addressId: order.addressId })
 
     if (!address || !address.isAvailible || !address.isValid) {
       throw new Error("Address Unavailible")
     }
 
-    const user = await getUserByPhone({ phoneNumber: userPhoneNumber })
+    if (address.cityName !== store.cityName) {
+      throw new Error("Must Ne In The Same City")
+    }
+
+    // need to evaluate shipment price dynamically and check for availibility of distance
+
+    const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
 
     if (!user || user.isSuspended || !address.isAvailible) {
       throw new Error("User Unavailible")
     }
 
-    if (!order) {
-      order = await db.order.create({
-        data: {
-          userPhoneNumber,
-          storeId,
-          addressId,
-          estimatedDeliveryTime,
-          isBilled,
-          isCanceled,
-          isDelayedByStore,
-          isDelivered,
-          isInCart,
-          isShipped,
-          isVerifiedByAdmin,
-          isVerifiedByStore,
-          packagingPrice,
-          shipmentPrice,
-          taxPercent,
-          totalPrice,
-        },
-      })
-      return order
-    }
-
-    order = await db.order.update({
+    const newOrder = await db.order.update({
       where: { id },
       data: {
         userPhoneNumber,
@@ -419,8 +248,7 @@ export async function createOrder({
         totalPrice,
       },
     })
-
-    return order
+    return newOrder
   } catch (error) {
     throw error
   }
@@ -438,7 +266,7 @@ export async function changeOrderItems({
   itemId: number
   count: number
   state: State
-}) {
+}): Promise<OrderHasItems> {
   try {
     const item = await getItem({ itemId })
 
@@ -448,7 +276,7 @@ export async function changeOrderItems({
 
     const order = await getOrder({ orderId })
 
-    if (!order) {
+    if (!order || order.isCanceled) {
       throw new Error("No Such Order")
     }
 
@@ -478,7 +306,8 @@ export async function changeOrderItems({
     if (
       !itemInStore ||
       itemInStore.remainingCount == undefined ||
-      itemInStore.remainingCount == null
+      itemInStore.remainingCount == null ||
+      itemInStore.remainingCount < 0
     ) {
       throw new Error("No Such Item In This Store")
     }
@@ -493,7 +322,11 @@ export async function changeOrderItems({
     })
 
     if (!itemInOrder) {
-      if (itemInStore.remainingCount < count || count == 0) {
+      if (
+        itemInStore.remainingCount < count ||
+        count == 0 ||
+        itemInStore.remainingCount < 0
+      ) {
         throw new Error("Insufficient Count")
       }
 
@@ -531,8 +364,8 @@ export async function changeOrderItems({
           count *= -1
         }
 
-        if (itemInStore.remainingCount < count || count == 0) {
-          throw new Error("Insufficient Count")
+        if (itemInStore.remainingCount - count < 0) {
+          throw new Error("Wrong Count")
         }
 
         const newItemInStore = await db.storeHasItems.update({
@@ -553,7 +386,7 @@ export async function changeOrderItems({
 
         const newCount = itemInOrder.count + count
         if (newCount < 0) {
-          throw new Error("Bad Count")
+          throw new Error("Wrong Count")
         }
 
         if (newCount == 0) {
@@ -607,6 +440,10 @@ export async function changeOrderItems({
           throw new Error("Insufficient Count")
         }
 
+        if (itemInStore.remainingCount + itemInOrder.count - count < 0) {
+          throw new Error("Wrong Count")
+        }
+
         await db.storeHasItems.update({
           where: {
             storeId_itemId: {
@@ -639,87 +476,101 @@ export async function changeOrderItems({
   }
 }
 
-export async function removeItemFromOrder({
-  orderId,
-  itemId,
-  count,
-}: {
-  orderId: number
-  itemId: number
-  count: number
-}) {
+export async function getOrderItems({ orderId }: { orderId: number }): Promise<{
+  items: (Item | null)[]
+  itemsInOrder: OrderHasItems[]
+}> {
   try {
-    const item = await getItem({ itemId })
-
-    if (!item) {
-      throw new Error("No Such Item")
-    }
-
-    const itemInOrder = await db.orderHasItems.findUnique({
-      where: {
-        itemId_orderId: {
-          itemId,
-          orderId,
-        },
-      },
+    const itemsInOrder = await db.orderHasItems.findMany({
+      where: { orderId },
+      orderBy: { itemId: "desc" },
     })
 
-    if (!itemInOrder) {
-      throw new Error("No Such Item In That Order")
-    }
+    const items = await Promise.all(
+      itemsInOrder.map(itemInOrder =>
+        db.item.findUnique({
+          where: {
+            id: itemInOrder.itemId,
+          },
+        }),
+      ),
+    )
 
-    if (count > itemInOrder.count) {
-      return await db.orderHasItems.delete({
-        where: {
-          itemId_orderId: {
-            itemId,
-            orderId,
-          },
-        },
-      })
-    } else {
-      return await db.orderHasItems.update({
-        where: {
-          itemId_orderId: {
-            itemId,
-            orderId,
-          },
-        },
-        data: {
-          count,
-        },
-      })
-    }
+    return { items, itemsInOrder }
   } catch (error) {
     throw error
   }
 }
 
-export async function billOrder({ id }: { id: number }) {
+export async function billOrder({
+  orderId,
+}: {
+  orderId: number
+}): Promise<Order> {
   try {
-    const order = await db.order.findUnique({ where: { id } })
+    const order = await getOrder({ orderId })
 
-    if (!order) {
+    if (
+      !order ||
+      order.isCanceled ||
+      order.isBilled ||
+      !order.isVerifiedByStore ||
+      !order.isVerifiedByAdmin
+    ) {
       throw new Error("No Such Order")
     }
 
-    return await db.order.update({
+    const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
+
+    if (!user || user.isSuspended || !user.isVerified) {
+      throw new Error("No Such User")
+    }
+
+    if (user.credit < order.totalPrice || user.credit < 0) {
+      throw new Error("Not Enough Credit")
+    }
+
+    const updatedUser = await db.user.update({
       where: {
-        id,
+        phoneNumber: user.phoneNumber,
+      },
+      data: {
+        credit: user.credit - order.totalPrice,
+      },
+    })
+
+    if (!updatedUser) {
+      throw new Error("Could Not Perform The Operation")
+    }
+
+    const updatedOrder = await db.order.update({
+      where: {
+        id: orderId,
       },
       data: {
         isBilled: true,
       },
     })
+
+    if (!updatedOrder) {
+      throw new Error("Could Not Perform The Operation")
+    }
+
+    return updatedOrder
   } catch (error) {
     throw error
   }
 }
 
-export async function calculateOrder({ orderId }: { orderId: number }) {
+export async function calculateOrder({
+  orderId,
+}: {
+  orderId: number
+}): Promise<Order> {
   try {
     const order = await getOrder({ orderId })
-    if (!order) {
+
+    if (!order || order.isBilled) {
       throw new Error("No Such Order")
     }
 
@@ -749,19 +600,17 @@ export async function calculateOrder({ orderId }: { orderId: number }) {
       ),
     )
 
-    console.log(itemsInStore)
-
     let totalPrice: number = 0
-    itemsInStore.forEach((item, index) => {
-      if (!item) {
+    itemsInStore.forEach((itemInStore, index) => {
+      if (!itemInStore) {
         return
       }
 
-      if (item.discountPercent) {
-        item.price *= item.discountPercent / 100
+      if (itemInStore.discountPercent) {
+        itemInStore.price *= itemInStore.discountPercent / 100
       }
 
-      totalPrice += item?.price * items[index].count
+      totalPrice += itemInStore?.price * items[index].count
     })
 
     totalPrice +=
@@ -769,9 +618,55 @@ export async function calculateOrder({ orderId }: { orderId: number }) {
       order.packagingPrice +=
         totalPrice * order.taxPercent
 
-    await db.order.update({ where: { id: orderId }, data: { totalPrice } })
+    if (totalPrice < 0) {
+      throw new Error("Invalid Price")
+    }
 
-    return totalPrice
+    const newOrder = await db.order.update({
+      where: { id: orderId },
+      data: { totalPrice },
+    })
+
+    return newOrder
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getFullOrderItems({
+  orderId,
+}: {
+  orderId: number
+}): Promise<(StoreHasItems | undefined)[]> {
+  try {
+    const order = await getOrder({ orderId })
+
+    if (!order) {
+      throw new Error("No Such Order")
+    }
+
+    const storeHasItems = await getStoreItems({ storeId: order.storeId })
+
+    const orderHasItems = (await getOrderItems({ orderId })).itemsInOrder
+
+    const fullOrderItems = orderHasItems.map(itemInOrder => {
+      let itemInStore = storeHasItems.items.find(
+        item => item?.id == itemInOrder.itemId,
+      )
+
+      let mergedItems =
+        storeHasItems.itemsInStore.find(
+          itemInStore => itemInStore.itemId == itemInOrder.itemId,
+        ) ?? undefined
+
+      mergedItems = mergedItems
+        ? { ...mergedItems, ...itemInOrder, ...itemInStore }
+        : undefined
+
+      return mergedItems
+    })
+
+    return fullOrderItems
   } catch (error) {
     throw error
   }
@@ -782,8 +677,20 @@ export async function addComment({
   description,
   isPositive,
   score,
-}: Comment) {
+}: Comment): Promise<Comment> {
   try {
+    const order = await getOrder({ orderId })
+
+    if (!order) {
+      throw new Error("No Such Order")
+    }
+
+    const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
+
+    if (!user || user.isSuspended || !user.isVerified) {
+      throw new Error("No Such User")
+    }
+
     const comment = await db.comment.findUnique({
       where: {
         orderId,
@@ -793,6 +700,8 @@ export async function addComment({
     if (comment) {
       throw new Error("Comment Already Exists")
     }
+
+    // need to  evaluate comment
 
     const newComment = await db.comment.create({
       data: {
@@ -817,7 +726,7 @@ export async function changeComment({
   isVerified,
   isVisible,
   response,
-}: Comment) {
+}: Comment): Promise<Comment> {
   try {
     const comment = await db.comment.findUnique({
       where: {
@@ -825,9 +734,7 @@ export async function changeComment({
       },
     })
 
-    if (comment) {
-      throw new Error("Comment Already Exists")
-    }
+    // need to evaluate comment
 
     const changedComment = await db.comment.update({
       data: {
