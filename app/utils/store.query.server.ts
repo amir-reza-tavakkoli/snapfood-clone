@@ -1,7 +1,7 @@
 import type { Item, Store, StoreHasItems } from "@prisma/client"
 import { getOrderInCart } from "./cart.query.server"
 import { db } from "./db.server"
-import { getOrder, getOrderItems } from "./order.query.server"
+import { FullOrderItem, getOrder, getOrderItems } from "./order.query.server"
 
 export async function getStore({
   storeId,
@@ -89,26 +89,7 @@ export async function getFullStoreItems({
   storeId,
 }: {
   storeId: number
-}): Promise<
-  {
-    id: number
-    storeId: number
-    itemId: number
-    createdAt: Date
-    updatedAt: Date
-    name: string
-    description?: string | null
-    price: number
-    discountPercent: number | null
-    remainingCount: number
-    estimatedReadyTime: number
-    isAvailible: boolean
-    avatarUrl?: string | null
-    basePrice?: number | null
-    isVerified: boolean
-    itemCategoryName?: string | undefined
-  }[]
-> {
+}): Promise<FullOrderItem[]> {
   try {
     const itemsInStore = await db.storeHasItems.findMany({
       where: { storeId },
@@ -180,24 +161,7 @@ export async function getFullStoreOrdersItems({
   storeId: number
   orderId: number
 }): Promise<
-  {
-    id: number
-    storeId: number
-    itemId: number
-    createdAt: Date
-    updatedAt: Date
-    name: string
-    description?: string | null
-    price: number
-    discountPercent: number | null
-    remainingCount: number
-    estimatedReadyTime: number
-    isAvailible: boolean
-    avatarUrl?: string | null
-    basePrice?: number | null
-    isVerified: boolean
-    itemCategoryName?: string | undefined
-  }[]
+  FullOrderItem[]
 > {
   try {
     const itemsInStore = await db.storeHasItems.findMany({

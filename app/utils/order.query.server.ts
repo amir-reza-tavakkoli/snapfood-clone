@@ -15,22 +15,22 @@ import { getUserByPhone } from "./user.query.server"
 export type FullOrderItem = {
   storeId?: number
   id?: number
-  itemId: number
+  itemId?: number
   orderId?: number
   count?: number
-  createdAt: Date
-  updatedAt: Date
-  price: number
+  createdAt?: Date
+  updatedAt?: Date
+  price?: number
   name?: string
   description?: string | null
   avatarUrl?: string | null
   basePrice?: number | null
   itemCategoryName?: any
   discountPercent?: number | null
-  remainingCount: number
-  estimatedReadyTime: number
-  isAvailible: boolean
-  isVerified: boolean
+  remainingCount?: number
+  estimatedReadyTime?: number
+  isAvailible?: boolean
+  isVerified?: boolean
 }
 
 export async function getOrder({
