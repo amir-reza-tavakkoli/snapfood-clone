@@ -589,7 +589,7 @@ constants()
   })
 
 async function seed() {
-  seedFirstStore()
+  await seedFirstStore()
     .then(async () => {
       await prisma.$disconnect()
     })
@@ -600,7 +600,7 @@ async function seed() {
       process.exit(1)
     })
 
-  seedSecondStore()
+  await seedSecondStore()
     .then(async () => {
       await prisma.$disconnect()
     })
