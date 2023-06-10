@@ -1,13 +1,7 @@
-import type {
-  Address,
-  Comment,
-  Item,
-  Order,
-  Store,
-  OrderHasItems,
-  StoreHasItems,
-} from "@prisma/client"
+import type { Item, Store, StoreHasItems } from "@prisma/client"
+import { getOrderInCart } from "./cart.query.server"
 import { db } from "./db.server"
+import { getOrder, getOrderItems } from "./order.query.server"
 
 export async function getStore({
   storeId,
@@ -174,6 +168,78 @@ export async function getStoreCategories({
     )
 
     return storeCategories
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getFullStoreOrdersItems({
+  storeId,
+  orderId,
+}: {
+  storeId: number
+  orderId: number
+}): Promise<
+  {
+    id: number
+    storeId: number
+    itemId: number
+    createdAt: Date
+    updatedAt: Date
+    name: string
+    description?: string | null
+    price: number
+    discountPercent: number | null
+    remainingCount: number
+    estimatedReadyTime: number
+    isAvailible: boolean
+    avatarUrl?: string | null
+    basePrice?: number | null
+    isVerified: boolean
+    itemCategoryName?: string | undefined
+  }[]
+> {
+  try {
+    const itemsInStore = await db.storeHasItems.findMany({
+      where: { storeId },
+      orderBy: {
+        itemId: "desc",
+      },
+    })
+
+    const order = await getOrder({ orderId })
+
+    if (!order || !order.isInCart) {
+      throw new Error("Order Is Not In Cart")
+    }
+
+    const { itemsInOrder } = await getOrderItems({ orderId })
+
+    const items = await Promise.all(
+      itemsInStore.map(itemInStore =>
+        db.item.findUnique({
+          where: {
+            id: itemInStore.itemId,
+          },
+        }),
+      ),
+    )
+
+    const mergedWithItems = itemsInStore.map(itemInStore => {
+      const found = items.find(item => item && item.id == itemInStore.itemId)
+
+      if (!found) {
+        throw new Error("Item Not Found")
+      }
+
+      const itemInOrder = itemsInOrder.find(
+        item => item && item.itemId == itemInStore.itemId,
+      )
+
+      return { ...found, ...itemInStore, ...itemInOrder }
+    })
+
+    return mergedWithItems
   } catch (error) {
     throw error
   }

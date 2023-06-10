@@ -1,12 +1,4 @@
-import type {
-  Address,
-  Comment,
-  Item,
-  Order,
-  Store,
-  OrderHasItems,
-  User,
-} from "@prisma/client"
+import type { User } from "@prisma/client"
 import { db } from "./db.server"
 
 export async function getUserByPhone({

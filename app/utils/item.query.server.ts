@@ -1,11 +1,4 @@
-import type {
-  Address,
-  Comment,
-  Item,
-  Order,
-  Store,
-  OrderHasItems,
-} from "@prisma/client"
+import type { Item } from "@prisma/client"
 import { db } from "./db.server"
 
 export async function updateOrCreateItem({

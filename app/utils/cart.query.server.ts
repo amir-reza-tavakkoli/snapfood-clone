@@ -1,13 +1,14 @@
 import type {
-  Address,
-  Comment,
   Item,
   Order,
   Store,
   OrderHasItems,
+  StoreHasItems,
 } from "@prisma/client"
 import { db } from "./db.server"
-import { getOrders } from "./order.query.server"
+
+import type { FullOrderItem } from "./order.query.server"
+import { getFullOrderItems, getOrders } from "./order.query.server"
 import { getUserByPhone } from "./user.query.server"
 
 export async function getCart({
@@ -83,6 +84,28 @@ export async function getCart({
     })
 
     return { orderInfo }
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getFullCart({
+  phoneNumber,
+}: {
+  phoneNumber: string
+}): Promise<(FullOrderItem | undefined)[][] | undefined> {
+  try {
+    const orders = await getOrdersInCart({ phoneNumber })
+
+    if (!orders || orders?.length == 0) {
+      return
+    }
+
+    const cart = await Promise.all(
+      orders.map(order => getFullOrderItems({ orderId: order.id })),
+    )
+
+    return cart
   } catch (error) {
     throw error
   }

@@ -1,9 +1,7 @@
 import type {
-  Address,
   Comment,
   Item,
   Order,
-  Store,
   OrderHasItems,
   StoreHasItems,
 } from "@prisma/client"
@@ -13,6 +11,27 @@ import { db } from "./db.server"
 import { getItem } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
+
+export type FullOrderItem = {
+  storeId?: number
+  id?: number
+  itemId: number
+  orderId?: number
+  count?: number
+  createdAt: Date
+  updatedAt: Date
+  price: number
+  name?: string
+  description?: string | null
+  avatarUrl?: string | null
+  basePrice?: number | null
+  itemCategoryName?: any
+  discountPercent?: number | null
+  remainingCount: number
+  estimatedReadyTime: number
+  isAvailible: boolean
+  isVerified: boolean
+}
 
 export async function getOrder({
   orderId,
@@ -622,6 +641,9 @@ export async function calculateOrder({
       throw new Error("Invalid Price")
     }
 
+    if (order.totalPrice == totalPrice) {
+      return order
+    }
     const newOrder = await db.order.update({
       where: { id: orderId },
       data: { totalPrice },
@@ -637,7 +659,7 @@ export async function getFullOrderItems({
   orderId,
 }: {
   orderId: number
-}): Promise<(StoreHasItems | undefined)[]> {
+}): Promise<(FullOrderItem | undefined)[]> {
   try {
     const order = await getOrder({ orderId })
 
@@ -659,11 +681,11 @@ export async function getFullOrderItems({
           itemInStore => itemInStore.itemId == itemInOrder.itemId,
         ) ?? undefined
 
-      mergedItems = mergedItems
+      const fullMergedItems: FullOrderItem | undefined = mergedItems
         ? { ...mergedItems, ...itemInOrder, ...itemInStore }
         : undefined
 
-      return mergedItems
+      return fullMergedItems
     })
 
     return fullOrderItems

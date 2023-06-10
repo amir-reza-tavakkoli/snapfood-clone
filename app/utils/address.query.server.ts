@@ -1,11 +1,4 @@
-import type {
-  Address,
-  Comment,
-  Item,
-  Order,
-  Store,
-  OrderHasItems,
-} from "@prisma/client"
+import type { Address } from "@prisma/client"
 import { db } from "./db.server"
 
 export async function getUserAddresses({
@@ -129,6 +122,25 @@ export async function getAddressById({
     })
 
     return address
+  } catch (error) {
+    throw error
+  }
+}
+
+// to be fully implemented by GPS API
+export async function getNearestAddress({
+  phoneNumber,
+}: {
+  phoneNumber: string
+}): Promise<Address | null> {
+  try {
+    const addresses = await getUserAddresses({ phoneNumber })
+
+    if (!addresses || addresses.length == 0) {
+      return null
+    }
+
+    return addresses[0]
   } catch (error) {
     throw error
   }
