@@ -3,6 +3,7 @@ import { Link, Outlet, useLoaderData } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
 import { createContext, useContext, useEffect } from "react"
 import { getNearestAddress } from "~/utils/address.query.server"
+import { calculateOrder } from "~/utils/order.query.server"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 import { getUserByPhone } from "~/utils/user.query.server"
@@ -16,6 +17,7 @@ export const loader = async ({
     const user = await getUserByPhone({ phoneNumber })
 
     const address = await getNearestAddress({ phoneNumber })
+    console.log("mmmmm", await calculateOrder({ orderId: 4 }))
 
     return { address, user }
   } catch (error) {

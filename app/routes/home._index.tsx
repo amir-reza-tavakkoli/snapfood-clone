@@ -5,14 +5,14 @@ export default function Home() {
   const [city, setCity] = useState("تهران")
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      return
-    }
-
     const cityName = localStorage.getItem("city")
 
-    useState(cityName)
-  }, [city])
+    if(cityName)
+      setCity(cityName)
+    
+  } )
+
+
   return (
     <>
       <Link to={`stores/${city}`}>Go To Stores</Link>

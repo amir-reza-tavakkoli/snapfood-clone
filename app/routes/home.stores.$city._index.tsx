@@ -25,9 +25,9 @@ export const loader = async ({
     let stores: Store[] | null = []
 
     let city = params.city
-    if (city) {
-      city = DEFAULT_CITY
-    }
+    // if (city) {
+    //   city = DEFAULT_CITY
+    // }
 
     if (city) {
       stores = await getStoresByCity({ cityName: city })
@@ -52,7 +52,7 @@ export default function Index() {
           stores.map((store, index) => (
             <div key={index}>
               <p>{store.name}</p>
-              <Link to={`${store.id}`}>go to</Link>
+              <Link to={`../store/${store.id}`}>go to</Link>
             </div>
           ))}
       </div>

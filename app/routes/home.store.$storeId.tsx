@@ -13,15 +13,13 @@ import { getUser, requirePhoneNumber } from "~/utils/session.server"
 import {
   calculateOrder,
   changeOrderItems,
+  createOrder,
   FullOrderItem,
-  getFullOrderItems,
-  getOrder,
-  getOrderItems,
-  getOrders,
+  updateOrder,
+
 } from "~/utils/order.query.server"
 
 import {
-  getOrdersInCart,
   getOrderInCart,
   getCart,
 } from "~/utils/cart.query.server"
@@ -29,131 +27,85 @@ import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
-  getStoreItems,
 } from "~/utils/store.query.server"
 import {
-  Item,
   Order,
-  StoreHasItems,
   User,
   Store,
-  OrderHasItems,
 } from "@prisma/client"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { useEffect, useState } from "react"
+import { Disabled } from "~/components/button.stories"
 
 export const action = async ({ request, params }: any) => {
-  const storeId = Number(params.storeId)
+  try {
+    const storeId = Number(params.storeId)
 
-  if (!storeId || isNaN(storeId)) {
-    throw new Error("404")
+    if (!storeId || isNaN(storeId)) {
+      throw new Error("404")
+    }
+console.log("1");
+
+    const form = await request.formData()
+
+    const phoneNumber = await requirePhoneNumber(request)
+    const job: string | undefined = form.get("job")
+    const addressId: number | undefined = Number(form.get("address"))
+    const itemId: number | undefined = Number(form.get("id"))
+    // const orderId: string | undefined = form.get("order")
+
+    let orderInCart = await getOrderInCart({ phoneNumber, storeId })
+    console.log("2")
+
+
+
+    if (!orderInCart && addressId) {
+      orderInCart = await createOrder({
+        addressId,
+        storeId,isInCart : true, isCanceled :false,isDelivered:false,
+        userPhoneNumber: phoneNumber,
+        estimatedDeliveryTime: 0,
+        totalPrice: 0,
+        taxPercent: 0,
+        packagingPrice: 0,
+        shipmentPrice: 0,
+      })
+      console.log(orderInCart)
+      console.log("in cartttt")
+      // await updateOrder({id : orderInCart.id, isBilled : false})
+    }
+
+
+    if (!orderInCart) {
+      throw new Error("gozz")
+    }
+
+    if (job === "add") {
+      await changeOrderItems({
+        count: 1,
+        state: "add",
+        itemId: Number(itemId),
+        orderId: orderInCart?.id,
+      })
+    }
+
+    if (job === "remove") {
+      await changeOrderItems({
+        count: 1,
+        state: "remove",
+        itemId: Number(itemId),
+        orderId: orderInCart?.id,
+      })
+    }
+console.log("4")
+
+    const newItems = await getFullStoreOrdersItems({ orderId: orderInCart.id, storeId })
+    const newTotalPrice = await calculateOrder({ orderId: orderInCart.id })
+    return { newItems, newTotalPrice }
+  } catch (error) {
+    throw error
   }
-
-  const form = await request.formData()
-  const phoneNumber = await requirePhoneNumber(request)
-  const job: string | undefined = form.get("job")
-  const itemId: number | undefined = form.get("item")
-  // const orderId: string | undefined = form.get("order")
-
-  const ordersFromStore = await db.order.findMany({
-    where: {
-      storeId,
-      userPhoneNumber: phoneNumber,
-      isInCart: true,
-    },
-  })
-
-  if (ordersFromStore.length > 1) {
-    throw new Error("Bad Request")
-  }
-
-  const order = ordersFromStore[0]
-
-  if (job === "add") {
-    changeOrderItems({
-      count: 1,
-      state: "add",
-      itemId: Number(itemId),
-      orderId: Number(order),
-    })
-  }
-
-  const cart = await getCart({ phoneNumber })
-
-  // const orderInCart = cart.orderInfo.find(
-  //   cartOrder => cartOrder.order.id === order.id,
-  // )
-
-  // return { orderInCart }
 }
-
-// export const loader: LoaderFunction = async ({
-//   request,
-//   params,
-// }: LoaderArgs) => {
-//   try {
-//     // let storeInfo: {
-//     //   user?: User | null
-//     //   store?: Store | null
-//     //   order?: Order | null
-//     //   itemsInStore?: {
-//     //     items: (Item | null)[]
-//     //   } | null
-//     //   itemsInOrder?: {
-//     //     items: (Item | null)[]
-//     //     itemsInOrder: OrderHasItems[]
-//     //   } | null
-
-//     //   merged?: (Item | null | undefined)[]
-//     // } = {}
-//     const user = await getUser(request)
-
-//     const storeId = Number(params.storeId)
-
-//     if (!storeId || isNaN(storeId)) {
-//       throw new Error("404")
-//     }
-
-//     const store = await getStore({ storeId })
-
-//     if (!store) {
-//       throw new Error("No such store")
-//     }
-
-//     // storeInfo.store = store
-//     const itemsInStore = await getStoreItems({ storeId })
-//     // // let order : Order | undefined
-
-//     // storeInfo.itemsInStore = itemsInStore
-
-//     if (user) {
-//       let order = await getOrderInCart({
-//         storeId: store.id,
-//         phoneNumber: user?.phoneNumber,
-//       })
-
-//       // storeInfo.order = order
-//       if (order) {
-//         const itemsInOrder = await getOrderItems({ orderId: order?.id })
-//         // storeInfo.itemsInOrder = itemsInOrder
-//       }
-//     }
-
-//     if (storeInfo.itemsInOrder) {
-//       const merged = storeInfo.itemsInOrder.itemsInOrder.map(itemInOrder => {
-//          const x =storeInfo.itemsInStore?.items.find(
-//           itemInStore => itemInOrder.itemId == itemInStore?.id,
-//         )
-//         return { a : x , itemInOrder}
-//       })
-//       console.log("merged", merged)
-//       // storeInfo.merged = merged
-//     }
-//     return { storeInfo }
-//   } catch (error) {
-//     throw error
-//   }
-// }
 
 export const loader: LoaderFunction = async ({
   request,
@@ -198,7 +150,7 @@ export const loader: LoaderFunction = async ({
     if (order) totalPrice = order.totalPrice
 
     if (!totalPrice && order) {
-      totalPrice = (await calculateOrder({ orderId: order.id })).totalPrice
+      totalPrice = (await calculateOrder({ orderId: order.id }))
     }
 
     if (order && !order.isBilled) {
@@ -223,50 +175,67 @@ export default function Store() {
 
   console.log(items)
 
-  const [state, setstate] = useState<FullOrderItem[] | undefined>(items)
+  const [itemsState, setItemsState] = useState<FullOrderItem[]>(items)
+
   const [chosenItems, setChosenItems] = useState<(number | undefined)[]>(
     items.map((item: FullOrderItem) => (item.orderId ? item.id : undefined)),
   )
-  const [isOrder, setIsOrder] = useState<boolean>(!!order)
 
-  // const actionData = useActionData()
-  // const x = useRouteLoaderData("routes/store")
+  const [orderState, setOrderState] = useState<Order>(order)
+  const [address, setAddress] = useState<number>(0)
+
+  const [totalPriceState, setTotalPriceState] = useState<number>(totalPrice)
+
+  const actionData = useActionData()
+
   useEffect(() => {
     console.log(chosenItems)
+    const x = localStorage.getItem("addressId")
+    setAddress(Number(x))
   })
+
+  useEffect(() => {
+    if (
+      actionData && actionData.totalPrice &&
+      totalPriceState != actionData.newTotalPrice
+    )
+      setTotalPriceState(actionData.newTotalPrice)
+  }, [actionData])
+
+  useEffect(() => {
+    if (actionData &&
+      actionData.newItems &&
+      actionData.newlItems != itemsState
+    )
+      setItemsState(actionData.newItems)
+  }, [actionData])
 
   return (
     <>
-      {isOrder ? <p>{totalPrice}</p> : undefined}
-      {items.map((item: FullOrderItem, index: number) => (
+      {order ? <p>{totalPrice}</p> : undefined}
+      {itemsState.map((item: FullOrderItem, index: number) => (
         <div key={index}>
           <p>{item.name}</p>
           <Form method="post">
             {item.count}
-            <button
-              type="submit"
-              onClick={() => {
-                if (!item.id) return
-                const isInOrder = chosenItems.includes(item.id)
-                if (!isInOrder) {
-                  const x = chosenItems.push(item.id)
+            <input type="hidden" name="id" value={item.id} />
+            <input type="hidden" name="job" value="add" />
+            <input type="hidden" name="address" value={address} />
+            <button type="submit">+</button>
+          </Form>
 
-                  setChosenItems(chosenItems => {
-                    chosenItems.push(item.id)
-                    return chosenItems
-                  })
-                }
-              }}
-            >
-
-              +
-            </button>
+          <Form method="post">
+            <input type="hidden" name="id" value={item.id} />
+            <input type="hidden" name="job" value="remove" />
             {!item.count ? undefined : <button type="submit"> - </button>}
           </Form>
         </div>
       ))}
 
       <p>Items</p>
+      {order && totalPriceState > store.minOrderPrice ? (
+        <Link to={`../bill/${order.id}`}>Bill</Link>
+      ) : undefined}
       {/* {itemsInStore.map((item, index) => )} */}
     </>
   )

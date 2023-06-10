@@ -1,6 +1,7 @@
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react"
-import { LoaderArgs, redirect } from "@remix-run/server-runtime"
+import { LoaderArgs, redirect, TypedResponse } from "@remix-run/server-runtime"
 import { db } from "~/utils/db.server"
+
 import {
   billOrder,
   calculateOrder,
@@ -10,15 +11,18 @@ import {
 import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { useState } from "react"
+import { getStore } from "~/utils/store.query.server"
 
 export const action = async ({
   request,
   params,
-}: any): Promise<{
-  isSuccessful?: boolean
-  isUnsuccessful?: boolean
-  error?: Error
-}> => {
+}: any): Promise<
+  | {
+      isUnsuccessful?: boolean
+      error?: Error
+    }
+  | TypedResponse<never>
+> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
     const orderId = Number(params.orderId)
@@ -45,13 +49,9 @@ export const action = async ({
 
     const isSuccessful = !!(await billOrder({ orderId }))
 
-    await updateOrder({ id: order.id, isInCart: false })
-
-    if (isSuccessful)
-      return {
-        isSuccessful: true,
-      }
-    else {
+    if (isSuccessful) {
+      return redirect(`home/order/${orderId}`)
+    } else {
       return {
         isUnsuccessful: true,
       }
@@ -94,11 +94,17 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
     let price: number = order.totalPrice
     if (!price || price == 0) {
-      price = (await calculateOrder({ orderId })).totalPrice
+      price = await calculateOrder({ orderId })
     }
 
-    if (price == null || price == undefined) {
+    const store = await getStore({ storeId: order.storeId })
+
+    if (!store || price == null || price == undefined) {
       throw new Error("Could Not Calculate Price")
+    }
+
+    if (store.minOrderPrice > price) {
+      throw new Error("Min Order Price Is Not Met")
     }
 
     return { user, order, price }
@@ -113,9 +119,9 @@ export default function BillPage() {
 
   return (
     <>
-      Money Left :{user.credit}
       Bill order : {order.id}
-      {price}
+      Money Left :{user.credit}
+      Order Price {price}
       <Form method="post">
         <button type="submit" disabled={user.credit < price || order.isBilled}>
           Bill Order
@@ -126,7 +132,7 @@ export default function BillPage() {
           ? "Successfuly Billed"
           : undefined}
         {actionData?.isSuccessful || order.isBilled ? (
-          <Link to={`home`}>Go To Order</Link>
+          <Link to={`../../order/${order.id}`}>Go To Order</Link>
         ) : undefined}
         {actionData?.isSuccessful ? "Could Not Perform" : undefined}
         {/* {actionData.isSuccessful ? setTimeout(redirect("/waiting",200) ,3000) : undefined} */}

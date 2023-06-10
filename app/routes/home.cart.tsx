@@ -29,7 +29,7 @@ export const loader = async ({
 
 export default function Orders() {
   const cart = useLoaderData<typeof loader>()
-  console.log(cart)
+  // console.log(cart)
 
   return (
     <div>
