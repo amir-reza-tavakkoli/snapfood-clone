@@ -1,19 +1,25 @@
+import { Link, useLoaderData } from "@remix-run/react"
 import type { LoaderArgs } from "@remix-run/node"
-import { useLoaderData } from "@remix-run/react"
-import { getFullOrderItems } from "~/utils/order.query.server"
 
+import type { User } from "@prisma/client"
 import { getUser } from "~/utils/session.server"
-import { getFullStoreItems } from "~/utils/store.query.server"
 
-export const loader = async ({ request }: LoaderArgs) => {
-  const user = await getUser(request)
-  const u = await getFullStoreItems({ storeId: 1 })
-  return { user, u }
+export const loader = async ({ request }: LoaderArgs): Promise<User | null> => {
+  try {
+    const user = await getUser(request)
+
+    return user
+  } catch (error) {
+    throw error
+  }
 }
 
 export default function Index() {
-  const { user, u } = useLoaderData<typeof loader>()
-  console.log(u)
+  const user = useLoaderData<typeof loader>()
 
-  return <div></div>
+  return (
+    <div>
+      {user ? <Link to="home">Home</Link> : <Link to="login">Login</Link>}
+    </div>
+  )
 }
