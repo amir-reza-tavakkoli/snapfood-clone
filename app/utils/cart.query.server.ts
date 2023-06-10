@@ -143,7 +143,7 @@ export async function getOrderInCart({
       return undefined
     }
 
-    let order = orders.find(order => order.isInCart)
+    let order = orders.find(order => order.isInCart && !order.isBilled)
 
     return order
   } catch (error) {}

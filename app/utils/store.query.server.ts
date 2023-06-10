@@ -172,8 +172,9 @@ export async function getFullStoreOrdersItems({
     })
 
     const order = await getOrder({ orderId })
-
-    if (!order || !order.isInCart) {
+    console.log("hereee", order);
+    
+    if (!order || !order.isInCart || order.isBilled) {
       throw new Error("Order Is Not In Cart")
     }
 

@@ -147,7 +147,9 @@ export async function createOrder({
 
     if (
       ordersInCart &&
-      ordersInCart.find(orderInCart => orderInCart.storeId == storeId)
+      ordersInCart.find(
+        orderInCart => orderInCart.storeId == storeId && !orderInCart.isBilled,
+      )
     ) {
       throw new Error("An Order Is Already In Progress")
     }
@@ -158,7 +160,7 @@ export async function createOrder({
         storeId,
         addressId,
         estimatedDeliveryTime,
-        isBilled,
+        isBilled: false,
         isCanceled,
         isDelayedByStore,
         isDelivered,
@@ -242,7 +244,7 @@ export async function updateOrder({
 
     const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
 
-    if (!user || user.isSuspended || !address.isAvailible) {
+    if (!user || user.isSuspended) {
       throw new Error("User Unavailible")
     }
 
@@ -585,51 +587,54 @@ export async function calculateOrder({
   orderId,
 }: {
   orderId: number
-}): Promise<Order> {
+}): Promise<number> {
   try {
     const order = await getOrder({ orderId })
 
-    if (!order || order.isBilled) {
+    if (!order) {
       throw new Error("No Such Order")
     }
 
-    const items = await db.orderHasItems.findMany({
-      where: {
-        orderId: orderId,
-      },
-      orderBy: {
-        itemId: "desc",
-      },
-    })
+    const orderItems = await getFullOrderItems({ orderId })
+    // const items = await db.orderHasItems.findMany({
+    //   where: {
+    //     orderId: orderId,
+    //   },
+    //   orderBy: {
+    //     itemId: "desc",
+    //   },
+    // })
 
-    if (!items || items.length == 0) {
+    if (!orderItems || orderItems.length == 0) {
       throw new Error("No Item In The Order")
     }
 
-    const itemsInStore = await Promise.all(
-      items.map(item =>
-        db.storeHasItems.findUnique({
-          where: {
-            storeId_itemId: {
-              itemId: item.itemId,
-              storeId: order.storeId,
-            },
-          },
-        }),
-      ),
-    )
+    // const itemsInStore = await Promise.all(
+    //   orderItems.map(item =>
+    //     db.storeHasItems.findUnique({
+    //       where: {
+    //         storeId_itemId: {
+    //           itemId: item.itemId,
+    //           storeId: order.storeId,
+    //         },
+    //       },
+    //     }),
+    //   ),
+    // )
 
     let totalPrice: number = 0
-    itemsInStore.forEach((itemInStore, index) => {
-      if (!itemInStore) {
+    orderItems.forEach((orderItem, index) => {
+      if (!orderItem || !orderItem.price || !orderItem.count) {
         return
       }
+      
+      let tempPrice = orderItem.price
 
-      if (itemInStore.discountPercent) {
-        itemInStore.price *= itemInStore.discountPercent / 100
+      if (orderItem.discountPercent) {
+        tempPrice *= (orderItem.discountPercent / 100)
       }
 
-      totalPrice += itemInStore?.price * items[index].count
+      totalPrice += tempPrice * orderItem.count
     })
 
     totalPrice +=
@@ -641,15 +646,15 @@ export async function calculateOrder({
       throw new Error("Invalid Price")
     }
 
-    if (order.totalPrice == totalPrice) {
-      return order
+    if (order.totalPrice == totalPrice || order.isBilled) {
+      return totalPrice
     }
     const newOrder = await db.order.update({
       where: { id: orderId },
       data: { totalPrice },
     })
 
-    return newOrder
+    return totalPrice
   } catch (error) {
     throw error
   }
