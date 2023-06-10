@@ -1,39 +1,43 @@
-import { Link, useLoaderData } from "@remix-run/react"
-import { json, LoaderArgs } from "@remix-run/server-runtime"
-import { db } from "~/utils/db.server"
-import { getPhoneNumber, getUser } from "~/utils/session.server"
+import { Address, User } from "@prisma/client"
+import { Link, Outlet, useLoaderData } from "@remix-run/react"
+import { LoaderArgs } from "@remix-run/server-runtime"
+import { createContext, useContext, useEffect } from "react"
+import { getNearestAddress } from "~/utils/address.query.server"
 
-export const loader = async ({ request }: LoaderArgs) => {
-  //   const jokeListItems = await db.user.findUnique({
-  //     orderBy: { createdAt: "desc" },
-  //     select: { id: true, name: true },
-  //     take: 5,
-  //   })
+import { requirePhoneNumber } from "~/utils/session.server"
+import { getUserByPhone } from "~/utils/user.query.server"
 
-  const user = await getUser(request)(user, "kos")
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<{ address: Address | null; user: User | null }> => {
+  try {
+    const phoneNumber = await requirePhoneNumber(request)
 
-  return json({ user: user })
+    const user = await getUserByPhone({ phoneNumber })
+
+    const address = await getNearestAddress({ phoneNumber })
+
+    return { address, user }
+  } catch (error) {
+    throw error
+  }
 }
 
 export default function Home() {
-  const data = useLoaderData<typeof loader>()
+  const { address, user } = useLoaderData<typeof loader>()
+
+  useEffect(() => {
+    if (address && address.id)
+      localStorage.setItem("addressId", address?.id.toString())
+  }, [address?.id])
 
   return (
     <>
+      <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+      </form>
       <p>homeeeeee</p>
-      {data.user ? (
-        <div className="user-info">
-          gfgfgfg
-          <span>{`Hi ${data.user?.phoneNumber}`}</span>
-          <form action="/logout" method="post">
-            <button type="submit" className="button">
-              Logout
-            </button>
-          </form>
-        </div>
-      ) : (
-        <Link to="/login">Login</Link>
-      )}
+      <Outlet></Outlet>
     </>
   )
 }
