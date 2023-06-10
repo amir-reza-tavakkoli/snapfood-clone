@@ -160,9 +160,7 @@ export async function getFullStoreOrdersItems({
 }: {
   storeId: number
   orderId: number
-}): Promise<
-  FullOrderItem[]
-> {
+}): Promise<FullOrderItem[]> {
   try {
     const itemsInStore = await db.storeHasItems.findMany({
       where: { storeId },
@@ -172,8 +170,8 @@ export async function getFullStoreOrdersItems({
     })
 
     const order = await getOrder({ orderId })
-    console.log("hereee", order);
-    
+    console.log("hereee", order)
+
     if (!order || !order.isInCart || order.isBilled) {
       throw new Error("Order Is Not In Cart")
     }

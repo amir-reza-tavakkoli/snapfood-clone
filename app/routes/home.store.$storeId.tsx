@@ -16,23 +16,15 @@ import {
   createOrder,
   FullOrderItem,
   updateOrder,
-
 } from "~/utils/order.query.server"
 
-import {
-  getOrderInCart,
-  getCart,
-} from "~/utils/cart.query.server"
+import { getOrderInCart, getCart } from "~/utils/cart.query.server"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
 } from "~/utils/store.query.server"
-import {
-  Order,
-  User,
-  Store,
-} from "@prisma/client"
+import { Order, User, Store } from "@prisma/client"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { useEffect, useState } from "react"
 import { Disabled } from "~/components/button.stories"
@@ -44,7 +36,7 @@ export const action = async ({ request, params }: any) => {
     if (!storeId || isNaN(storeId)) {
       throw new Error("404")
     }
-console.log("1");
+    console.log("1")
 
     const form = await request.formData()
 
@@ -57,12 +49,13 @@ console.log("1");
     let orderInCart = await getOrderInCart({ phoneNumber, storeId })
     console.log("2")
 
-
-
     if (!orderInCart && addressId) {
       orderInCart = await createOrder({
         addressId,
-        storeId,isInCart : true, isCanceled :false,isDelivered:false,
+        storeId,
+        isInCart: true,
+        isCanceled: false,
+        isDelivered: false,
         userPhoneNumber: phoneNumber,
         estimatedDeliveryTime: 0,
         totalPrice: 0,
@@ -74,7 +67,6 @@ console.log("1");
       console.log("in cartttt")
       // await updateOrder({id : orderInCart.id, isBilled : false})
     }
-
 
     if (!orderInCart) {
       throw new Error("gozz")
@@ -97,9 +89,12 @@ console.log("1");
         orderId: orderInCart?.id,
       })
     }
-console.log("4")
+    console.log("4")
 
-    const newItems = await getFullStoreOrdersItems({ orderId: orderInCart.id, storeId })
+    const newItems = await getFullStoreOrdersItems({
+      orderId: orderInCart.id,
+      storeId,
+    })
     const newTotalPrice = await calculateOrder({ orderId: orderInCart.id })
     return { newItems, newTotalPrice }
   } catch (error) {
@@ -150,7 +145,7 @@ export const loader: LoaderFunction = async ({
     if (order) totalPrice = order.totalPrice
 
     if (!totalPrice && order) {
-      totalPrice = (await calculateOrder({ orderId: order.id }))
+      totalPrice = await calculateOrder({ orderId: order.id })
     }
 
     if (order && !order.isBilled) {
@@ -196,17 +191,15 @@ export default function Store() {
 
   useEffect(() => {
     if (
-      actionData && actionData.totalPrice &&
+      actionData &&
+      actionData.totalPrice &&
       totalPriceState != actionData.newTotalPrice
     )
       setTotalPriceState(actionData.newTotalPrice)
   }, [actionData])
 
   useEffect(() => {
-    if (actionData &&
-      actionData.newItems &&
-      actionData.newlItems != itemsState
-    )
+    if (actionData && actionData.newItems && actionData.newlItems != itemsState)
       setItemsState(actionData.newItems)
   }, [actionData])
 

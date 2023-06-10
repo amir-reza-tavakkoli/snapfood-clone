@@ -7,11 +7,8 @@ export default function Home() {
   useEffect(() => {
     const cityName = localStorage.getItem("city")
 
-    if(cityName)
-      setCity(cityName)
-    
-  } )
-
+    if (cityName) setCity(cityName)
+  })
 
   return (
     <>

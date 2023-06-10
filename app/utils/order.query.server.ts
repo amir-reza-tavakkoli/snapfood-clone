@@ -627,11 +627,11 @@ export async function calculateOrder({
       if (!orderItem || !orderItem.price || !orderItem.count) {
         return
       }
-      
+
       let tempPrice = orderItem.price
 
       if (orderItem.discountPercent) {
-        tempPrice *= (orderItem.discountPercent / 100)
+        tempPrice *= orderItem.discountPercent / 100
       }
 
       totalPrice += tempPrice * orderItem.count

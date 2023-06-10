@@ -276,7 +276,7 @@ async function seedFirstStore() {
       phoneNumber: "09900249950",
       firstName: "Amir",
       lastName: "Tavakkoli",
-      credit : 1000000
+      credit: 1000000,
     },
   })
 
