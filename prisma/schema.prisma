@@ -186,7 +186,7 @@ model Order {
   packagingPrice        Float
   estimatedDeliveryTime Int
 
-  isBilled          Boolean @default(true)
+  isBilled          Boolean @default(false)
   isInCart          Boolean @default(false)
   isVerifiedByAdmin Boolean @default(true)
   isVerifiedByStore Boolean @default(true)
