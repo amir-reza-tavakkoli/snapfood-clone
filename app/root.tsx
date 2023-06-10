@@ -1,4 +1,6 @@
 import css from "./index.css"
+
+import { createContext } from "react"
 import type { LinksFunction } from "@remix-run/node"
 import {
   Links,
@@ -7,10 +9,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: css }]
-
 export default function App() {
   return (
     <html lang="en">
@@ -27,5 +29,17 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
+  )
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  const errorMessage = error instanceof Error ? error.message : "Unknown error"
+  return (
+    <div>
+      <h1>Error</h1>
+      <pre>{errorMessage}</pre>
+    </div>
   )
 }
