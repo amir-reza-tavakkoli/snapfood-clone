@@ -1,7 +1,7 @@
 import { useLoaderData } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
 import { db } from "~/utils/db.server"
-import { getUserByPhone } from "~/utils/query.server"
+import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 
 import { useState } from "react"
@@ -40,8 +40,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
 export default function Comment() {
   const loaderData = useLoaderData<typeof loader>()
-  const [rate, setRate] = useState(0)
-  console.log(rate)
+  const [rate, setRate] = useState(0)(rate)
 
   return <></>
 }
