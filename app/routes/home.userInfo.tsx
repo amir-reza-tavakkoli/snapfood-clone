@@ -27,7 +27,9 @@ export const action = async ({ request }: any) => {
       birthday,
       email,
     })
+
     if (user) return { successful: true }
+
     return { unsuccessful: true }
   } catch (error) {
     return {
@@ -53,14 +55,14 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 export default function UserInfo() {
-  const loaderData = useLoaderData<typeof loader>()
+  const { user } = useLoaderData<typeof loader>()
   const actionData = useActionData()
 
-  const [firstName, setFirstName] = useState(loaderData.user.firstName)
-  const [lastName, setLastName] = useState(loaderData.user.lastName)
-  const [gender, setGender] = useState(loaderData.user.gender)
-  const [birthday, setBirthday] = useState(loaderData.user.birthday)
-  const [email, setEmail] = useState(loaderData.user.email)
+  const [firstName, setFirstName] = useState(user.firstName)
+  const [lastName, setLastName] = useState(user.lastName)
+  const [gender, setGender] = useState(user.gender)
+  const [birthday, setBirthday] = useState(user.birthday)
+  const [email, setEmail] = useState(user.email)
 
   return (
     <Form method="post">
@@ -69,7 +71,7 @@ export default function UserInfo() {
         type="text"
         name="phoneNumber"
         id="phoneNumber"
-        value={loaderData.user.phoneNumber}
+        value={user.phoneNumber}
       />
       <label htmlFor="firstName">First Name</label>
       <input
