@@ -782,3 +782,15 @@ export async function changeComment({
     throw error
   }
 }
+
+export async function getNewOrders({ storeId }: { storeId: number }) {
+  try {
+    const orders = await getOrders({ storeId })
+
+    if (orders) orders.filter(order => order.isBilled && order.isInCart)
+
+    return orders
+  } catch (error) {
+    throw error
+  }
+}

@@ -1,7 +1,8 @@
 import { Link, useLoaderData } from "@remix-run/react"
-import type { LoaderArgs } from "@remix-run/node"
 
+import type { LoaderArgs } from "@remix-run/node"
 import type { User } from "@prisma/client"
+
 import { getUser } from "~/utils/session.server"
 
 export const loader = async ({ request }: LoaderArgs): Promise<User | null> => {

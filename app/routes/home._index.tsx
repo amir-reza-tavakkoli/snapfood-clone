@@ -1,8 +1,10 @@
 import { Link } from "@remix-run/react"
 import { useEffect, useState } from "react"
 
+const DEFAULT_CITY = "تهران"
+
 export default function Home() {
-  const [city, setCity] = useState("تهران")
+  const [city, setCity] = useState(DEFAULT_CITY)
 
   useEffect(() => {
     const cityName = localStorage.getItem("city")
