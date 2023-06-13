@@ -1,23 +1,33 @@
 import { useActionData, useLoaderData } from "@remix-run/react"
-import { LoaderArgs } from "@remix-run/server-runtime"
+import { ActionArgs, LoaderArgs } from "@remix-run/server-runtime"
 
 import { Form } from "@remix-run/react"
 
 import { createOrUpdateUser, getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { useState } from "react"
+import { User } from "@prisma/client"
 
 export const action = async ({ request }: any) => {
   try {
-    await requirePhoneNumber(request)
-
     const form = await request.formData()
+
     const phoneNumber = form.get("phoneNumber")
     const firstName = form.get("firstName")
     const lastName = form.get("lastName")
     const gender = form.get("gender")
     const birthday = form.get("birthday")
-    const email = form.get("email")(gender)
+    const email = form.get("email")
+
+    if (!phoneNumber) {
+      throw new Error("Wrong Phone Number")
+    }
+
+    const oldUser = await getUserByPhone({phoneNumber})
+
+    if (!oldUser) {
+      throw new Error("User Does Not Exist");
+    }
 
     const user = await createOrUpdateUser({
       phoneNumber,
@@ -32,13 +42,14 @@ export const action = async ({ request }: any) => {
 
     return { unsuccessful: true }
   } catch (error) {
+    
     return {
       unsuccessful: true,
     }
   }
 }
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   const phoneNumber = await requirePhoneNumber(request)
 
   try {
@@ -48,14 +59,14 @@ export const loader = async ({ request }: LoaderArgs) => {
       throw new Error("No Such User")
     }
 
-    return { user }
+    return user
   } catch (error) {
     throw error
   }
 }
 
 export default function UserInfo() {
-  const { user } = useLoaderData<typeof loader>()
+  const  user  = useLoaderData<typeof loader>()
   const actionData = useActionData()
 
   const [firstName, setFirstName] = useState(user.firstName)

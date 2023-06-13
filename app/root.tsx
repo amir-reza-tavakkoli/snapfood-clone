@@ -1,6 +1,4 @@
-import css from "./index.css"
 
-import { createContext } from "react"
 import type { LinksFunction } from "@remix-run/node"
 import {
   Links,
@@ -12,7 +10,9 @@ import {
   useRouteError,
 } from "@remix-run/react"
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: css }]
+import baseCss from "./index.css"
+
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: baseCss }]
 export default function App() {
   return (
     <html lang="en">

@@ -1,7 +1,5 @@
-import { Link, Outlet, useActionData, useLoaderData } from "@remix-run/react"
+import { Link, Outlet, useActionData, useLoaderData, useSearchParams } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
-
-import { Form } from "@remix-run/react"
 
 import { createOrUpdateUser, getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
@@ -43,10 +41,15 @@ export const loader = async ({
 }: LoaderArgs): Promise<Address[] | null> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
+
     const user = await getUserByPhone({ phoneNumber })
 
     if (!user) {
       throw new Error("No Such User")
+    }
+
+    if (user.isSuspended || !user.isVerified) {
+      throw new Error("User Is Not Verified Or Suspended")
     }
 
     const addresses = await getUserAddresses({ phoneNumber })
@@ -58,6 +61,7 @@ export const loader = async ({
 
 export default function UserInfo() {
   const addresses = useLoaderData<typeof loader>()
+  const [searchParams] = useSearchParams()
 
   //   const [firstName, setFirstName] = useState(loaderData.user.firstName)
   //   const [lastName, setLastName] = useState(loaderData.user.lastName)
@@ -84,20 +88,25 @@ export default function UserInfo() {
   }, [addressId])
 
   return (
-    <>
+    <>{searchParams.get("storeId")}
       <p>{addressId}</p>
-      {addresses?.map((address, index) => (
-        <div key={index}>
-          <p>{address.address + address.cityName + address.id}</p>
-          chosen :
-          <input
-            type="radio"
-            checked={addressId == address.id}
-            onChange={() => setChosenAddress(address.id, address.cityName)}
-          />
-          <Link to={address.id.toString()}>Edit</Link>
-        </div>
-      ))}
+      {addresses ? (
+        addresses?.map((address, index) => (
+          <div key={index}>
+            <p>{address.address + address.cityName + address.id}</p>
+            chosen :
+            <input
+              type="radio"
+              checked={addressId == address.id}
+              onChange={() => setChosenAddress(address.id, address.cityName)}
+            />
+            <Link to={address.id.toString()}>Edit</Link>
+          </div>
+        ))
+      ) : (
+        <p>No Address Yet</p>
+      )}
+      <Link to={"/home/addresses/new"}>Create New Address</Link>
       <Outlet></Outlet>
     </>
   )

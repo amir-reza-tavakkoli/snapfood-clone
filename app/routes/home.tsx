@@ -1,5 +1,5 @@
 import { Address, User } from "@prisma/client"
-import { Link, Outlet, useLoaderData } from "@remix-run/react"
+import { Link, Outlet, useLoaderData, useNavigate } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
 import { createContext, useContext, useEffect } from "react"
 import { getNearestAddress } from "~/utils/address.query.server"
@@ -17,7 +17,6 @@ export const loader = async ({
     const user = await getUserByPhone({ phoneNumber })
 
     const address = await getNearestAddress({ phoneNumber })
-    console.log("mmmmm", await calculateOrder({ orderId: 4 }))
 
     return { address, user }
   } catch (error) {
@@ -26,12 +25,8 @@ export const loader = async ({
 }
 
 export default function Home() {
+  // const navigate = useNavigate()
   const { address, user } = useLoaderData<typeof loader>()
-
-  useEffect(() => {
-    if (address && address.id)
-      localStorage.setItem("addressId", address?.id.toString())
-  }, [address?.id])
 
   return (
     <>

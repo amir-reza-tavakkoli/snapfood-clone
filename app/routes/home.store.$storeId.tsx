@@ -1,24 +1,22 @@
 import { LoaderArgs, LoaderFunction } from "@remix-run/node"
 
-import { db } from "~/utils/db.server"
 import {
   Form,
   Link,
-  Outlet,
   useActionData,
   useLoaderData,
-  useRouteLoaderData,
+  useNavigate,
+  useSearchParams,
 } from "@remix-run/react"
-import { getUser, requirePhoneNumber } from "~/utils/session.server"
+import { requirePhoneNumber } from "~/utils/session.server"
 import {
   calculateOrder,
   changeOrderItems,
   createOrder,
   FullOrderItem,
-  updateOrder,
 } from "~/utils/order.query.server"
 
-import { getOrderInCart, getCart } from "~/utils/cart.query.server"
+import { getStoreOrderInCart } from "~/utils/cart.query.server"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
@@ -27,11 +25,13 @@ import {
 import { Order, User, Store } from "@prisma/client"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { useEffect, useState } from "react"
-import { Disabled } from "~/components/button.stories"
+import { getAddressById } from "~/utils/address.query.server"
+import { setTimeout } from "timers/promises"
 
 export const action = async ({ request, params }: any) => {
   try {
     const storeId = Number(params.storeId)
+    console.log("oooo")
 
     if (!storeId || isNaN(storeId)) {
       throw new Error("404")
@@ -46,7 +46,13 @@ export const action = async ({ request, params }: any) => {
     const itemId: number | undefined = Number(form.get("id"))
     // const orderId: string | undefined = form.get("order")
 
-    let orderInCart = await getOrderInCart({ phoneNumber, storeId })
+    const address = await getAddressById({ addressId })
+
+    if (!address || address.userPhoneNumber != phoneNumber) {
+      throw new Error("Wrong Address")
+    }
+
+    let orderInCart = await getStoreOrderInCart({ phoneNumber, storeId })
     console.log("2")
 
     if (!orderInCart && addressId) {
@@ -133,7 +139,7 @@ export const loader: LoaderFunction = async ({
     }
 
     // const itemsInStore = await getStoreItems({ storeId })
-    let order = await getOrderInCart({
+    let order = await getStoreOrderInCart({
       phoneNumber: phoneNumber,
       storeId,
     })
@@ -167,27 +173,35 @@ export const loader: LoaderFunction = async ({
 export default function Store() {
   const { user, store, items, order, totalPrice } =
     useLoaderData<typeof loader>()
-
-  console.log(items)
-
+  const navigate = useNavigate()
+  // let [searchParams, setSearchParams] = useSearchParams()
   const [itemsState, setItemsState] = useState<FullOrderItem[]>(items)
 
-  const [chosenItems, setChosenItems] = useState<(number | undefined)[]>(
-    items.map((item: FullOrderItem) => (item.orderId ? item.id : undefined)),
-  )
+  // const [chosenItems, setChosenItems] = useState<(number | undefined)[]>(
+  //   items.map((item: FullOrderItem) => (item.orderId ? item.id : undefined)),
+  // )
 
   const [orderState, setOrderState] = useState<Order>(order)
   const [address, setAddress] = useState<number>(0)
-
+  //choosed city DANGER incompliance of addressId and city
   const [totalPriceState, setTotalPriceState] = useState<number>(totalPrice)
 
   const actionData = useActionData()
 
   useEffect(() => {
-    console.log(chosenItems)
-    const x = localStorage.getItem("addressId")
-    setAddress(Number(x))
-  })
+    const choosedAddress = localStorage.getItem("addressId")
+    console.log("kkkk", choosedAddress, "iiii")
+    if (
+      !choosedAddress ||
+      isNaN(Number(choosedAddress)) ||
+      !Number(choosedAddress)
+    ) {
+      setTimeout( () => navigate(`/home/addresses?storeId=${store.id}`), 2000)
+      setAddress(-1)
+    }
+
+    if (Number(choosedAddress) != address) setAddress(Number(choosedAddress))
+  }, [])
 
   useEffect(() => {
     if (
@@ -205,31 +219,41 @@ export default function Store() {
 
   return (
     <>
-      {order ? <p>{totalPrice}</p> : undefined}
-      {itemsState.map((item: FullOrderItem, index: number) => (
-        <div key={index}>
-          <p>{item.name}</p>
-          <Form method="post">
-            {item.count}
-            <input type="hidden" name="id" value={item.id} />
-            <input type="hidden" name="job" value="add" />
-            <input type="hidden" name="address" value={address} />
-            <button type="submit">+</button>
-          </Form>
+      {address == -1 ? (
+        <Link to={"home/addresses"}>Set An Address</Link>
+      ) : (
+        <div>
+          {order ? <p>{totalPrice}</p> : undefined}
+          {itemsState.map((item: FullOrderItem, index: number) => (
+            <div key={index}>
+              <p>{item.name}</p>
+              <Form method="post">
+                {item.count}
+                <input type="hidden" name="id" value={item.id} />
+                <input type="hidden" name="job" value="add" />
+                <input type="hidden" name="address" value={address} />
+                <button
+                  type="submit"
+                  disabled={item.remainingCount == 0 || !address}
+                >
+                  +
+                </button>
+              </Form>
 
-          <Form method="post">
-            <input type="hidden" name="id" value={item.id} />
-            <input type="hidden" name="job" value="remove" />
-            {!item.count ? undefined : <button type="submit"> - </button>}
-          </Form>
+              <Form method="post">
+                <input type="hidden" name="id" value={item.id} />
+                <input type="hidden" name="job" value="remove" />
+                {!item.count ? undefined : <button type="submit"> - </button>}
+              </Form>
+            </div>
+          ))}
+
+          <p>Items</p>
+          {order && totalPriceState > store.minOrderPrice ? (
+            <Link to={`../bill/${order.id}`}>Bill</Link>
+          ) : undefined}
         </div>
-      ))}
-
-      <p>Items</p>
-      {order && totalPriceState > store.minOrderPrice ? (
-        <Link to={`../bill/${order.id}`}>Bill</Link>
-      ) : undefined}
-      {/* {itemsInStore.map((item, index) => )} */}
+      )}
     </>
   )
 }

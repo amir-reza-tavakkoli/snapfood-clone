@@ -40,7 +40,12 @@ export const loader = async ({
       throw new Error("No Such Order")
     }
 
+    if (order.userPhoneNumber !== phoneNumber) {
+      throw new Error("No Permission")
+    }
+
     const items = await getFullOrderItems({ orderId })
+
     return { items, order }
   } catch (error) {
     throw error
@@ -54,7 +59,7 @@ export default function Orders() {
     <div>
       {<Link to={`../store/${order.storeId}`}>Go To Store</Link>}
       {order?.id}
-      {order ? items.map((item: any) => <p>{item.name}</p>) : undefined}
+      {order ? items.map((item: any, index) => <p key={index}>{item.name}</p>) : undefined}
       <>
         {!order?.isBilled ? (
           <Link to={`home/bill/${order.id}`}>Bill</Link>

@@ -1,10 +1,11 @@
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node"
-import { Link, Outlet, useActionData, useLoaderData } from "@remix-run/react"
+import type { LoaderArgs } from "@remix-run/node"
+import { Link, Outlet, useLoaderData } from "@remix-run/react"
 
 import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
+import { User } from "@prisma/client"
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderArgs):Promise<User> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
@@ -14,14 +15,18 @@ export const loader = async ({ request }: LoaderArgs) => {
       throw new Error("Not SuchUser")
     }
 
-    return { user }
+    if (user.isSuspended || !user.isVerified) {
+      throw new Error("User Is Not Verified Or Suspended")
+    }
+
+    return user
   } catch (error) {
     throw error
   }
 }
 
 export default function Index() {
-  const { user } = useLoaderData<typeof loader>()
+  const user = useLoaderData<typeof loader>()
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { Order, User } from "@prisma/client"
-import { useLoaderData } from "@remix-run/react"
+import { Link, useLoaderData } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
 
 import { getOrders } from "~/utils/order.query.server"
@@ -9,7 +9,7 @@ import { getUserByPhone } from "~/utils/user.query.server"
 
 export const loader = async ({
   request,
-}: LoaderArgs): Promise<{ user: User; orders: Order[] | null }> => {
+}: LoaderArgs): Promise<Order[] | null> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
@@ -19,20 +19,33 @@ export const loader = async ({
       throw new Error("No Such User")
     }
 
-    const orders = await getOrders({ phoneNumber })
+    let orders = await getOrders({ phoneNumber })
 
-    return { user, orders }
+    if (orders && orders.length > 0) {
+      orders = orders.filter((order) => order.isBilled && order.isVerifiedByAdmin && order.isVerifiedByStore)
+    }
+
+    return orders
   } catch (error) {
     throw error
   }
 }
 
 export default function Orders() {
-  const { user, orders } = useLoaderData<typeof loader>()
+  const orders  = useLoaderData<typeof loader>()
 
   return (
     <div>
-      {orders ? orders.map((order: any) => <p>{order.id}</p>) : undefined}
+      {orders ? (
+        orders.map(order => (
+          <>
+            {" "}
+            <p>{order.id}</p> <Link to={`../order/${order.id}`}>Go To Order Page</Link>
+          </>
+        ))
+      ) : (
+        <p>No Orders Yet</p>
+      )}
     </div>
   )
 }

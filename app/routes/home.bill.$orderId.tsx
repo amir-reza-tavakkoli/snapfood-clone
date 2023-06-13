@@ -10,7 +10,6 @@ import {
 } from "~/utils/order.query.server"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
-import { useState } from "react"
 import { getStore } from "~/utils/store.query.server"
 
 export const action = async ({
