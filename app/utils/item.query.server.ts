@@ -57,6 +57,9 @@ export async function updateOrCreateItem({
 
       return item
     }
+    
+    throw new Error("Wrong Item Info");
+
   } catch (error) {
     throw error
   }

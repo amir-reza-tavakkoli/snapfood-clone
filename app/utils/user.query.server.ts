@@ -39,10 +39,10 @@ export async function createOrUpdateUser({
   isVerified?: boolean
 }): Promise<User> {
   try {
-    const user = await getUserByPhone({ phoneNumber })
+    let user = await getUserByPhone({ phoneNumber })
 
     if (user) {
-      const user = await db.user.update({
+      user = await db.user.update({
         where: {
           phoneNumber,
         },

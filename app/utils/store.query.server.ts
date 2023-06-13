@@ -1,7 +1,8 @@
 import type { Item, Store, StoreHasItems } from "@prisma/client"
-import { getOrderInCart } from "./cart.query.server"
 import { db } from "./db.server"
-import { FullOrderItem, getOrder, getOrderItems } from "./order.query.server"
+
+import type { FullOrderItem } from "./order.query.server"
+import { getOrder, getOrderItems } from "./order.query.server"
 
 export async function getStore({
   storeId,
@@ -21,7 +22,7 @@ export async function getStore({
   }
 }
 
-export async function getStores(): Promise<Store[] | null> {
+export async function getStores(): Promise<Store[]> {
   try {
     const stores = await db.store.findMany({ orderBy: { id: "desc" } })
 
@@ -170,7 +171,6 @@ export async function getFullStoreOrdersItems({
     })
 
     const order = await getOrder({ orderId })
-    console.log("hereee", order)
 
     if (!order || !order.isInCart || order.isBilled) {
       throw new Error("Order Is Not In Cart")
