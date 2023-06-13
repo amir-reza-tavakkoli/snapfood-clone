@@ -1,64 +1,33 @@
 import { useEffect, useState } from "react"
-import { useActionData, useLoaderData, useSearchParams } from "@remix-run/react"
+
+import { useActionData, useSearchParams } from "@remix-run/react"
+import { Form } from "@remix-run/react"
+
 import {
   createOrUpdateUser,
   getUserByPhone,
   updateVerificationCode,
 } from "~/utils/user.query.server"
-import { calculateOrder } from "~/utils/order.query.server"
-import { badRequest } from "~/utils/request.server"
+
 import { createUserSession } from "~/utils/session.server"
-import { LoaderArgs } from "@remix-run/server-runtime"
-import { Form } from "@remix-run/react"
+import { badRequest, generateVerificationCode, generateVerificationExpiry, validatePhoneNumber, validateUrl } from "~/utils/request.server"
+import { User } from "@prisma/client"
 
-const ALLOWED_PHONE_PREFIX = "09"
-const VERIFICATION_CODE_FIGURES = 4
-const VERIFICATION_CODE_EXPIRY_TIME = 5
-const ALLOWED_URLS = ["/home", "/", "/stores", "/orders", "/login"]
+export const ALLOWED_PHONE_PREFIX = "09"
+export const VERIFICATION_CODE_FIGURES = 4
+export const VERIFICATION_CODE_EXPIRY_TIME = 5
+export const ALLOWED_URLS = [
+  "/home",
+  "/",
+  "/home/stores",
+  "/home/orders",
+  "/login",
+  "/home/addresses",
+]
 
-function validatePhoneNumber(phoneNumber: string) {
-  if (
-    phoneNumber?.length != 11 ||
-    !phoneNumber.match(/\d{11}/) ||
-    !Boolean(parseInt(phoneNumber)) ||
-    !phoneNumber.startsWith(ALLOWED_PHONE_PREFIX)
-  ) {
-    return "Wrong PhoneNumber Format"
-  }
-}
 
-function generateVerificationCode(figures: number) {
-  const mins = [1]
-  const maxs = [9]
+export async function verify() {
 
-  for (let index = 0; index < figures - 1; index++) {
-    mins.push(0)
-    maxs.push(9)
-  }
-
-  let min = Number(mins.join(""))
-  let max = Number(maxs.join(""))
-
-  min = Math.ceil(min)
-  max = Math.floor(max)
-
-  return String(Math.floor(Math.random() * (max - min) + min))
-}
-
-function generateVerificationExpiry(mins: number): Date {
-  const defaultMinutes = 4
-  mins = mins ?? defaultMinutes
-
-  return new Date(
-    new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + mins),
-  )
-}
-
-function validateUrl(url: string, urls: string[]) {
-  if (urls.includes(url)) {
-    return url
-  }
-  return "/"
 }
 
 type FieldErrors = {
@@ -67,54 +36,19 @@ type FieldErrors = {
 }
 
 export const action = async ({ request }: any) => {
-  const form = await request.formData()
-  const state: string | undefined = form.get("state")
-  const submittedphone: string | undefined = form.get("phoneNumber")(
-    "price",
-    await calculateOrder({ orderId: 1 }),
-  )
-
-  const fieldErrors: FieldErrors = {
-    phoneNumber: submittedphone
-      ? validatePhoneNumber(submittedphone)
-      : undefined,
-  }
-
-  if (typeof submittedphone !== "string" || !state) {
-    return badRequest({
-      fieldErrors: null,
-      fields: null,
-      formError: "Form Not Submitted Correctly.",
-    })
-  }
-
-  if (fieldErrors.phoneNumber) {
-    return {
-      fieldErrors,
-    }
-  }
-
-  const fields = { phoneNumber: submittedphone }
-
-  let user
   try {
-    user = await getUserByPhone({ phoneNumber: submittedphone })
-  } catch {
-    return {
-      formError: "Internal Error",
-    }
-  }
+    const form = await request.formData()
 
-  if (state === "verification") {
-    if (!user) {
-      return {
-        formError: "Internal Error",
-      }
+    const state: string | undefined = form.get("state")
+    const submittedPhone: string | undefined = form.get("phoneNumber")
+
+    const fieldErrors: FieldErrors = {
+      phoneNumber: submittedPhone
+        ? validatePhoneNumber(submittedPhone)
+        : undefined,
     }
 
-    const submittedCode: String = form.get("verification")
-
-    if (typeof submittedCode !== "string" || !submittedCode) {
+    if (typeof submittedPhone !== "string" || !state) {
       return badRequest({
         fieldErrors: null,
         fields: null,
@@ -122,69 +56,106 @@ export const action = async ({ request }: any) => {
       })
     }
 
-    const redirectTo = validateUrl(
-      (form.get("redirectTo") as string) || "/home",
-      ALLOWED_URLS,
-    )
-
-    if (
-      user.verificationCode! !== submittedCode ||
-      user.verificationCodeExpiry! < new Date(Date.now())
-    ) {
-      fieldErrors.verificationCode = "Verification Code Wrong, Try Again"
-    }
-
-    if (Object.values(fieldErrors).some(Boolean)) {
+    if (fieldErrors.phoneNumber) {
       return {
         fieldErrors,
-        fields,
-        formError: null,
-        state: "verification",
       }
     }
 
-    return createUserSession(user.phoneNumber, redirectTo)
-  }
+    const fields = { phoneNumber: submittedPhone }
 
-  if (!user) {
+    let user : User | null
     try {
-      user = await createOrUpdateUser({ phoneNumber: submittedphone })
+      user = await getUserByPhone({ phoneNumber: submittedPhone })
     } catch {
       return {
         formError: "Internal Error",
       }
     }
-  }
 
-  if (user.isSuspended) {
-    fieldErrors.phoneNumber = "User Is Suspended"
-  }
+    if (state === "verification") {
+      if (!user) {
+        return {
+          formError: "Internal Error",
+        }
+      }
 
-  if (Object.values(fieldErrors).some(Boolean)) {
-    return {
-      fieldErrors,
+      const submittedCode: String = form.get("verification")
+
+      if (typeof submittedCode !== "string" || !submittedCode) {
+        return badRequest({
+          fieldErrors: null,
+          fields: null,
+          formError: "Form Not Submitted Correctly.",
+        })
+      }
+
+      const redirectTo = validateUrl(
+        (form.get("redirectTo") as string) || "/home",
+        ALLOWED_URLS,
+      )
+
+      if (
+        user.verificationCode! !== submittedCode ||
+        user.verificationCodeExpiry! < new Date(Date.now())
+      ) {
+        fieldErrors.verificationCode = "Verification Code Wrong, Try Again"
+      }
+
+      if (Object.values(fieldErrors).some(Boolean)) {
+        return {
+          fieldErrors,
+          fields,
+          formError: null,
+          state: "verification",
+        }
+      }
+
+      return createUserSession(user.phoneNumber, redirectTo)
     }
-  }
 
-  const verificationCode = generateVerificationCode(VERIFICATION_CODE_FIGURES)
-  const verificationCodeExpiry = generateVerificationExpiry(
-    VERIFICATION_CODE_EXPIRY_TIME,
-  )
+    if (!user) {
+      try {
+        user = await createOrUpdateUser({ phoneNumber: submittedPhone })
+      } catch {
+        return {
+          formError: "Internal Error",
+        }
+      }
+    }
 
-  try {
-    user = await updateVerificationCode(
-      submittedphone,
-      verificationCode,
-      verificationCodeExpiry,
+    if (user.isSuspended) {
+      fieldErrors.phoneNumber = "User Is Suspended"
+    }
+
+    if (Object.values(fieldErrors).some(Boolean)) {
+      return {
+        fieldErrors,
+      }
+    }
+
+    const verificationCode = generateVerificationCode(VERIFICATION_CODE_FIGURES)
+    const verificationCodeExpiry = generateVerificationExpiry(
+      VERIFICATION_CODE_EXPIRY_TIME,
     )
-  } catch {
-    return {
-      formError: "Internal Error",
-    }
-  }
 
-  return {
-    codeSent: true,
+    try {
+      user = await updateVerificationCode(
+        submittedPhone,
+        verificationCode,
+        verificationCodeExpiry,
+      )
+    } catch {
+      return {
+        formError: "Internal Error",
+      }
+    }
+
+    return {
+      codeSent: true,
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
