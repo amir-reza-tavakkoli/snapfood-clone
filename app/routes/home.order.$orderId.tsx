@@ -59,7 +59,9 @@ export default function Orders() {
     <div>
       {<Link to={`../store/${order.storeId}`}>Go To Store</Link>}
       {order?.id}
-      {order ? items.map((item: any, index) => <p key={index}>{item.name}</p>) : undefined}
+      {order
+        ? items.map((item: any, index) => <p key={index}>{item.name}</p>)
+        : undefined}
       <>
         {!order?.isBilled ? (
           <Link to={`home/bill/${order.id}`}>Bill</Link>

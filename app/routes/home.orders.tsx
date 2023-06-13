@@ -22,7 +22,10 @@ export const loader = async ({
     let orders = await getOrders({ phoneNumber })
 
     if (orders && orders.length > 0) {
-      orders = orders.filter((order) => order.isBilled && order.isVerifiedByAdmin && order.isVerifiedByStore)
+      orders = orders.filter(
+        order =>
+          order.isBilled && order.isVerifiedByAdmin && order.isVerifiedByStore,
+      )
     }
 
     return orders
@@ -32,7 +35,7 @@ export const loader = async ({
 }
 
 export default function Orders() {
-  const orders  = useLoaderData<typeof loader>()
+  const orders = useLoaderData<typeof loader>()
 
   return (
     <div>
@@ -40,7 +43,8 @@ export default function Orders() {
         orders.map(order => (
           <>
             {" "}
-            <p>{order.id}</p> <Link to={`../order/${order.id}`}>Go To Order Page</Link>
+            <p>{order.id}</p>{" "}
+            <Link to={`../order/${order.id}`}>Go To Order Page</Link>
           </>
         ))
       ) : (

@@ -12,7 +12,7 @@ export const loader = async ({
     let city = params.city
 
     if (!city) {
-      throw new Error("Unsupported City");
+      throw new Error("Unsupported City")
     }
 
     stores = await getStoresByCity({ cityName: city })

@@ -10,7 +10,13 @@ import {
 } from "~/utils/user.query.server"
 
 import { createUserSession } from "~/utils/session.server"
-import { badRequest, generateVerificationCode, generateVerificationExpiry, validatePhoneNumber, validateUrl } from "~/utils/request.server"
+import {
+  badRequest,
+  generateVerificationCode,
+  generateVerificationExpiry,
+  validatePhoneNumber,
+  validateUrl,
+} from "~/utils/request.server"
 import { User } from "@prisma/client"
 
 export const ALLOWED_PHONE_PREFIX = "09"
@@ -25,10 +31,7 @@ export const ALLOWED_URLS = [
   "/home/addresses",
 ]
 
-
-export async function verify() {
-
-}
+export async function verify() {}
 
 type FieldErrors = {
   phoneNumber?: string | undefined
@@ -64,7 +67,7 @@ export const action = async ({ request }: any) => {
 
     const fields = { phoneNumber: submittedPhone }
 
-    let user : User | null
+    let user: User | null
     try {
       user = await getUserByPhone({ phoneNumber: submittedPhone })
     } catch {
@@ -155,7 +158,7 @@ export const action = async ({ request }: any) => {
       codeSent: true,
     }
   } catch (error) {
-    throw error;
+    throw error
   }
 }
 

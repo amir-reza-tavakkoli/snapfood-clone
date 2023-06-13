@@ -13,12 +13,10 @@ export default function Home() {
 
     if (cityName) {
       setCity(cityName)
-      
     } else {
-      setTimeout( () => navigate("/home/addresses"), 2000)
-
+      setTimeout(() => navigate("/home/addresses"), 2000)
     }
-  },[city])
+  }, [city])
 
   return (
     <>

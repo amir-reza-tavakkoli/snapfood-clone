@@ -71,13 +71,13 @@ export const action = async ({
       return { isSuccessful: true }
     }
 
-    const isSuccessful = !!await updateAddress({
+    const isSuccessful = !!(await updateAddress({
       id: Number(addressId),
       address,
       title,
       unit: Number(unit),
       details,
-    })
+    }))
     //   : Promise<isSuccessful: boolean >
 
     if (isSuccessful) return { isSuccessful: true }
@@ -119,7 +119,10 @@ export const loader = async ({
 
     const addressId = Number(params.addressId)
 
-    if ((isNaN(addressId) && !isNew) || (typeof addressId !== "number" && !isNew)) {
+    if (
+      (isNaN(addressId) && !isNew) ||
+      (typeof addressId !== "number" && !isNew)
+    ) {
       throw new Error("Invalid Address")
     }
 

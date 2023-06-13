@@ -1,4 +1,10 @@
-import { Link, Outlet, useActionData, useLoaderData, useSearchParams } from "@remix-run/react"
+import {
+  Link,
+  Outlet,
+  useActionData,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
 
 import { createOrUpdateUser, getUserByPhone } from "~/utils/user.query.server"
@@ -88,7 +94,8 @@ export default function UserInfo() {
   }, [addressId])
 
   return (
-    <>{searchParams.get("storeId")}
+    <>
+      {searchParams.get("storeId")}
       <p>{addressId}</p>
       {addresses ? (
         addresses?.map((address, index) => (

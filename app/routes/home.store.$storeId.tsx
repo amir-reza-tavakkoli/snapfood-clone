@@ -196,7 +196,7 @@ export default function Store() {
       isNaN(Number(choosedAddress)) ||
       !Number(choosedAddress)
     ) {
-      setTimeout( () => navigate(`/home/addresses?storeId=${store.id}`), 2000)
+      setTimeout(() => navigate(`/home/addresses?storeId=${store.id}`), 2000)
       setAddress(-1)
     }
 

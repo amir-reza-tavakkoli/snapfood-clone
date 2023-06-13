@@ -5,7 +5,7 @@ import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { User } from "@prisma/client"
 
-export const loader = async ({ request }: LoaderArgs):Promise<User> => {
+export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 

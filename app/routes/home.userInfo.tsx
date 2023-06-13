@@ -23,10 +23,10 @@ export const action = async ({ request }: any) => {
       throw new Error("Wrong Phone Number")
     }
 
-    const oldUser = await getUserByPhone({phoneNumber})
+    const oldUser = await getUserByPhone({ phoneNumber })
 
     if (!oldUser) {
-      throw new Error("User Does Not Exist");
+      throw new Error("User Does Not Exist")
     }
 
     const user = await createOrUpdateUser({
@@ -42,7 +42,6 @@ export const action = async ({ request }: any) => {
 
     return { unsuccessful: true }
   } catch (error) {
-    
     return {
       unsuccessful: true,
     }
@@ -66,7 +65,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<User> => {
 }
 
 export default function UserInfo() {
-  const  user  = useLoaderData<typeof loader>()
+  const user = useLoaderData<typeof loader>()
   const actionData = useActionData()
 
   const [firstName, setFirstName] = useState(user.firstName)
