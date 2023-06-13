@@ -1,7 +1,11 @@
-import { Item, PrismaClient } from "@prisma/client"
+import type { Item } from "@prisma/client"
+
+import { PrismaClient } from "@prisma/client"
+import { getStoreCategories } from "./../app/utils/store.query.server"
+
 const prisma = new PrismaClient()
 
-async function main() {
+async function constants() {
   await prisma.storeKind.createMany({
     data: [
       {
@@ -264,24 +268,24 @@ async function main() {
       },
     ],
   })
+}
 
+async function seedFirstStore() {
   const user = await prisma.user.create({
     data: {
       phoneNumber: "09900249950",
-      userName: "Amir",
-      hashedPassword: "1234",
       firstName: "Amir",
       lastName: "Tavakkoli",
+      credit: 1000000,
     },
   })
 
   const storeOwner = await prisma.user.create({
     data: {
       phoneNumber: "09121234567",
-      userName: "Ahmad",
-      hashedPassword: "1234",
       firstName: "Ahmad",
       lastName: "Sadeghi",
+      credit: 1000000,
     },
   })
 
@@ -312,7 +316,7 @@ async function main() {
         name: "چلو جوجه کباب زعفرانی",
         description:
           "یک سیخ جوجه کباب زعفرانی، ۲۶۰ گرم برنج خارجی، دورچین: گوجه کبابی، فلفل کبابی، لیمو، کره",
-        basePrice: 1750000,
+        basePrice: 175000,
         avatarUrl:
           "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb855bcb2ec.jpg",
         itemCategoryName: "ایرانی",
@@ -325,7 +329,7 @@ async function main() {
       data: {
         name: "زرشک پلو با مرغ",
         description: `یک عدد ران مرغ ۴۰۰ گرمی سس پز، ۴۵۰ گرم برنج خارجی، دورچین: لیموترش`,
-        basePrice: 1550000,
+        basePrice: 155000,
         avatarUrl:
           "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb8ada4c81c.jpg",
         itemCategoryName: "ایرانی",
@@ -353,6 +357,7 @@ async function main() {
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
       minOrderPrice: 20000,
       storeKindId: "رستوران",
+      cityName: storeAddress.cityName,
       addressId: storeAddress.id,
       userPhoneNumber: storeOwner.phoneNumber,
     },
@@ -371,11 +376,12 @@ async function main() {
     ),
   )
 
+  const storeCategories = await getStoreCategories({ storeId: store.id })
+
   await prisma.storeHasItemCategories.createMany({
-    data: [
-      { storeId: store.id, itemCategoryName: "ایرانی" },
-      { storeId: store.id, itemCategoryName: "نوشیدنی" },
-    ],
+    data: storeCategories.map(category => {
+      return { storeId: store.id, itemCategoryName: category }
+    }),
   })
 
   const order = await prisma.order.create({
@@ -413,12 +419,199 @@ async function main() {
   })
 }
 
-main()
+async function seedSecondStore() {
+  const user = await prisma.user.create({
+    data: {
+      phoneNumber: "09173196544",
+      firstName: "Reza",
+      lastName: "Habibi",
+      credit: 1000000,
+    },
+  })
+
+  const storeOwner = await prisma.user.create({
+    data: {
+      phoneNumber: "09825486201",
+      firstName: "Ghader",
+      lastName: "Eskandari",
+      credit: 1000000,
+    },
+  })
+
+  const storeAddress = await prisma.address.create({
+    data: {
+      address: "بلوار کسایی، انتهای دوستان، ایران برگر",
+      unit: 1,
+      cityName: "تهران",
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const userAddress = await prisma.address.create({
+    data: {
+      address: "سعادت آباد بولواراصلی",
+      unit: 16,
+      cityName: "تهران",
+      userPhoneNumber: user.phoneNumber,
+    },
+  })
+
+  let items: Item[] = []
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چوریتسو برگر",
+        description:
+          "گوشت گوساله خالص ،گردو، سوسیس چوریتسو،پنیرورقه ای، قارچ، نان مک دونالد",
+        basePrice: 220000,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/6329709095616.jpeg",
+        itemCategoryName: "برگر",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فیله استریپس (چهار تکه)",
+        description: `۴ تکه فیله سوخاری، سیب زمینی سرخ شده، سالاد کلم، نان بروتچن`,
+        basePrice: 305000,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296fbdb7975.jpeg",
+        itemCategoryName: "فست فود",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "ساندویچ برگر تنوری سینگل",
+        description: `برگر دست ساز گوشت گوساله خالص ، میکس پنیر پیتزا، چیپس، سس قارچ، نان باگت فرانسوی`,
+        basePrice: 180000,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/630dcf51c29db.jpeg`,
+        itemCategoryName: "ساندویچ",
+      },
+      // {name:"", description:"", basePrice:,avatarUrl:"",},
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فانتا قوطی",
+        description: "۳۳۰ میلی لیتر",
+        basePrice: 19000,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296e4b8b231.jpeg`,
+        itemCategoryName: "نوشیدنی",
+      },
+      // {name:"", description:"", basePrice:,avatarUrl:"",},
+    }),
+  )
+
+  const store = await prisma.store.create({
+    data: {
+      name: "ایران برگر",
+      avatarUrl:
+        "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5eb257c8f0766.jpg",
+      minOrderPrice: 80000,
+      storeKindId: "رستوران",
+      cityName: storeAddress.cityName,
+      addressId: storeAddress.id,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const itemsInStore = await Promise.all(
+    items.map(item =>
+      prisma.storeHasItems.create({
+        data: {
+          storeId: store.id,
+          itemId: item.id,
+          price: item.basePrice ?? 0,
+          remainingCount: 100,
+        },
+      }),
+    ),
+  )
+
+  const storeCategories = await getStoreCategories({ storeId: store.id })
+
+  await prisma.storeHasItemCategories.createMany({
+    data: storeCategories.map(category => {
+      return { storeId: store.id, itemCategoryName: category }
+    }),
+  })
+
+  const order = await prisma.order.create({
+    data: {
+      packagingPrice: 10000,
+      storeId: store.id,
+      userPhoneNumber: user.phoneNumber,
+      addressId: userAddress.id,
+      taxPercent: 0,
+      estimatedDeliveryTime: 50,
+      shipmentPrice: 3000,
+      totalPrice: 0,
+    },
+  })
+
+  const itemsInOrder = await Promise.all(
+    items.map(item =>
+      prisma.orderHasItems.create({
+        data: {
+          count: 1,
+          itemId: item.id,
+          orderId: order.id,
+        },
+      }),
+    ),
+  )
+
+  const comment = await prisma.comment.create({
+    data: {
+      orderId: order.id,
+      isPositive: true,
+      score: 5,
+      description: "عالی",
+    },
+  })
+}
+
+constants()
   .then(async () => {
+    await seed()
     await prisma.$disconnect()
   })
+
   .catch(async e => {
     console.error(e)
     await prisma.$disconnect()
     process.exit(1)
   })
+
+async function seed() {
+  await seedFirstStore()
+    .then(async () => {
+      await prisma.$disconnect()
+    })
+
+    .catch(async e => {
+      console.error(e)
+      await prisma.$disconnect()
+      process.exit(1)
+    })
+
+  await seedSecondStore()
+    .then(async () => {
+      await prisma.$disconnect()
+    })
+
+    .catch(async e => {
+      console.error(e)
+      await prisma.$disconnect()
+      process.exit(1)
+    })
+}

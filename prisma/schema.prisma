@@ -41,15 +41,16 @@ model Address {
 }
 
 model Store {
-  id            Int      @id @default(autoincrement())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  name          String
-  branchName    String?
-  description   String?
-  avatarUrl     String?
-  minOrderPrice Float
-  shipmentPrice Float @default(0)
+  id             Int                    @id @default(autoincrement())
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  name           String
+  branchName     String?
+  description    String?
+  avatarUrl      String?
+  cityName       String //DENORMALIZATION
+  minOrderPrice  Float
+  shipmentPrice  Float                  @default(0)
   desliveryRange Unsupported("circle")?
 
   isAvailible Boolean @default(true)
@@ -64,8 +65,8 @@ model Store {
 
   storeHasItems          StoreHasItems[]
   storeHasItemCategories StoreHasItemCategories[]
-  Schedules               storeSchedule[]
-  orders                  Order[]
+  Schedules              storeSchedule[]
+  orders                 Order[]
 }
 
 model StoreKind {
@@ -114,12 +115,12 @@ model StoreHasItems {
   itemId  Int
   item    Item  @relation(fields: [itemId], references: [id])
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  price           Float
-  discountPercent Float?
-  remainingCount  Int
-  estimatedReadyTime Int @default(10)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  price              Float
+  discountPercent    Float?
+  remainingCount     Int
+  estimatedReadyTime Int      @default(10)
 
   isAvailible Boolean @default(true)
   isVerified  Boolean @default(true)
@@ -155,23 +156,24 @@ model storeSchedule {
 }
 
 model User {
-  phoneNumber    String    @id
-  userName       String?   @unique
-  hashedPassword String?
-  firstName      String?
-  lastName       String?
-  birthday       DateTime?
-  gender         String?
-  email          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  phoneNumber            String    @id
+  firstName              String?
+  lastName               String?
+  birthday               DateTime?
+  gender                 String?
+  email                  String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  verificationCode       String?
+  verificationCodeExpiry DateTime?
 
   isVerified  Boolean @default(true)
   isSuspended Boolean @default(false)
 
+  credit    Float     @default(0)
   addresses Address[]
   stores    Store[]
-  orders     Order[]
+  orders    Order[]
 }
 
 model Order {
@@ -184,7 +186,7 @@ model Order {
   packagingPrice        Float
   estimatedDeliveryTime Int
 
-  isBilled          Boolean @default(true)
+  isBilled          Boolean @default(false)
   isInCart          Boolean @default(false)
   isVerifiedByAdmin Boolean @default(true)
   isVerifiedByStore Boolean @default(true)
@@ -193,14 +195,14 @@ model Order {
   isCanceled        Boolean @default(false)
   isDelayedByStore  Boolean @default(false)
 
-  storeId Int
-  store   Store @relation(fields: [storeId], references: [id])
+  storeId         Int
+  store           Store   @relation(fields: [storeId], references: [id])
   userPhoneNumber String
-  user            User   @relation(fields: [userPhoneNumber], references: [phoneNumber])
-  addressId Int
-  address Address @relation(fields: [addressId], references: [id])
+  user            User    @relation(fields: [userPhoneNumber], references: [phoneNumber])
+  addressId       Int
+  address         Address @relation(fields: [addressId], references: [id])
 
-  comments       Comment[]
+  comments      Comment[]
   orderHasItems OrderHasItems[]
 }
 
