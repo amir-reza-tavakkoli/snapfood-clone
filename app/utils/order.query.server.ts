@@ -1,13 +1,8 @@
-import type {
-  Comment,
-  Item,
-  Order,
-  OrderHasItems,
-  StoreHasItems,
-} from "@prisma/client"
+import type { Comment, Item, Order, OrderHasItems } from "@prisma/client"
+import { db } from "./db.server"
+
 import { getAddressById } from "./address.query.server"
 import { getOrdersInCart } from "./cart.query.server"
-import { db } from "./db.server"
 import { getItem } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
@@ -130,7 +125,7 @@ export async function createOrder({
     }
 
     if (address.cityName !== store.cityName) {
-      throw new Error("Must Ne In The Same City")
+      throw new Error("Must Be In The Same City")
     }
 
     // need to evaluate shipment price dynamically and check for availibility of distance
@@ -224,6 +219,14 @@ export async function updateOrder({
       throw new Error("Order Does Bot Exist")
     }
 
+    if (order.isDelivered) {
+      throw new Error("Order Fullfilled")
+    }
+
+    if (order.isCanceled) {
+      throw new Error("Order Canceled")
+    }
+
     const store = await getStore({ storeId: order.storeId })
 
     if (!store || !store.isAvailible || !store.isVerified) {
@@ -275,7 +278,7 @@ export async function updateOrder({
   }
 }
 
-type State = "add" | "set" | "remove"
+type ChangeOrderItemState = "add" | "set" | "remove"
 
 export async function changeOrderItems({
   orderId,
@@ -286,7 +289,7 @@ export async function changeOrderItems({
   orderId: number
   itemId: number
   count: number
-  state: State
+  state: ChangeOrderItemState
 }): Promise<OrderHasItems> {
   try {
     const item = await getItem({ itemId })
@@ -299,6 +302,10 @@ export async function changeOrderItems({
 
     if (!order || order.isCanceled) {
       throw new Error("No Such Order")
+    }
+
+    if (order.isDelivered) {
+      throw new Error("Order Alreafy Delivered")
     }
 
     if (
@@ -531,20 +538,23 @@ export async function billOrder({
   try {
     const order = await getOrder({ orderId })
 
+    if (!order) {
+      throw new Error("No Such Order")
+    }
+
     if (
-      !order ||
       order.isCanceled ||
       order.isBilled ||
       !order.isVerifiedByStore ||
       !order.isVerifiedByAdmin
     ) {
-      throw new Error("No Such Order")
+      throw new Error("Order Already Payed Or Not Verified Yet")
     }
 
     const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
 
     if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("No Such User")
+      throw new Error("No Such User Or User Is Suspended")
     }
 
     if (user.credit < order.totalPrice || user.credit < 0) {
@@ -596,34 +606,13 @@ export async function calculateOrder({
     }
 
     const orderItems = await getFullOrderItems({ orderId })
-    // const items = await db.orderHasItems.findMany({
-    //   where: {
-    //     orderId: orderId,
-    //   },
-    //   orderBy: {
-    //     itemId: "desc",
-    //   },
-    // })
 
     if (!orderItems || orderItems.length == 0) {
       throw new Error("No Item In The Order")
     }
 
-    // const itemsInStore = await Promise.all(
-    //   orderItems.map(item =>
-    //     db.storeHasItems.findUnique({
-    //       where: {
-    //         storeId_itemId: {
-    //           itemId: item.itemId,
-    //           storeId: order.storeId,
-    //         },
-    //       },
-    //     }),
-    //   ),
-    // )
-
     let totalPrice: number = 0
-    orderItems.forEach((orderItem, index) => {
+    orderItems.forEach(orderItem => {
       if (!orderItem || !orderItem.price || !orderItem.count) {
         return
       }
@@ -708,7 +697,13 @@ export async function addComment({
   try {
     const order = await getOrder({ orderId })
 
-    if (!order) {
+    if (
+      !order ||
+      !order.isBilled ||
+      order.isCanceled ||
+      !order.isVerifiedByAdmin ||
+      !order.isVerifiedByStore
+    ) {
       throw new Error("No Such Order")
     }
 
@@ -761,6 +756,9 @@ export async function changeComment({
       },
     })
 
+    if (!comment) {
+      throw new Error("No Such Comment")
+    }
     // need to evaluate comment
 
     const changedComment = await db.comment.update({
@@ -783,11 +781,41 @@ export async function changeComment({
   }
 }
 
-export async function getNewOrders({ storeId }: { storeId: number }) {
+export async function getNewStoreOrders({
+  storeId,
+}: {
+  storeId: number
+}): Promise<Order[] | null> {
   try {
-    const orders = await getOrders({ storeId })
+    let orders = await getOrders({ storeId })
 
-    if (orders) orders.filter(order => order.isBilled && order.isInCart)
+    if (orders)
+      orders = orders.filter(
+        order =>
+          order.isBilled &&
+          order.isInCart &&
+          order.isVerifiedByAdmin &&
+          !order.isVerifiedByStore,
+      )
+
+    return orders
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getNewOrders({}): Promise<Order[] | null> {
+  try {
+    let orders = await getOrders({})
+
+    if (orders)
+      orders = orders.filter(
+        order =>
+          order.isBilled &&
+          order.isInCart &&
+          !order.isVerifiedByAdmin &&
+          !order.isVerifiedByStore,
+      )
 
     return orders
   } catch (error) {
