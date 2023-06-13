@@ -1,11 +1,11 @@
-import type { Address } from "@prisma/client"
+import type { Address, City } from "@prisma/client"
 import { db } from "./db.server"
 
 export async function getUserAddresses({
   phoneNumber,
 }: {
   phoneNumber: string
-}): Promise<Address[] | null> {
+}): Promise<Address[]> {
   try {
     const addresses = await db.address.findMany({
       where: {
@@ -40,6 +40,12 @@ export async function createAddress({
   unit: number
 }): Promise<Address> {
   try {
+    const cities = await getCities()
+
+    if (!cities || !cities.find(city => city.name === cityName)) {
+      throw new Error("Unsupported City")
+    }
+
     const newAddress = await db.address.create({
       data: {
         userPhoneNumber,
@@ -61,7 +67,6 @@ export async function createAddress({
 
 export async function updateAddress({
   id,
-  userPhoneNumber,
   address,
   cityName,
   details,
@@ -71,7 +76,6 @@ export async function updateAddress({
   unit,
 }: {
   id: number
-  userPhoneNumber?: string
   address?: string
   cityName?: string
   details?: string
@@ -87,12 +91,17 @@ export async function updateAddress({
       throw new Error("Not Such Address")
     }
 
+    const cities = await getCities()
+
+    if (!cities || !cities.find(city => city.name === cityName)) {
+      throw new Error("Unsupported City")
+    }
+
     const newAddress: Address = await db.address.update({
       where: {
         id,
       },
       data: {
-        userPhoneNumber,
         address,
         cityName,
         details,
@@ -144,4 +153,10 @@ export async function getNearestAddress({
   } catch (error) {
     throw error
   }
+}
+
+export async function getCities(): Promise<City[] | undefined> {
+  try {
+    return await db.city.findMany()
+  } catch (error) {}
 }
