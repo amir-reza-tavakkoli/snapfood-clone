@@ -2,25 +2,26 @@ import "./nav.css"
 
 export type item = {
   name: string
-  image?: string
+  avatarUrl?: string
   href: string
 }
 
 type VendorNavProps = {
   type?: string
   items: item[]
+  dir? : "lrt" | "rtl"
 }
 
-export const Nav = ({ items, type }: VendorNavProps) => {
+export const CategoryNav = ({ items, type,dir }: VendorNavProps) => {
   return (
-    <nav className="nav">
+    <nav className="nav" dir={dir}>
       <ul aria-label={type}>
         {items.map((item, index) => (
           <li key={index}>
             <a href={item.href}>
               <span>
-                {item.image ? (
-                  <img role="presentation" src={item.image} alt="" />
+                {item.avatarUrl ? (
+                  <img role="presentation" src={item.avatarUrl} alt="" />
                 ) : null}
                 <span className="_name">{item.name}</span>
               </span>

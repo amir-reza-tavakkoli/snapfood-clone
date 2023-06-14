@@ -10,7 +10,6 @@ import {
 } from "~/utils/address.query.server"
 
 import { requirePhoneNumber } from "~/utils/session.server"
-import { getUserByPhone } from "~/utils/user.query.server"
 import { getStoresKind } from "~/utils/store.query.server"
 
 import headerCss from "./../components/header.css"
@@ -75,7 +74,7 @@ export default function Home() {
           dir="rtl"
           address={addressState?.address ?? "آدرس را آنتخاب کنید"}
         ></Header>
-        <CategoryNav
+        <CategoryNav dir="rtl"
           type="Categories"
           items={storesKind.map(kind => {
             return {

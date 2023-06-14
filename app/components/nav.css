@@ -1,3 +1,7 @@
+:where(.nav) {
+  position: sticky;
+
+}
 :where(.nav ul) {
   display: flex;
   justify-content: flex-start;
@@ -8,6 +12,8 @@
   padding-block-start: min(var(--length-16), 28px);
   font-size: var(--length-12);
   overflow-x: auto;
+  box-shadow: var(--box-shadow-light);
+  margin-block-start: var(--length-4);
 }
 
 :where(.nav li) {
@@ -38,8 +44,8 @@
 
 :where(.nav a img) {
   display: inline-block;
-  inline-size: var(--length-48);
-  max-inline-size: var(--length-48);
+  inline-size: var(--length-40);
+  max-inline-size: var(--length-40);
   margin-block-end: min(var(--length-16), 28px);
   aspect-ratio: 1/1;
 }

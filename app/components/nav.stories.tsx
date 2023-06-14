@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react"
-import { Nav } from "./nav"
+import { categoryNav } from "./nav"
 
-const props: ComponentProps<typeof Nav> = {
+const props: ComponentProps<typeof categoryNav> = {
   type: "foods",
   items: [
     {
@@ -92,7 +92,7 @@ const props: ComponentProps<typeof Nav> = {
 }
 
 export const DefaultNav = () => {
-  return <Nav {...props} />
+  return <categoryNav {...props} />
 }
 
 export const WithoutImages = () => {
@@ -100,10 +100,10 @@ export const WithoutImages = () => {
     return { ...item, image: undefined }
   })
 
-  const filteredProps: ComponentProps<typeof Nav> = {
+  const filteredProps: ComponentProps<typeof categoryNav> = {
     items: noImages,
   }
-  return <Nav {...filteredProps} />
+  return <categoryNav {...filteredProps} />
 }
 
 export const WithBadImages = () => {
@@ -111,10 +111,10 @@ export const WithBadImages = () => {
     return { ...item, image: "noSuchUrl.com" }
   })
 
-  const filteredProps: ComponentProps<typeof Nav> = {
+  const filteredProps: ComponentProps<typeof categoryNav> = {
     items: noImages,
   }
-  return <Nav {...filteredProps} />
+  return <categoryNav {...filteredProps} />
 }
 
 export const WithLongName = () => {
@@ -125,10 +125,10 @@ export const WithLongName = () => {
     }
   })
 
-  const filteredProps: ComponentProps<typeof Nav> = {
+  const filteredProps: ComponentProps<typeof categoryNav> = {
     items: noImages,
   }
-  return <Nav {...filteredProps} />
+  return <categoryNav {...filteredProps} />
 }
 
 export const WithOverflowinName = () => {
@@ -139,8 +139,8 @@ export const WithOverflowinName = () => {
     }
   })
 
-  const filteredProps: ComponentProps<typeof Nav> = {
+  const filteredProps: ComponentProps<typeof categoryNav> = {
     items: noImages,
   }
-  return <Nav {...filteredProps} />
+  return <categoryNav {...filteredProps} />
 }
