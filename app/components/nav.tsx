@@ -9,10 +9,10 @@ export type item = {
 type VendorNavProps = {
   type?: string
   items: item[]
-  dir? : "lrt" | "rtl"
+  dir?: "lrt" | "rtl"
 }
 
-export const CategoryNav = ({ items, type,dir }: VendorNavProps) => {
+export const CategoryNav = ({ items, type, dir }: VendorNavProps) => {
   return (
     <nav className="nav" dir={dir}>
       <ul aria-label={type}>
