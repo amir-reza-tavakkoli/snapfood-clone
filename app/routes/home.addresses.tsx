@@ -3,6 +3,7 @@ import {
   Outlet,
   useActionData,
   useLoaderData,
+  useOutletContext,
   useSearchParams,
 } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
@@ -66,21 +67,18 @@ export const loader = async ({
 }
 
 export default function UserInfo() {
+  const [HomeAddressState, setHomeAddressState] = useOutletContext<any>()
+
   const addresses = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
 
-  //   const [firstName, setFirstName] = useState(loaderData.user.firstName)
-  //   const [lastName, setLastName] = useState(loaderData.user.lastName)
-  //   const [gender, setGender] = useState(loaderData.user.gender)
-  //   const [birthday, setBirthday] = useState(loaderData.user.birthday)
-  //   const [email, setEmail] = useState(loaderData.user.email)
   const [addressId, setAddressId] = useState(0)
 
   function setChosenAddress(addressId: number, cityName: string) {
     try {
       localStorage.setItem("addressId", addressId.toString())
       localStorage.setItem("city", cityName.toString())
-
+      setHomeAddressState()
       setAddressId(addressId)
     } catch (error) {
       throw error
