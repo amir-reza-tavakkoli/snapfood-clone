@@ -58,8 +58,8 @@ model Store {
 
   addressId       Int
   address         Address   @relation(fields: [addressId], references: [id])
-  storeKindId     String
-  storeKind       StoreKind @relation(fields: [storeKindId], references: [name])
+  storeKindName   String
+  storeKind       StoreKind @relation(fields: [storeKindName], references: [name])
   userPhoneNumber String
   userPhone       User      @relation(fields: [userPhoneNumber], references: [phoneNumber])
 
