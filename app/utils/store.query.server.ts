@@ -217,3 +217,36 @@ export async function getStoresKind(): Promise<StoreKind[]> {
     throw error
   }
 }
+
+export async function getStoresByKind({
+  kind,
+}: {
+  kind: string
+}): Promise<Store[]> {
+  try {
+    const stores = await db.store.findMany({
+      where: {
+        storeKindName: kind,
+      },
+    })
+
+    return stores
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getStoreItemKinds({ storeId }: { storeId: number }) {
+  try {
+    const items = (await getStoreItems({ storeId })).items
+
+    const kinds: string[] = []
+
+    items.map((item) => item && !kinds.includes(item.itemCategoryName) ? kinds.push(item.itemCategoryName) : undefined)
+
+    console.log(kinds);
+    return kinds
+  } catch (error) {
+    throw error
+  }
+}
