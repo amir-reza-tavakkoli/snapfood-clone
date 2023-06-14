@@ -1,4 +1,4 @@
-import type { Item, Store, StoreHasItems } from "@prisma/client"
+import type { Item, Store, StoreHasItems, StoreKind } from "@prisma/client"
 import { db } from "./db.server"
 
 import type { FullOrderItem } from "./order.query.server"
@@ -203,6 +203,16 @@ export async function getFullStoreOrdersItems({
     })
 
     return mergedWithItems
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getStoresKind(): Promise<StoreKind[]> {
+  try {
+    const kinds = await db.storeKind.findMany()
+
+    return kinds
   } catch (error) {
     throw error
   }
