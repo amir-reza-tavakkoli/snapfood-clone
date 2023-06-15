@@ -8,7 +8,7 @@
 
 :where(.city-list p) {
   margin-block-end: var(--length-32);
-  font-size: var(--length-fluid-text);
+  font-size: var(--length-16);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -31,7 +31,8 @@
   font-weight: 400;
   font-size: var(--length-10);
   line-height: var(--length-12);
-  color: var(--color-faded-9); //WCAG AA 4.5 contrast ratio violation fixed
+  color: var(--color-faded-9);
+   /* //WCAG AA 4.5 contrast ratio violation fixed */
 }
 
 :where(.city-list a) {
