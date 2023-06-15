@@ -7,7 +7,7 @@ export type ImageItemProps = {
   image: string
 }
 
-export const ImageItem = ({ title, image, type }: ImageItemProps) => {
+export const ImageItem = ({ title, image, type = "Category" }: ImageItemProps) => {
   return (
     <article className="image-item" aria-label={type ?? undefined}>
       <img src={image} alt="" role="presentation" />
