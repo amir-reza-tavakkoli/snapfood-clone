@@ -7,6 +7,37 @@ import { getItem } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
 
+
+export type FullOrderStore = {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+  totalPrice: number
+  taxPercent: number
+  packagingPrice: number
+  estimatedDeliveryTime: number
+  addressId: number
+
+  isBilled: boolean
+  isInCart?: boolean
+  isVerifiedByAdmin?: boolean
+  isVerifiedByStore?: boolean
+  isShipped?: boolean
+  isDelivered?: boolean
+  isCanceled?: boolean
+  isDelayedByStore?: boolean
+
+  storeId?: number
+  storeKindName?: string
+  name?: string
+  branchName?: string | null
+  description?: string | null
+  avatarUrl?: string | null
+  cityName?: string
+  minOrderPrice?: number
+  shipmentPrice?: number
+}
+
 export type FullOrderItem = {
   storeId?: number
   id?: number
@@ -818,6 +849,70 @@ export async function getNewOrders({}): Promise<Order[] | null> {
       )
 
     return orders
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getFullOrderStore({
+  orderId,
+}: {
+  orderId: number
+}): Promise<FullOrderStore> {
+  try {
+    const order = await getOrder({ orderId })
+
+    if (!order) {
+      throw new Error("No Such Order")
+    }
+
+    const store = await db.store.findUnique({
+      where: {
+        id: order.id,
+      },
+    })
+
+    if (!store) {
+      throw new Error("No Such Store")
+    }
+
+    return { ...store, ...order }
+  } catch (error) {
+    throw error
+  }
+}
+
+
+export async function getFullOrdersStore({
+  phoneNumber,
+}: {
+  phoneNumber: string
+}): Promise<FullOrderStore[]> {
+  try {
+    const orders = await getOrders({ phoneNumber })
+
+    if (!orders) {
+      throw new Error("Not Any Order")
+    }
+
+    const fullOrder = await Promise.all(
+      orders.map(order => getFullOrderStore({orderId : order.id})
+      //   const store = db.store.findUnique({
+      //     where: {
+      //       id: order.id,
+      //     },
+      //   })
+
+      //   if (!store || !order) {
+      //     throw new Error("No Such Store")
+      //   }
+
+      //   return { ...store, ...order }
+      ),
+    )
+console.log("hhh",fullOrder);
+
+    return fullOrder
   } catch (error) {
     throw error
   }

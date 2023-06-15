@@ -1,4 +1,10 @@
-import type { City, Item, Store, StoreHasItems, StoreKind } from "@prisma/client"
+import type {
+  City,
+  Item,
+  Store,
+  StoreHasItems,
+  StoreKind,
+} from "@prisma/client"
 import { db } from "./db.server"
 
 import type { FullOrderItem } from "./order.query.server"
@@ -213,6 +219,16 @@ export async function getStoresKind(): Promise<StoreKind[]> {
     const kinds = await db.storeKind.findMany()
 
     return kinds
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getItemCategories() {
+  try {
+    const categories = await db.itemCategory.findMany({take: 12})
+
+    return categories
   } catch (error) {
     throw error
   }
