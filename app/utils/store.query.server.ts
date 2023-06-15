@@ -1,4 +1,4 @@
-import type { Item, Store, StoreHasItems, StoreKind } from "@prisma/client"
+import type { City, Item, Store, StoreHasItems, StoreKind } from "@prisma/client"
 import { db } from "./db.server"
 
 import type { FullOrderItem } from "./order.query.server"
@@ -236,16 +236,30 @@ export async function getStoresByKind({
   }
 }
 
-export async function getStoreItemKinds({ storeId }: { storeId: number }) {
+export async function getStoreItemCategories({ storeId }: { storeId: number }) {
   try {
     const items = (await getStoreItems({ storeId })).items
 
     const kinds: string[] = []
 
-    items.map((item) => item && !kinds.includes(item.itemCategoryName) ? kinds.push(item.itemCategoryName) : undefined)
+    items.map(item =>
+      item && !kinds.includes(item.itemCategoryName)
+        ? kinds.push(item.itemCategoryName)
+        : undefined,
+    )
 
-    console.log(kinds);
+    console.log(kinds)
     return kinds
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getSupportedCities(): Promise<City[] | null> {
+  try {
+    const cities = await db.city.findMany()
+
+    return cities
   } catch (error) {
     throw error
   }
