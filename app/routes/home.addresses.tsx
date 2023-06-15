@@ -6,7 +6,7 @@ import {
   useOutletContext,
   useSearchParams,
 } from "@remix-run/react"
-import { LoaderArgs } from "@remix-run/server-runtime"
+import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
 import { createOrUpdateUser, getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
@@ -14,6 +14,14 @@ import { useState, useEffect } from "react"
 
 import { getUserAddresses } from "~/utils/address.query.server"
 import { Address } from "@prisma/client"
+import { Addresses } from "~/components/addresses"
+
+import addressesCss from "./../components/addresses.css"
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: addressesCss },
+]
+
 export const action = async ({ request }: any) => {
   try {
     await requirePhoneNumber(request)
@@ -69,49 +77,11 @@ export const loader = async ({
 export default function UserInfo() {
   const [HomeAddressState, setHomeAddressState] = useOutletContext<any>()
 
-  const addresses = useLoaderData<typeof loader>()
-  const [searchParams] = useSearchParams()
-
-  const [addressId, setAddressId] = useState(0)
-
-  function setChosenAddress(addressId: number, cityName: string) {
-    try {
-      localStorage.setItem("addressId", addressId.toString())
-      localStorage.setItem("city", cityName.toString())
-      setHomeAddressState()
-      setAddressId(addressId)
-    } catch (error) {
-      throw error
-    }
-  }
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setAddressId(Number(localStorage.getItem("addressId")))
-    }
-  }, [addressId])
+  const addresses = useLoaderData<typeof loader>() as Address[] | null
 
   return (
     <>
-      {searchParams.get("storeId")}
-      <p>{addressId}</p>
-      {addresses ? (
-        addresses?.map((address, index) => (
-          <div key={index}>
-            <p>{address.address + address.cityName + address.id}</p>
-            chosen :
-            <input
-              type="radio"
-              checked={addressId == address.id}
-              onChange={() => setChosenAddress(address.id, address.cityName)}
-            />
-            <Link to={address.id.toString()}>Edit</Link>
-          </div>
-        ))
-      ) : (
-        <p>No Address Yet</p>
-      )}
-      <Link to={"/home/addresses/new"}>Create New Address</Link>
+      <Addresses addresses={addresses}></Addresses>
       <Outlet></Outlet>
     </>
   )
