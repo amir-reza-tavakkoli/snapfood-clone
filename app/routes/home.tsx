@@ -1,5 +1,5 @@
 import { Address, City, StoreKind } from "@prisma/client"
-import { Outlet, useLoaderData } from "@remix-run/react"
+import { Outlet, useLoaderData, useLocation } from "@remix-run/react"
 import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 import { memo, useEffect, useState } from "react"
 import { Header } from "~/components/header"
@@ -10,6 +10,7 @@ import { getUserAddresses } from "~/utils/address.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { getStoresKind, getSupportedCities } from "~/utils/store.query.server"
 import { CityList } from "~/components/city-list"
+import { Footer } from "~/components/footer"
 
 import homeCss from "./styles/home.css"
 import headerCss from "./../components/header.css"
@@ -19,7 +20,6 @@ import categoryNavCss from "./../components/nav.css"
 import storeContainerCss from "./../components/store-container.css"
 import cityListCss from "./../components/city-list.css"
 import footerCss from "./../components/footer.css"
-import { Footer } from "~/components/footer"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: homeCss },
@@ -32,14 +32,37 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: footerCss },
 ]
 
-const DEAFULT_DIRECTION = "rtl"
+function linksHierarchy() {
+  const location = useLocation().pathname
+  const splits = location.split("/")
+  const hierarchy: string[] = []
+
+  splits.forEach(split => {
+    if (
+      split === "home" ||
+      split === "stores" ||
+      split === "orders" ||
+      split === "orders-summary" ||
+      split === "cart" ||
+      split === "bill"
+    ) {
+      hierarchy.push(split)
+    }
+  })
+
+  console.log(hierarchy)
+
+  return hierarchy
+}
+
+export const DEAFULT_DIRECTION = "rtl"
 
 export const loader = async ({
   request,
 }: LoaderArgs): Promise<{
   addresses: Address[]
   storesKind: StoreKind[]
-  cities : City[] | null
+  cities: City[] | null
 }> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
@@ -60,6 +83,8 @@ function arePropsEqual() {
 }
 
 export default function Home() {
+  linksHierarchy()
+
   const { addresses, storesKind, cities } = useLoaderData<typeof loader>()
   const [addressState, setAddressState] = useState<any>()
 
