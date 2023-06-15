@@ -11,13 +11,15 @@
   overflow-x: hidden;
   box-shadow: var(--box-shadow-light);
 }
-
+:where(.vendor-card:hover, .vendor-card:active) {
+  box-shadow: var(--box-shadow-thick);
+}
 :where(.vendor-card > dd) {
   order: 12;
 }
 
 :where(.vendor-card ._name) {
-  padding-block-start: min(48px, var(--length-32));
+  padding-block-start: min(36px, var(--length-32));
   padding-inline: min(32px, var(--length-32));
   margin-block-end: min(12px, var(--length-8));
   text-align: center;
@@ -117,7 +119,7 @@
 :where(.vendor-card ._categories) {
   display: inline-block;
   padding-inline: min(32px, var(--length-24));
-  margin-block-end: var(--length-12);
+  /* margin-block-end: var(--length-12); */
   font-size: var(--length-12);
   color: var(--color-faded);
   order: 2;
@@ -130,7 +132,8 @@
   text-align: center;
   padding-block: min(18px, var(--length-10));
   padding-inline: min(28px, var(--length-14));
-  margin-block: min(36px, var(--length-24));
+  margin-block-start: min(12px, var(--length-8));
+  margin-block-end: min(16px, var(--length-12));
   background-color: var(--color-primary);
   font-size: var(--length-12);
   line-height: var(--length-20);
@@ -153,7 +156,7 @@
 }
 
 :where(.vendor-card ._delivery.faded) {
-  background-color: var(--color-faded-2);
+  /* background-color: var(--color-faded-2); */
 }
 
 :where(.vendor-card ._delivery svg:first-of-type) {
