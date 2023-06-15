@@ -6,34 +6,31 @@ export type VendorCardProps = {
   image: string
   type?: string
   logo?: string
-  rating?: {
-    value?: number | string
-    range?: number
-    count?: number
-  }
+  ratingValue?: number | string
+  ratingRange?: number
+  ratingCount?: number
   discount?: number
   tags?: string[]
-  delivery: {
-    method: string
-    price?: {
-      value?: number
-      currency?: string
-    }
-  }
+  deliveryMethod: string
+  deliveryPrice: string | number
+  deliveryCurrency: string
+  dir?: "lrt" | "rtl"
 }
 
 export const VendorCard = ({
   name,
   logo,
-  image,
-  rating,
+  image,ratingRange,ratingValue,
+  ratingCount,
+  deliveryMethod,
   type,
   discount,
   tags,
-  delivery,
+  deliveryCurrency,
+  deliveryPrice,dir
 }: VendorCardProps) => {
   return (
-    <dl className="vendor-card">
+    <dl className="vendor-card" dir={dir}>
       <dt className="nonvisual">Name</dt>
       <dd className="_name">{name ?? null}</dd>
 
@@ -80,7 +77,7 @@ export const VendorCard = ({
         ) : null}
       </div>
 
-      {rating ? (
+      {ratingValue ? (
         <>
           <dt className="nonvisual">Rating</dt>
           <dd className="_rating">
@@ -89,22 +86,22 @@ export const VendorCard = ({
               <dd className="_star-icon">
                 {<Icon name="star" role="presentation" />}
               </dd>
-              {rating.value ? (
+              {ratingValue ? (
                 <>
                   <dt className="nonvisual">Value</dt>
-                  <dd aria-label="Stars">{rating.value}</dd>{" "}
+                  <dd aria-label="Stars">{ratingValue}</dd>{" "}
                 </>
               ) : null}
-              {rating.range ? (
+              {ratingRange ? (
                 <>
                   <dd className="nonvisual">Range</dd>
-                  <dt className="nonvisual">/ {rating.range}</dt>
+                  <dt className="nonvisual">/ {ratingRange}</dt>
                 </>
               ) : null}
-              {rating.count ? (
+              {ratingCount ? (
                 <>
                   <dt className="nonvisual">Count</dt>
-                  <dd className="_rating-count">( {rating.count} )</dd>{" "}
+                  <dd className="_rating-count">( {ratingCount} )</dd>{" "}
                 </>
               ) : null}
             </dl>
@@ -112,20 +109,20 @@ export const VendorCard = ({
         </>
       ) : null}
 
-      {delivery ? (
+      {deliveryMethod ? (
         <>
           <dt className="nonvisual">Delivery</dt>
           <dd>
             <dl>
-              {delivery.price && delivery.method ? (
+              {deliveryPrice && deliveryMethod ? (
                 <>
                   <dt className="nonvisual">Method / Price:</dt>
                   <dd className="_delivery">
                     <Icon name="delivery" role="presentation" />
                     <div>
-                      <span>{delivery.method} </span>
-                      <span>{delivery.price.value ?? null} </span>
-                      <span>{delivery.price.currency ?? null}</span>
+                      <span>{deliveryMethod} </span>
+                      <span>{deliveryPrice ?? null} </span>
+                      <span>{deliveryCurrency ?? null}</span>
                     </div>
                   </dd>
                   <dt className="nonvisual">Currency</dt>
@@ -135,7 +132,7 @@ export const VendorCard = ({
                   <dt className="nonvisual">Method</dt>
                   <dd className="_delivery faded">
                     <Icon name="remainingTime" role="presentation" />
-                    <span>{delivery.method ?? null}</span>
+                    <span>{deliveryMethod ?? null}</span>
                   </dd>
                 </>
               )}
