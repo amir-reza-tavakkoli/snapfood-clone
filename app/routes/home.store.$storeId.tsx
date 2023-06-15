@@ -31,7 +31,6 @@ import { setTimeout } from "timers/promises"
 export const action = async ({ request, params }: any) => {
   try {
     const storeId = Number(params.storeId)
-    console.log("oooo")
 
     if (!storeId || isNaN(storeId)) {
       throw new Error("404")
@@ -44,7 +43,6 @@ export const action = async ({ request, params }: any) => {
     const job: string | undefined = form.get("job")
     const addressId: number | undefined = Number(form.get("address"))
     const itemId: number | undefined = Number(form.get("id"))
-    // const orderId: string | undefined = form.get("order")
 
     const address = await getAddressById({ addressId })
 

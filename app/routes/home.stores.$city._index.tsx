@@ -1,8 +1,13 @@
 import type { Store } from "@prisma/client"
-import type { LoaderArgs } from "@remix-run/node"
+import type { LinksFunction, LoaderArgs } from "@remix-run/node"
 import { Link, Outlet, useLoaderData } from "@remix-run/react"
 
-import { getStores, getStoresByCity } from "~/utils/store.query.server"
+import { getStoreCategories, getStores, getStoresByCity } from "~/utils/store.query.server"
+import { VendorCard } from "~/components/store-card"
+
+import storeCardCss from "./../components/store-card.css"
+import { StoreContainer } from "~/components/store-container"
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: storeCardCss }]
 
 export const loader = async ({
   params,
@@ -28,15 +33,9 @@ export default function Index() {
 
   return (
     <>
-      <div>
-        {stores &&
-          stores.map((store, index) => (
-            <div key={index}>
-              <p>{store.name}</p>
-              <Link to={`../store/${store.id}`}>go to</Link>
-            </div>
-          ))}
-      </div>
+      <article className="_storesCity_container">
+<StoreContainer title="شیراز" moreHref="hhh" stores={stores as (Store[] | null)}></StoreContainer>
+      </article>
       <Outlet></Outlet>
     </>
   )
