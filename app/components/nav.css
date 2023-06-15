@@ -32,6 +32,7 @@
   font-weight: 400;
   max-inline-size: 75%;
   overflow-wrap: break-word;
+  text-align: center;
 }
 
 :where(.nav a span:first-child) {
@@ -39,6 +40,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   padding-block-end: min(var(--length-16), 28px);
 }
 
