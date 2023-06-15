@@ -6,7 +6,6 @@ import {
   useActionData,
   useLoaderData,
   useNavigate,
-  useSearchParams,
 } from "@remix-run/react"
 import { requirePhoneNumber } from "~/utils/session.server"
 import {
@@ -26,7 +25,6 @@ import { Order, User, Store } from "@prisma/client"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { useEffect, useState } from "react"
 import { getAddressById } from "~/utils/address.query.server"
-import { setTimeout } from "timers/promises"
 
 export const action = async ({ request, params }: any) => {
   try {
@@ -67,9 +65,6 @@ export const action = async ({ request, params }: any) => {
         packagingPrice: 0,
         shipmentPrice: 0,
       })
-      console.log(orderInCart)
-      console.log("in cartttt")
-      // await updateOrder({id : orderInCart.id, isBilled : false})
     }
 
     if (!orderInCart) {
@@ -115,6 +110,7 @@ export const loader: LoaderFunction = async ({
   items: FullOrderItem[]
   order: Order | undefined
   totalPrice: number
+  categorizedItems: Map<string, FullOrderItem[]>
 }> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
@@ -162,14 +158,28 @@ export const loader: LoaderFunction = async ({
       order = undefined
     }
 
-    return { user, store, items, order, totalPrice }
+    const categorizedItems = new Map<string, FullOrderItem[]>()
+
+    items.forEach(item => {
+      if (categorizedItems.has(item.itemCategoryName)) {
+        categorizedItems.get(item.itemCategoryName)?.push(item)
+        return
+      }
+
+      categorizedItems.set(item.itemCategoryName, [])
+      categorizedItems.get(item.itemCategoryName)?.push(item)
+    })
+
+    console.log(categorizedItems.values())
+
+    return { user, store, items, order, totalPrice, categorizedItems }
   } catch (error) {
     throw error
   }
 }
 
 export default function Store() {
-  const { user, store, items, order, totalPrice } =
+  const { user, store, items, order, totalPrice, categorizedItems } =
     useLoaderData<typeof loader>()
   const navigate = useNavigate()
   // let [searchParams, setSearchParams] = useSearchParams()
