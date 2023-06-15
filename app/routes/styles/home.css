@@ -1,0 +1,10 @@
+:where(div._home_container){
+    position: sticky;
+    top: 0px;
+    background: var(--color-primary);
+    z-index: 1;
+}
+
+/* :where(._storesCity_container){
+    inline-size: 300px;
+} */
