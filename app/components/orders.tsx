@@ -2,12 +2,15 @@ import { Button } from "./button"
 import "./orders.css"
 
 type OrderProps = {
-  orders: { name: string; date: string; logo: string; time: string }[]
+  orders: { name: string; date: Date; logo: string; time?: string }[]
+  dir? : "ltr" | "rtl"
 }
 
-export const Orders = ({ orders }: OrderProps) => {
+export const Orders = ({ orders, dir }: OrderProps) => {
+  console.log(orders);
+
   return (
-    <article className="orders" aria-describedby="__orders">
+    <article className="orders" aria-describedby="__orders" dir={dir}>
       <p id="__orders">سفارش های پیشین</p>
       <ol>
         {orders.map((item, index) => (
@@ -20,7 +23,8 @@ export const Orders = ({ orders }: OrderProps) => {
               <div className="_identity">
                 <p>{item.name}</p>
                 <time className="_datetime">
-                  {item.date} <span className="_space">&nbsp;</span>
+                  {item.date.toLocaleString("fa-IR")}{" "}
+                  <span className="_space">&nbsp;</span>
                   {item.time}
                 </time>
               </div>
@@ -50,7 +54,7 @@ export const Orders = ({ orders }: OrderProps) => {
           </li>
         ))}
       </ol>
-      <Button
+      {/* <Button
         variant="primary"
         icon={{ name: "search", color: "action" }}
         rounding="full"
@@ -58,7 +62,7 @@ export const Orders = ({ orders }: OrderProps) => {
       >
         {" "}
         مشاهده همه سفارش ها
-      </Button>
+      </Button> */}
     </article>
   )
 }
