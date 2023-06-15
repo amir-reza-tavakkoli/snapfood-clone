@@ -139,16 +139,18 @@ input[type="radio"] {
   -webkit-appearance: none;
   appearance: none;
   background-color: var(--color-primary);
-  margin: 0;
+  margin-inline: 0;
+  margin-block: 0;
   font: inherit;
   color: currentColor;
   width: 1.5em;
   height: 1.5em;
-  border: 0.25px solid var(--color-faded-3);
+  border: var(--border-thin) solid var(--color-faded-3);
   border-radius: 100%;
   transform: translateY(-2px);
   display: grid;
   place-content: center;
+  cursor: pointer;
 }
 
 input[type="radio"]::before {
@@ -166,10 +168,10 @@ input[type="radio"]:checked {
 }
 
 input[type="radio"]:checked::before {
-  transform: scale(1.55);
+  transform: scale(1.50) translatex(-0.25px) translateY(-0.25px);
 }
 
-input[type="radio"]:focus {
-  outline: max(2px, 0.15em) solid currentColor;
-  outline-offset: max(2px, 0.15em);
+input[type="radio"]:focus, input[type="radio"]:active,input[type="radio"]:hover {
+  outline: var(--border-extra-thick) solid currentColor;
+  outline-offset: var(--border-thick);
 }
