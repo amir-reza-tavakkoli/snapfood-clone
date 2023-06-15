@@ -29,36 +29,24 @@
 
   --length-coarse-min: 40px;
 
-  --length-fluid-text: clamp(
-    var(--length-12),
-    var(--length-4) + 1.45vw,
-    var(--length-20)
-  );
-  --length-fluid-extra-small: clamp(
-    var(--length-16),
-    var(--length-8) + 1.45vw,
-    var(--length-24)
-  );
-  --length-fluid-small: clamp(
-    var(--length-20),
-    var(--length-12) + 1.45vw,
-    var(--length-28)
-  );
-  --length-fluid-normal: clamp(
-    var(--length-24),
-    var(--length-16) + 1.45vw,
-    var(--length-32)
-  );
-  --length-fluid-big: clamp(
-    var(--length-28),
-    var(--length-20) + 1.45vw,
-    2.25rem
-  );
-  --length-fluid-extra-big: clamp(
-    var(--length-32),
-    var(--length-24) + 1.45vw,
-    var(--length-40)
-  );
+  --length-fluid-text: clamp(var(--length-12),
+      var(--length-4) + 1.45vw,
+      var(--length-20));
+  --length-fluid-extra-small: clamp(var(--length-16),
+      var(--length-8) + 1.45vw,
+      var(--length-24));
+  --length-fluid-small: clamp(var(--length-20),
+      var(--length-12) + 1.45vw,
+      var(--length-28));
+  --length-fluid-normal: clamp(var(--length-24),
+      var(--length-16) + 1.45vw,
+      var(--length-32));
+  --length-fluid-big: clamp(var(--length-28),
+      var(--length-20) + 1.45vw,
+      2.25rem);
+  --length-fluid-extra-big: clamp(var(--length-32),
+      var(--length-24) + 1.45vw,
+      var(--length-40));
 
   --small: 34.375rem;
   --normal: 68.75rem;
@@ -113,7 +101,8 @@
 :where(*, *::before, *::after) {
   margin: 0;
   font-family: "IRANSans", system-ui, -apple-system,
-    /* Firefox supports this but not yet `system-ui` */ Helvetica, Roboto,
+    /* Firefox supports this but not yet `system-ui` */
+    Helvetica, Roboto,
     "Segoe UI", sans-serif, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
@@ -144,4 +133,43 @@
 
 :where(ol, li) {
   display: inline;
+}
+
+input[type="radio"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: var(--color-primary);
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 1.5em;
+  height: 1.5em;
+  border: 0.25px solid var(--color-faded-3);
+  border-radius: 100%;
+  transform: translateY(-2px);
+  display: grid;
+  place-content: center;
+}
+
+input[type="radio"]::before {
+  width: 1em;
+  height: 1em;
+  border-radius: 100%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset var(--box-shadow-light);
+  content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNjQgNjQiPjxzY3JpcHQgeG1sbnM9IiIgYXN5bmM9ImZhbHNlIiB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiIHNyYz0iY2hyb21lLWV4dGVuc2lvbjovL2Zuamhta2hobWtiamtrYWJuZGNubm9nYWdvZ2JuZWVjL2luLXBhZ2UuanMiLz48cGF0aCBkPSJNMzIsMkMxNS40MzEsMiwyLDE1LjQzMiwyLDMyYzAsMTYuNTY4LDEzLjQzMiwzMCwzMCwzMGMxNi41NjgsMCwzMC0xMy40MzIsMzAtMzBDNjIsMTUuNDMyLDQ4LjU2OCwyLDMyLDJ6IE0yNS4wMjUsNTAgIGwtMC4wMi0wLjAyTDI0Ljk4OCw1MEwxMSwzNS42bDcuMDI5LTcuMTY0bDYuOTc3LDcuMTg0bDIxLTIxLjYxOUw1MywyMS4xOTlMMjUuMDI1LDUweiIgZmlsbD0iIzQzYTA0NyIvPjwvc3ZnPg==");
+}
+
+input[type="radio"]:checked {
+  border: none;
+}
+
+input[type="radio"]:checked::before {
+  transform: scale(1.55);
+}
+
+input[type="radio"]:focus {
+  outline: max(2px, 0.15em) solid currentColor;
+  outline-offset: max(2px, 0.15em);
 }
