@@ -19,10 +19,15 @@
   align-self: flex-start;
 }
 
+:where(.footer ._vendor > a) {
+  margin-inline: 10px;
+}
+
 :where(.footer ._vendor) {
   flex-shrink: 1;
   display: flex;
   justify-content: flex-start;
+  flex-direction: row;
 }
 
 :where(.footer ._vendor span:only-of-type) {
@@ -185,21 +190,22 @@
 
   :where(.footer ._vendor) {
     justify-content: center;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 
-  :where(.footer ._vendor a) {
-    margin-inline-start: min(30px, var(--length-20));
-    margin-block-end: calc(var(--length-10) * -1);
+  :where(.footer ._vendor > a) {
+    /* margin-inline-start: min(30px, var(--length-20));
+    margin-block-end: calc(var(--length-10) * -1); */
+    margin-inline-end: 32px;
   }
 
   :where(.footer ._contacts) {
     display: flex;
     justify-content: center;
-    margin-inline: 0px;
+    margin-inline-end: 0px;
     margin-block: min(32px, var(--length-16));
-    margin-left: auto;
+    margin-left: 0;
     margin-right: auto;
   }
 
@@ -235,6 +241,15 @@
   :where(.footer ._sitemap) {
     padding-inline: min(48px, var(--length-32));
     margin-inline: 0px;
+  }
+
+  :where(.footer ._vendor > a) {
+    margin-inline: initial;
+  }
+
+  :where(.footer ._vendor) {
+    flex-direction: column;
+
   }
 }
 

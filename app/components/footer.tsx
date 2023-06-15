@@ -11,26 +11,54 @@ type WithImage = Reference & { logo: string }
 type WithIcon = Reference & { logo: ComponentProps<typeof Icon> }
 
 type FooterProps = {
-  name: string
-  logo: ComponentProps<typeof Icon>
-  homepage: string
+  name?: string
+  logo?: ComponentProps<typeof Icon>
+  homepage?: string
   description?: string
-  links: Reference[]
-  contacts: WithIcon[]
-  credentials: WithImage[]
+  links?: Reference[]
+  contacts?: WithIcon[]
+  credentials?: WithImage[]
+  dir? : "rtl" | "lrt"
 }
 
 export const Footer = ({
-  logo,
-  name,
-  homepage,
-  description,
-  links,
-  credentials,
-  contacts,
+  logo = { name: "snappfood" },
+  name = "اسنپ فود",
+  homepage = "/",
+  description = "تجربه سفارش غذا، از زودفود تا اسنپ‌ فود",
+  links = [
+    { name: "درباره اسنپ فود", href: "#" },
+    { name: "وبلاگ", href: "#" },
+    { name: "قوانین سایت", href: "#" },
+    { name: "حریم شخصی", href: "#" },
+    { name: "ثبت نام فروشندگان", href: "#" },
+    { name: "ثبت نام فروشندگان", href: "#" },
+    { name: "تماس با اسنپ فود", href: "#" },
+    { name: "ٍثبت شکایات", href: "#" },
+    { name: "پرسش های متداول", href: "#" },
+  ],
+  credentials = [
+    {
+      name: "E-Trust",
+      href: "",
+      logo: "https://snappfood.ir/static/images/senf.png",
+    },
+    {
+      name: "E-Trust",
+      href: "",
+      logo: "https://snappfood.ir/static/images/senf.png",
+    },
+  ],
+  contacts = [
+    { href: "#", logo: { name: "twitter" } },
+    { href: "#", logo: { name: "telegram" } },
+    { href: "#", logo: { name: "linkedin" } },
+    { href: "#", logo: { name: "instagram" } },
+    { href: "#", logo: { name: "aparat" } },
+  ],dir
 }: FooterProps) => {
   return (
-    <footer className="footer">
+    <footer className="footer" dir={dir}>
       <div>
         <p className="_vendor">
           <a href={homepage} aria-label="Homepage" rel="canonical">
