@@ -1,7 +1,7 @@
 import { Address, City, StoreKind } from "@prisma/client"
 import { Outlet, useLoaderData } from "@remix-run/react"
 import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { Header } from "~/components/header"
 import { CategoryNav } from "~/components/nav"
 
@@ -55,9 +55,17 @@ export const loader = async ({
   }
 }
 
+function arePropsEqual() {
+  return true
+}
+
 export default function Home() {
   const { addresses, storesKind, cities } = useLoaderData<typeof loader>()
   const [addressState, setAddressState] = useState<any>()
+
+  const FooterMemo = memo(Footer, arePropsEqual)
+  const CategoryNavMemo = memo(CategoryNav, arePropsEqual)
+  const CityListMemo = memo(CityList, arePropsEqual)
 
   useEffect(() => {
     const choosedAddressId = Number(localStorage.getItem("addressId"))
@@ -84,7 +92,7 @@ export default function Home() {
           dir={DEAFULT_DIRECTION}
           address={addressState?.address ?? "آدرس را آنتخاب کنید"}
         ></Header>
-        <CategoryNav
+        <CategoryNavMemo
           dir={DEAFULT_DIRECTION}
           type="Categories"
           items={storesKind.map(kind => {
@@ -94,11 +102,11 @@ export default function Home() {
               href: `/home/stores/kind/${kind.name}`,
             }
           })}
-        ></CategoryNav>
+        ></CategoryNavMemo>
       </div>
       <Outlet context={[addresses, setAddressState]}></Outlet>
       {cities ? (
-        <CityList
+        <CityListMemo
           dir={DEAFULT_DIRECTION}
           title="اسنپ‌فود در شهرهای ایران"
           items={cities?.map(city => {
@@ -109,9 +117,9 @@ export default function Home() {
                 : undefined,
             }
           })}
-        ></CityList>
+        ></CityListMemo>
       ) : undefined}
-      <Footer dir={DEAFULT_DIRECTION}></Footer>
+      <FooterMemo dir={DEAFULT_DIRECTION}></FooterMemo>
     </>
   )
 }
