@@ -12,12 +12,25 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    overflow-y: auto;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: flex;
+}
+
+:where(.store-container > :first-of-type > a > svg) {
+    transform: rotate(180deg);
+    margin-inline: 10px;
 }
 
 :where(.store-container > :first-of-type > a) {
+    display: flex;
+    align-items: center;
     font-size: var(--length-20);
     color: var(--color-action);
     text-decoration: none;
+
 }
 
 :where(.store-container > div:first-of-type > p) {
@@ -25,18 +38,24 @@
     font-size: var(--length-20);
     margin-block-end: var(--length-2);
     color: var(--color-text);
-    margin-inline-start: 6px;
+    margin-inline-start: 10px;
 }
 
-:where(.store-container > div:last-of-type) {
-    display: flex;
-    flex-direction: row;
+:where(.store-container > div:last-of-type > a > li) {
+    inline-size: 100%;
+    flex-shrink: 0;
+    flex-grow: 0;
 }
 
 :where(.store-container > div:last-of-type > a) {
-    inline-size: 300px;
-    margin-inline: 4px;
-    margin-block: var(--length-4);
+    display: inline-flex;
+    flex-direction: row;
     flex-shrink: 0;
+    flex-grow: 0;
+    flex-wrap: nowrap;
+    inline-size: 300px;
+    margin-inline: 6px;
+    margin-block: var(--length-8);
     flex-basis: 280px;
+    text-decoration: none;
 }

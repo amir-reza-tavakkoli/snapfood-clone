@@ -110,7 +110,10 @@ export const loader: LoaderFunction = async ({
   items: FullOrderItem[]
   order: Order | undefined
   totalPrice: number
-  categorizedItems: Map<string, FullOrderItem[]>
+  array :{
+    name: string;
+    value: FullOrderItem[];
+}[]
 }> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
@@ -172,18 +175,24 @@ export const loader: LoaderFunction = async ({
 
     console.log(categorizedItems.values())
 
-    return { user, store, items, order, totalPrice, categorizedItems }
+    const array = Array.from(categorizedItems, ([name, value]) => ({ name, value }))
+    return { user, store, items, order, totalPrice, array }
   } catch (error) {
     throw error
   }
 }
 
 export default function Store() {
-  const { user, store, items, order, totalPrice, categorizedItems } =
+  const { user, store, items, order, totalPrice, array } =
     useLoaderData<typeof loader>()
   const navigate = useNavigate()
   // let [searchParams, setSearchParams] = useSearchParams()
-  const [itemsState, setItemsState] = useState<FullOrderItem[]>(items)
+  const [itemsState, setItemsState] = useState<
+    {
+      name: string
+      value: FullOrderItem[]
+    }[]
+  >(array)
 
   // const [chosenItems, setChosenItems] = useState<(number | undefined)[]>(
   //   items.map((item: FullOrderItem) => (item.orderId ? item.id : undefined)),
@@ -224,6 +233,7 @@ export default function Store() {
     if (actionData && actionData.newItems && actionData.newlItems != itemsState)
       setItemsState(actionData.newItems)
   }, [actionData])
+console.log(itemsState);
 
   return (
     <>
@@ -232,29 +242,31 @@ export default function Store() {
       ) : (
         <div>
           {order ? <p>{totalPrice}</p> : undefined}
-          {itemsState.map((item: FullOrderItem, index: number) => (
-            <div key={index}>
-              <p>{item.name}</p>
-              <Form method="post">
-                {item.count}
-                <input type="hidden" name="id" value={item.id} />
-                <input type="hidden" name="job" value="add" />
-                <input type="hidden" name="address" value={address} />
-                <button
-                  type="submit"
-                  disabled={item.remainingCount == 0 || !address}
-                >
-                  +
-                </button>
-              </Form>
+          {itemsState?.map(category =>
+            category.value.map((item: FullOrderItem, index: number) => (
+              <div key={index}>
+                <p>{item.name}</p>
+                <Form method="post">
+                  {item.count}
+                  <input type="hidden" name="id" value={item.id} />
+                  <input type="hidden" name="job" value="add" />
+                  <input type="hidden" name="address" value={address} />
+                  <button
+                    type="submit"
+                    disabled={item.remainingCount == 0 || !address}
+                  >
+                    +
+                  </button>
+                </Form>
 
-              <Form method="post">
-                <input type="hidden" name="id" value={item.id} />
-                <input type="hidden" name="job" value="remove" />
-                {!item.count ? undefined : <button type="submit"> - </button>}
-              </Form>
-            </div>
-          ))}
+                <Form method="post">
+                  <input type="hidden" name="id" value={item.id} />
+                  <input type="hidden" name="job" value="remove" />
+                  {!item.count ? undefined : <button type="submit"> - </button>}
+                </Form>
+              </div>
+            )),
+          )}
 
           <p>Items</p>
           {order && totalPriceState > store.minOrderPrice ? (

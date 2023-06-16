@@ -23,7 +23,7 @@ return stores && stores.length > 0 ? (
     <div>
       <p>{title}</p>
       {moreHref ? (
-        <Link to={moreHref}>مشاهده همه{<Icon name="flash"></Icon>} </Link>
+        <Link to={moreHref}>مشاهده همه{<Icon name="flash" color="action"></Icon>} </Link>
       ) : undefined}
     </div>
     <div>

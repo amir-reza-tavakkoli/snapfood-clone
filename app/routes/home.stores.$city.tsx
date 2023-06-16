@@ -1,10 +1,9 @@
 import type { LoaderArgs } from "@remix-run/node"
-import { Link, Outlet, useLoaderData } from "@remix-run/react"
+import { Link, Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
 
 import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { User } from "@prisma/client"
-import { getStoresByCity } from "~/utils/store.query.server"
 
 export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   try {
@@ -19,8 +18,6 @@ export const loader = async ({ request }: LoaderArgs): Promise<User> => {
     if (user.isSuspended || !user.isVerified) {
       throw new Error("User Is Not Verified Or Suspended")
     }
-
-
 
     return user
   } catch (error) {

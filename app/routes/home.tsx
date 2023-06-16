@@ -88,6 +88,13 @@ export default function Home() {
   const { addresses, storesKind, cities } = useLoaderData<typeof loader>()
   const [addressState, setAddressState] = useState<any>()
 
+  const [cityName, setCityName] = useState("")
+
+  useEffect(() => {
+    const choosedCity = localStorage.getItem("city")
+    if (choosedCity) setCityName(choosedCity)
+  })
+
   const FooterMemo = memo(Footer, arePropsEqual)
   const CategoryNavMemo = memo(CategoryNav, arePropsEqual)
   const CityListMemo = memo(CityList, arePropsEqual)
@@ -121,10 +128,11 @@ export default function Home() {
           dir={DEAFULT_DIRECTION}
           type="Categories"
           items={storesKind.map(kind => {
+
             return {
               name: kind.name,
               avatarUrl: kind.avatarUrl,
-              href: `/home/stores/kind/${kind.name}`,
+              href: `/home/stores/${cityName}/kind/${kind.name}`,
             }
           })}
         ></CategoryNavMemo>

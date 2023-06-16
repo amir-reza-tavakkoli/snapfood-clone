@@ -40,8 +40,10 @@ export async function getStores(): Promise<Store[]> {
 
 export async function getStoresByCity({
   cityName,
+  storeKindName,
 }: {
   cityName: string
+  storeKindName? : string
 }): Promise<Store[] | null> {
   try {
     const city = await db.city.findUnique({ where: { name: cityName } })
@@ -53,6 +55,7 @@ export async function getStoresByCity({
     const stores = await db.store.findMany({
       where: {
         cityName,
+        storeKindName
       },
       orderBy: { id: "desc" },
     })
