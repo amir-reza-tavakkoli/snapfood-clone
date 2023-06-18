@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react"
-import { StoreCard } from "./store-info"
+import { StoreInfo } from "./store-info"
 
-const props: ComponentProps<typeof StoreCard> = {
+const props: ComponentProps<typeof StoreInfo> = {
   name: "مگیران برگر",
   logo: "https://cdn.snappfood.ir/300x200/cdn/vendor_sub_types/7/01.jpg",
   type: "رستوران",
@@ -13,13 +13,13 @@ const props: ComponentProps<typeof StoreCard> = {
 }
 
 export const StoreCardDefault = () => {
-  return <StoreCard {...props}></StoreCard>
+  return <StoreInfo {...props}></StoreInfo>
 }
 
 export const Constrained = () => {
   return (
     <div style={{ width: "300px" }}>
-      <StoreCard {...props}></StoreCard>
+      <StoreInfo {...props}></StoreInfo>
     </div>
   )
 }
@@ -31,7 +31,7 @@ export const WithLongNameConstrained = () => {
   }
   return (
     <div style={{ width: "300px" }}>
-      <StoreCard {...withLongName}></StoreCard>
+      <StoreInfo {...withLongName}></StoreInfo>
     </div>
   )
 }
@@ -41,5 +41,5 @@ export const WithLongName = () => {
     ...props,
     name: 'مگیران برگر"مگیران برگر"مگیران بمگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"مگیران برگر"رگر"مگیران برگر"مگیران برگر',
   }
-  return <StoreCard {...withLongName}></StoreCard>
+  return <StoreInfo {...withLongName}></StoreInfo>
 }

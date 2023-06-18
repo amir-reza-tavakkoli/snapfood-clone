@@ -1,10 +1,9 @@
 :where(.addresses) {
-    margin-inline: auto;
-    /* text-align: center; */
-    inline-size: 60%;
     display: flex;
     flex-direction: column;
     max-block-size: 100%;
+    inline-size: 60%;
+    margin-inline: auto;
     margin-block-start: var(--length-12);
 }
 
@@ -17,9 +16,9 @@
 
 :where(.addresses > div:first-of-type > p) {
     margin-inline-end: auto;
+    margin-block: var(--length-6);
     font-weight: 700;
     font-size: var(--length-14);
-    margin-block: var(--length-6);
 }
 
 :where(.addresses > div:first-of-type > a) {
@@ -31,18 +30,16 @@
 }
 
 :where(.addresses > div:last-of-type) {
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     inline-size: 100%;
+    overflow-y: auto;
 }
 
 :where(.addresses > div:last-of-type > li) {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    color: var(--color-text-2);
-    font-size: var(--length-14);
     padding-inline: 8px;
     padding-inline-start: 12px;
     padding-block: var(--length-28);
@@ -50,7 +47,8 @@
     margin-block-end: var(--length-12);
     border: 1px solid var(--color-faded-4);
     border-radius: 0.375rem;
-
+    color: var(--color-text-2);
+    font-size: var(--length-14);
 }
 
 :where(.addresses > div:last-of-type > li > p) {

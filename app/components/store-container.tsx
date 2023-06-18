@@ -1,10 +1,10 @@
 import { Store } from "@prisma/client"
 import { Link } from "@remix-run/react"
+import { DEFAULT_CURRENCY, DEFAULT_DELIVERY_METHOD } from "~/constants"
 import { Icon } from "./icon"
 import { VendorCard } from "./store-card"
 
-const DEFAULT_CURRENCY = "تومان"
-const DEFAULT_DELIVERY_METHOD ="ارسال اکسپرس"
+
 
 type StoreContainerProps = {
   stores?: Store[] | null

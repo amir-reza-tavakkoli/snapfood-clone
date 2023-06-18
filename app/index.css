@@ -107,6 +107,7 @@
 }
 
 :where(html, body) {
+
   height: 100%;
 }
 
@@ -129,6 +130,10 @@
   list-style: none;
   padding: 0px;
   margin: 0px;
+}
+
+:where(a) {
+  text-decoration: none;
 }
 
 :where(ol, li) {
