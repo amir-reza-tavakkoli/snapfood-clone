@@ -7,7 +7,7 @@
 }
 
 :where(.store-info > div:first-child) {
-  flex-grow: 1;
+  flex-grow: 0;
   flex-shrink: 1;
   display: flex;
   flex-direction: row;
