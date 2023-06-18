@@ -3,7 +3,7 @@
 }
 
 :where(svg[data-color="text"], svg[data-color="text"] path) {
-  fill: var(--color-text);
+  fill: var(--color-text-2);
 }
 
 :where(svg[data-color="primary"], svg[data-color="primary"] path) {
