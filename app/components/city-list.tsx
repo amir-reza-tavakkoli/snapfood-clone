@@ -1,5 +1,3 @@
-import "./city-list.css"
-
 type CityListProps = {
   title: string
   type?: string

@@ -1,5 +1,3 @@
-import "./nav.css"
-
 export type item = {
   name: string
   avatarUrl?: string

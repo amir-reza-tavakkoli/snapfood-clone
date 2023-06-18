@@ -1,7 +1,8 @@
-import { Order, Store } from "@prisma/client"
 import { Link } from "@remix-run/react"
-// import Orders from "~/routes/_home.cart"
-import { FullOrderItem } from "~/utils/order.query.server"
+
+import type{ Order, Store } from "@prisma/client"
+import type { FullOrderItem } from "~/utils/order.query.server"
+
 import { Icon } from "./icon"
 import { DEFAULT_CURRENCY } from "./../constants"
 

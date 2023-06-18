@@ -1,7 +1,7 @@
+import { Link } from "@remix-run/react"
+
 import { Icon } from "./icon"
 import { Button } from "./button"
-import "./header.css"
-import { Link } from "@remix-run/react"
 
 type HeaderProps = {
   address: string

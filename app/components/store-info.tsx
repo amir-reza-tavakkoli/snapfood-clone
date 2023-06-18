@@ -1,6 +1,5 @@
 import { Icon } from "./icon"
 import { Button } from "./button"
-import "./store-info.css"
 
 type StoreCardProps = {
   name: string

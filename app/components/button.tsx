@@ -1,5 +1,4 @@
 import { type IconProps, Icon } from "./icon"
-import "./button.css"
 
 type DefaultButtonProps = JSX.IntrinsicElements["button"]
 

@@ -1,8 +1,10 @@
-import { Store } from "@prisma/client"
 import { Link } from "@remix-run/react"
-import { DEFAULT_CURRENCY, DEFAULT_DELIVERY_METHOD } from "~/constants"
+
+import type { Store } from "@prisma/client"
+
 import { Icon } from "./icon"
 import { VendorCard } from "./store-card"
+import { DEFAULT_CURRENCY, DEFAULT_DELIVERY_METHOD } from "~/constants"
 
 
 

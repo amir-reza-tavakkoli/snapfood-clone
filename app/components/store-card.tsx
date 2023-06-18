@@ -1,4 +1,3 @@
-import "./store-card.css"
 import { Icon } from "./icon"
 
 export type VendorCardProps = {

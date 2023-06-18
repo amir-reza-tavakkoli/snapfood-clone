@@ -1,5 +1,4 @@
 import { Button } from "./button"
-import "./orders.css"
 
 type OrderProps = {
   orders: { name: string; date: Date; logo: string; time?: string }[]

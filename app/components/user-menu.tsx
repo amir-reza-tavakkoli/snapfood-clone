@@ -1,7 +1,9 @@
-import { User } from "@prisma/client"
 import { Link } from "@remix-run/react"
-import { DEFAULT_CURRENCY } from "~/constants"
+
+import type { User } from "@prisma/client"
+
 import { Icon } from "./icon"
+import { DEFAULT_CURRENCY } from "~/constants"
 
 type UserMenuProps = {
   user: User

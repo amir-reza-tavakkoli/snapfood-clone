@@ -1,8 +1,8 @@
-import { Button } from "./button"
-import "./food-card.css"
+import { useEffect, useState } from "react"
 
 import { Form } from "@remix-run/react"
-import { useEffect, useState } from "react"
+
+import { Button } from "./button"
 
 type FoodCardProps = {
   name: string

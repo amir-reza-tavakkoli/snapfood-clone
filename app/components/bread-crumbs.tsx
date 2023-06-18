@@ -1,4 +1,3 @@
-import "./bread-crumbs.css"
 import { Icon } from "./icon"
 
 type Item = {

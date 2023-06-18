@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react"
+
 import { Icon } from "./icon"
-import "./option-notes.css"
 
 type OptionNotesProps = {
   options: {

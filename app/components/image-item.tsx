@@ -1,4 +1,3 @@
-import "./image-item.css"
 import { Icon } from "./icon"
 
 export type ImageItemProps = {

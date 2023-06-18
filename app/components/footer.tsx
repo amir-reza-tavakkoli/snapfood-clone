@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react"
-import "./footer.css"
+
 import { Icon } from "./icon"
 
 type Reference = {

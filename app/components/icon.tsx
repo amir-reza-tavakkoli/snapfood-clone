@@ -1,5 +1,3 @@
-import "./icon.css"
-
 type IconName =
   | "snappfood"
   | "info"
