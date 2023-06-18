@@ -6,6 +6,7 @@ import { getOrdersInCart } from "./cart.query.server"
 import { getItem } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
+import { OrdersDefault } from "~/components/orders.stories"
 
 
 export type FullOrderStore = {
@@ -80,20 +81,26 @@ export async function getOrder({
 export async function getOrders({
   phoneNumber,
   storeId,
+  isBilled
 }: {
   phoneNumber?: string
-  storeId?: number
+    storeId?: number
+  isBilled ? :boolean
 }): Promise<Order[] | null> {
   try {
     const orders = await db.order.findMany({
       where: {
         userPhoneNumber: phoneNumber,
         storeId,
+
       },
       orderBy: {
         createdAt: "desc",
       },
     })
+
+    if(isBilled)
+    return orders.filter(order => order.isBilled)
 
     return orders
   } catch (error) {

@@ -1,25 +1,46 @@
-import type { Order } from "@prisma/client"
+import type { Order, Store } from "@prisma/client"
+import { CartComp, CartCompProps } from "~/components/cart"
+import Index from "~/routes/_index"
 import type { FullOrderItem } from "./order.query.server"
 
 import { getFullOrderItems, getOrders } from "./order.query.server"
+import { getStore } from "./store.query.server"
 
 export async function getCart({
   phoneNumber,
+  all = false
 }: {
-  phoneNumber: string
-}): Promise<(FullOrderItem | undefined)[][] | undefined> {
+    phoneNumber: string; all? : boolean
+}): Promise<CartCompProps | undefined> {
   try {
-    const orders = await getOrdersInCart({ phoneNumber })
+    const orders = all ? await getOrders({phoneNumber, isBilled:true}) :  await getOrdersInCart({ phoneNumber })
 
     if (!orders || orders.length == 0) {
       return undefined
     }
 
-    const cart = await Promise.all(
+    const stores = await Promise.all(
+      orders.map(order => getStore({ storeId: order.storeId })),
+    )
+
+    stores.forEach(store => {
+  if(!store) throw new Error("No Store");
+})
+
+    const items = await Promise.all(
       orders.map(order => getFullOrderItems({ orderId: order.id })),
     )
 
-    return cart
+    items.forEach(item => {
+      if (!item) throw new Error("No Store")
+    })
+
+
+    const x  = orders.map((order, index) => {
+      return { store: stores[index], order, items: items[index] }
+    })
+
+    return { orders : x } as CartCompProps
   } catch (error) {
     throw error
   }
