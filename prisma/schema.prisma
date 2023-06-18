@@ -185,6 +185,7 @@ model Order {
   taxPercent            Int
   packagingPrice        Float
   estimatedDeliveryTime Int
+  dsescription  String?
 
   isBilled          Boolean @default(false)
   isInCart          Boolean @default(false)
