@@ -13,7 +13,7 @@ type StoreCardProps = {
   }
 }
 
-export const StoreCard = ({ name, logo, type, rating }: StoreCardProps) => {
+export const StoreInfo = ({ name, logo, type, rating }: StoreCardProps) => {
   return (
     <dl className="store-info">
       <div>
