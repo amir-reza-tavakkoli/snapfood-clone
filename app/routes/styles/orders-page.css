@@ -1,0 +1,4 @@
+:where(._orders-page) {
+    inline-size: 75%;
+    margin-inline: auto;
+}
