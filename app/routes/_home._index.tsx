@@ -5,7 +5,7 @@ import { LinksFunction, LoaderArgs } from "@remix-run/node"
 import { getItemCategories } from "~/utils/store.query.server"
 
 
-import imageItemCss from "./../components/image-item.css"
+import imageItemCss from "./../components/styles/image-item.css"
 import homeIndexCss from "./styles/home-index.css"
 import { DEFAULT_CITY } from "~/constants"
 

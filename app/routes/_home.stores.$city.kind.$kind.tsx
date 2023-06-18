@@ -9,7 +9,7 @@ import { Link, Outlet, useLoaderData } from "@remix-run/react"
 
 import { getStoresByCity } from "~/utils/store.query.server"
 
-import storeCardCss from "./../components/store-card.css"
+import storeCardCss from "./../components/styles/store-card.css"
 import { StoreContainer } from "~/components/store-container"
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeCardCss },

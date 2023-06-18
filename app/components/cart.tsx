@@ -4,7 +4,6 @@ import { Link } from "@remix-run/react"
 import { FullOrderItem } from "~/utils/order.query.server"
 import { Icon } from "./icon"
 import { DEFAULT_CURRENCY } from "./../constants"
-import { StoreCardDefault } from "./store-info.stories"
 
 function toPersianDay(day: number) {
   switch (day) {
@@ -60,7 +59,7 @@ export const CartComp = ({ orders }: CartCompProps) => {
                       {"      " }
                       {toPersianDay(new Date(order.order.createdAt).getDay())}
                     </time>{" "}
-                      
+
                   </span>
                   <p>
                     {order.order.totalPrice.toLocaleString("fa-IR") +

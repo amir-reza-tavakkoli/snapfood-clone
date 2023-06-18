@@ -6,7 +6,6 @@ import { getOrdersInCart } from "./cart.query.server"
 import { getItem } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
-import { OrdersDefault } from "~/components/orders.stories"
 
 
 export type FullOrderStore = {

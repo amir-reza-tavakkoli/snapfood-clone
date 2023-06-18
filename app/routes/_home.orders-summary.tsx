@@ -7,7 +7,7 @@ import { getFullOrdersStore, getOrders } from "~/utils/order.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { getUserByPhone } from "~/utils/user.query.server"
 
-import ordersCss from "~/components/orders.css"
+import ordersCss from "~/components/styles/orders.css"
 import type { FullOrderStore } from "~/utils/order.query.server"
 
 import { Orders } from "~/components/orders"

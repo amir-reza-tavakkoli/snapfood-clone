@@ -1,6 +1,5 @@
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react"
 import { LoaderArgs, redirect, TypedResponse } from "@remix-run/server-runtime"
-import { db } from "~/utils/db.server"
 
 import {
   billOrder,

@@ -28,9 +28,9 @@ import { getAddressById } from "~/utils/address.query.server"
 import { FoodCard } from "~/components/food-card"
 import { LinksFunction } from "@remix-run/server-runtime"
 
-import foodCardCss from "./../components/food-card.css"
-import storeInfoCss from "./../components/store-info.css"
-import storePageCss from "./styles/storeId.css"
+import foodCardCss from "./../components/styles/food-card.css"
+import storeInfoCss from "./../components/styles/store-info.css"
+import storePageCss from "./styles/storeId-page.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeInfoCss },

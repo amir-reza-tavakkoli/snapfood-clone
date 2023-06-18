@@ -16,7 +16,7 @@ import { getUserAddresses } from "~/utils/address.query.server"
 import { Address } from "@prisma/client"
 import { Addresses } from "~/components/addresses"
 
-import addressesCss from "./../components/addresses.css"
+import addressesCss from "./../components/styles/addresses.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: addressesCss },

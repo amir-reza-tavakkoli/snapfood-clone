@@ -1,10 +1,13 @@
 import { Button } from "./button"
 import "./food-card.css"
 
+import { Form } from "@remix-run/react"
+import { useEffect, useState } from "react"
+
 type FoodCardProps = {
   name: string
   type: string
-  ingredients?: string[]
+  ingredients?: string
   available: boolean
   image?: string
   prices?: {
@@ -13,6 +16,11 @@ type FoodCardProps = {
     currency: string
     available: boolean
   }[]
+  count: number
+  remainingCount: number
+  id: number
+  address: number
+  reRender: React.Dispatch<React.SetStateAction<{}>>
 }
 
 export const FoodCard = ({
@@ -22,7 +30,21 @@ export const FoodCard = ({
   ingredients,
   prices,
   available,
+  count,
+  remainingCount,
+  address,
+  id,
+  reRender
 }: FoodCardProps) => {
+
+  const [addressState, setAddressstate] = useState(address)
+  console.log(address);
+
+  useEffect(() => {
+    reRender({})
+  },[])
+
+  const [state, setState] = useState({})
   return (
     <dl className="food-card">
       <div>
@@ -34,15 +56,11 @@ export const FoodCard = ({
           <dd className="nonvisual">{type}</dd>
           {ingredients ? (
             <>
-              <dt className="nonvisual">Ingredients</dt>
+              <dt className="nonvisual" aria-label="Description">
+                Ingredients
+              </dt>
               <dd className="_ingredients">
-                <ul>
-                  {ingredients.map((item, index) => (
-                    <li key={index}>
-                      {item} {index !== ingredients.length - 1 ? ", " : " "}
-                    </li>
-                  ))}
-                </ul>
+                <ul>{ingredients}</ul>
               </dd>
             </>
           ) : null}
@@ -54,7 +72,7 @@ export const FoodCard = ({
         />
       </div>
       {prices!.map((item, index) => (
-        <div>
+        <div className="_forms" key={index}>
           {item ? (
             <>
               <dt className="nonvisual">Price</dt>
@@ -75,26 +93,51 @@ export const FoodCard = ({
           <dt className="nonvisual">Add</dt>
           <dd>
             {available && item.available ? (
-              <Button
-                variant="primary"
-                rounding="full"
-                aria-label={"Add" + name + item.variation}
-              >
-                افزودن
-              </Button>
-            ) : (
-              <Button
-                disabled
-                variant="primary"
-                rounding="full"
-                aria-label="Not available"
-              >
-                افزودن
-              </Button>
-            )}
+              <>
+                <Form method="post">
+                  {count ? count : null}
+                  <input type="hidden" name="id" value={id} />
+                  <input type="hidden" name="job" value="add" />
+                  <input type="hidden" name="address" value={address} />
+                  <Button
+                    type="submit"
+                    disabled={remainingCount == 0 || !address}
+                    onClick={() => { reRender({}); console.log();
+                    }}
+                  >
+                    +
+                  </Button>
+                </Form>
+
+                <Form method="post">
+                  <input type="hidden" name="id" value={id} />
+                  <input type="hidden" name="job" value="remove" />
+                  <input type="hidden" name="address" value={address} />
+
+                  {!count ? undefined : <Button type="submit"> - </Button>}
+                </Form>
+              </>
+            ) : null}
           </dd>
         </div>
       ))}
     </dl>
   )
 }
+
+//   <Button
+//     variant="primary"
+//     rounding="full"
+//     aria-label={"Add" + name + item.variation}
+//   >
+//     افزودن
+//   </Button>
+// ) : (
+//   <Button
+//     disabled
+//     variant="primary"
+//     rounding="full"
+//     aria-label="Not available"
+//   >
+//     افزودن
+//   </Button>

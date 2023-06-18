@@ -2,7 +2,7 @@ import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 import { Link, useLoaderData } from "@remix-run/react"
 
 import { requirePhoneNumber } from "~/utils/session.server"
-import cartCss from "./../components/cart.css"
+import cartCss from "./../components/styles/cart.css"
 
 import { getCart } from "~/utils/cart.query.server"
 import { FullOrderItem } from "~/utils/order.query.server"
