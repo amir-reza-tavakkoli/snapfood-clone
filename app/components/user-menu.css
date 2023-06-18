@@ -1,0 +1,78 @@
+:where(.user-menu) {
+    position: fixed;
+    z-index: 2;
+    top: 70px;
+    left: 30px;
+    inline-size: 380px;
+    background-color: #fff;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow-thick);
+}
+
+:where(.user-menu > ul) {
+    display: flex;
+    flex-direction: column;
+
+}
+
+:where(.user-menu > ul > li) {
+    inline-size: 100%;
+    display: flex;
+    flex-direction: row;
+    color: var(--color-text-2);
+    padding-block: var(--length-16);
+    padding-inline: 12px;
+    font-weight: 500;
+}
+
+:where(.user-menu > ul > li:hover,.user-menu>ul>li:active) {
+    background-color: var(--color-faded-5);
+}
+
+:where(.user-menu ul li a) {
+    color: var(--color-text-2);
+    font-size: var(--length-12);
+    inline-size: 100%;
+    justify-content: space-between;
+    display: flex;
+}
+
+:where(.user-menu > ul > li svg) {
+    inline-size: 24px;
+    aspect-ratio: 1/1;
+    margin-inline: 6px;
+}
+
+:where(.user-menu > ul > li > a ._user) {
+    display: flex;
+    flex-direction: column;
+}
+
+:where(.user-menu >ul >li >a span) {
+    color: var(--color-text-2);
+    font-size: var(--length-12);
+
+}
+
+:where(.user-menu> ul >li >a > *:nth-child(2)) {
+    margin-inline-end: auto;
+}
+
+:where(.user-menu ul li a ._user span:first-child) {
+    font-size: var(--length-16);
+    font-weight: 700;
+}
+
+:where(.user-menu ul li a ._user span:last-child) {
+    color: var(--color-action);
+    font-size: var(--length-12);
+}
+
+@media (max-width: 34.375rem) {
+    :where(.user-menu) {
+        top: 70px;
+        left: 5%;
+        inline-size: 90%;
+    }
+}
