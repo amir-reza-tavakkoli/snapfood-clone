@@ -7,11 +7,12 @@ import { DEFAULT_CURRENCY } from "~/constants"
 
 type UserMenuProps = {
   user: User
+  dir?: "rtl" | "lrt"
 }
 
-export const UserMenu = ({ user }: UserMenuProps) => {
+export const UserMenu = ({ user,dir }: UserMenuProps) => {
   return (
-    <dialog open>
+    <dialog open dir={dir}>
       <nav className="user-menu">
         <ul>
           <li>

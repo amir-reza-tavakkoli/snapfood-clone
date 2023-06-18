@@ -39,11 +39,12 @@ export type CartCompProps = {
         store: Store
       }[]
     | undefined
+  dir?: "rtl" | "lrt"
 }
 
-export const CartComp = ({ orders }: CartCompProps) => {
+export const CartComp = ({ orders,dir }: CartCompProps) => {
   return (
-    <aside className="cart">
+    <aside className="cart" dir={dir}>
       {orders ? (
         <ol>
           {orders.map((order, index) => (

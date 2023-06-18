@@ -9,11 +9,12 @@ type OptionNotesProps = {
     interactive: boolean
     icon: ComponentProps<typeof Icon>
   }[]
+  dir?: "rtl" | "lrt"
 }
 
-export const OptionNotes = ({ options }: OptionNotesProps) => {
+export const OptionNotes = ({ options,dir }: OptionNotesProps) => {
   return (
-    <dl className="options-card">
+    <dl className="options-card" dir={dir}>
       <dt className="nonvisual">Options</dt>
       <dd>
         <dl>

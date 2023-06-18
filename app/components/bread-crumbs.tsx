@@ -7,11 +7,12 @@ type Item = {
 
 type BreadCrumbsProps = {
   items: Item[]
+  dir?: "rtl" | "lrt"
 }
 
-export const BreadCrumbs = ({ items }: BreadCrumbsProps) => {
+export const BreadCrumbs = ({ items,dir }: BreadCrumbsProps) => {
   return (
-    <nav aria-label="Breadcrumb" className="bread-crumbs">
+    <nav aria-label="Breadcrumb" className="bread-crumbs" dir={dir}>
       <ol>
         {items.map((item, index) => (
           <li key={index}>

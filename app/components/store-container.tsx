@@ -12,16 +12,17 @@ type StoreContainerProps = {
   stores?: Store[] | null
   moreHref?: string
   title: string
+  dir?: "rtl" | "lrt"
 }
 
 export function StoreContainer({
   stores,
   moreHref,
-  title,
+  title,dir
 }: StoreContainerProps) {
 
 return stores && stores.length > 0 ? (
-  <ul className="store-container" aria-label="Stores">
+  <ul className="store-container" aria-label="Stores" dir={dir}>
     <div>
       <p>{title}</p>
       {moreHref ? (

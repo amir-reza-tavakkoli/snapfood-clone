@@ -25,6 +25,8 @@ import { UserMenu } from "~/components/user-menu"
 import { DEAFULT_DIRECTION } from "~/constants"
 import { getUserByPhone } from "~/utils/user.query.server"
 
+import addressesCss from "./../components/styles/addresses.css"
+
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: homeCss },
   { rel: "stylesheet", href: buttonCss },
@@ -35,6 +37,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: cityListCss },
   { rel: "stylesheet", href: footerCss },
   { rel: "stylesheet", href: userMenuCss },
+  { rel: "stylesheet", href: addressesCss },
 ]
 
 function linksHierarchy() {
@@ -59,8 +62,6 @@ function linksHierarchy() {
 
   return hierarchy
 }
-
-
 
 export const loader = async ({
   request,

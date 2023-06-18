@@ -10,11 +10,12 @@ type StoreCardProps = {
     range?: number
     count?: number
   }
+  dir?: "rtl" | "lrt"
 }
 
-export const StoreInfo = ({ name, logo, type, rating }: StoreCardProps) => {
+export const StoreInfo = ({ name, logo, type, rating, dir }: StoreCardProps) => {
   return (
-    <dl className="store-info">
+    <dl className="store-info" dir={dir}>
       <div>
         <dt className="nonvisual">Store</dt>
         <dd className="_identity">
