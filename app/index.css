@@ -52,6 +52,8 @@
   --normal: 68.75rem;
   --big: 137.5rem;
 
+
+  --border-extra-thin: 0.01px;
   --border-thin: 0.5px;
   --border-normal: 1px;
   --border-thick: 1.5px;
@@ -100,6 +102,7 @@
 
 :where(*, *::before, *::after) {
   margin: 0;
+  outline-offset: var(--length-8);
   font-family: "IRANSans", system-ui, -apple-system,
     /* Firefox supports this but not yet `system-ui` */
     Helvetica, Roboto,
@@ -107,7 +110,6 @@
 }
 
 :where(html, body) {
-
   height: 100%;
 }
 
@@ -115,7 +117,18 @@
   isolation: isolate;
 }
 
-:where(.nonvisual) {
+.nonvisual {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  border: 0 !important;
+  padding: 0 !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.nonvisual * {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
