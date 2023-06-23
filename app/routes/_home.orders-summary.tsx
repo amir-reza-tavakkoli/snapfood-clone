@@ -1,71 +1,73 @@
-import { Order, User } from "@prisma/client"
 import { Link, useLoaderData } from "@remix-run/react"
-import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
-
-import { getFullOrdersStore, getOrders } from "~/utils/order.query.server"
+import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "~/utils/session.server"
+
 import { getUserByPhone } from "~/utils/user.query.server"
 
-import ordersCss from "~/components/styles/orders.css"
-import type { FullOrderStore } from "~/utils/order.query.server"
+import { Orders } from "~/components/order-summary"
 
-import { Orders } from "~/components/orders"
 import { DEAFULT_DIRECTION } from "./../constants"
+import type { CartCompProps } from "~/components/cart"
 
-import ordersSummaryCss from "./styles/orders-summary.css"
+import { getCart } from "~/utils/cart.query.server"
+
+import orderCss from "~/components/styles/order-summary.css"
+import ordersPageCss from "./styles/orders-page.css"
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: ordersCss },
-  { rel: "stylesheet", href: ordersSummaryCss },]
+  { rel: "stylesheet", href: orderCss },
+  { rel: "stylesheet", href: ordersPageCss },
+]
 
-export const loader = async ({ request }: LoaderArgs): Promise<FullOrderStore[]> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<CartCompProps | undefined> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
     const user = await getUserByPhone({ phoneNumber })
 
     if (!user) {
-      throw new Error("No Such User")
+      throw new Error("چنین کاربری وجود ندارد")
     }
 
-    let orders = await getFullOrdersStore({ phoneNumber })
-  // console.log("vvvv",orders)
-
-    if (orders && orders.length > 0) {
-      orders = orders.filter(
-        order =>
-          order &&
-          order.isBilled &&
-          order.isVerifiedByAdmin &&
-          order.isVerifiedByStore,
-      )
+    if (user.isSuspended || !user.isVerified) {
+      throw new Error("کاربر مسدود است")
     }
 
-    return orders
+    const cart = await getCart({ phoneNumber, all: true })
+
+    return cart
   } catch (error) {
     throw error
   }
 }
 
 export default function Ordersx() {
-  const orders = useLoaderData<typeof loader>()
+  const cart = useLoaderData<typeof loader>() as CartCompProps | undefined
 
-const uu = orders.map(order => {
-  return {
-    date: new Date(order.createdAt),
-    name: order.name ?? "",
-    logo: order.avatarUrl ?? "",
-    // time: "12:39",
-  }
-})
   return (
-    <article className="_orders-container">
-      {orders ? (
-        <Orders orders={uu} dir={DEAFULT_DIRECTION}></Orders>
+    <main className="_orders-page">
+      <p>سفارش‌ های پیشین</p>
+
+      {cart && cart.orders  ? (
+        <Orders orders={cart.orders} dir={DEAFULT_DIRECTION}></Orders>
       ) : (
-        <p>No Orders Yet</p>
+        <p>سفارشی وجود ندارد ! </p>
       )}
-    </article>
+    </main>
+  )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <div aria-label="error" role="alert" aria-live="assertive">
+      <h1>مشکلی پیش آمد!</h1>
+
+      {error && error.message ? <p>{error.message}</p> : null}
+
+      <Link to="/orders">دوباره امتحان کنید</Link>
+    </div>
   )
 }
