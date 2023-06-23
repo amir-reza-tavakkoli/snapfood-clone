@@ -69,6 +69,7 @@
     flex-wrap: wrap;
     margin-inline-start: 54px;
     margin-block-end: var(--length-16);
+    max-inline-size: 70%;
 }
 
 :where(.cart ul img) {
