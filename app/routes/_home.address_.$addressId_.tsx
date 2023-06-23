@@ -16,7 +16,7 @@ import {
 } from "~/utils/address.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { getUserByPhone } from "~/utils/user.query.server"
-import { DEFAULT_CITY, DEFAULT_MIN_ADDRESS_LENGTH } from "../constants"
+import { DEAFULT_DIRECTION, DEFAULT_CITY, DEFAULT_MIN_ADDRESS_LENGTH } from "../constants"
 
 import { Button } from "~/components/button"
 import addressPageCss from "./styles/address-page.css"
@@ -180,7 +180,7 @@ export default function Affresses() {
   const [details, setDetails] = useState(address.details)
 
   return (
-    <main className="_address-page">
+    <main className="_address-page" dir={DEAFULT_DIRECTION}>
       <p>جزییات آدرس</p>
       <Form method="post">
         <input type="text" name="addressId" hidden value={address.id} />

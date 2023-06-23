@@ -42,6 +42,10 @@
     outline-offset: 0px;
 }
 
+:where(._user-page > form input, ._user-page form select, ._user-page form textarea) {
+    margin-inline: 8px;
+}
+
 :where(._user-page > form input:focus, ._user-page form select:focus, ._user-page form textarea:focus) {
     outline: none;
     background-color: transparent;
@@ -64,7 +68,7 @@
     font-weight: 600;
     display: inline-block;
     align-self: center;
-    text-align: center;
+    text-align: start;
     inline-size: 25%;
 }
 

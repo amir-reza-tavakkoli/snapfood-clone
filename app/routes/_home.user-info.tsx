@@ -18,6 +18,8 @@ import type { User } from "@prisma/client"
 
 import { Button } from "~/components/button"
 
+import { DEAFULT_DIRECTION } from "~/constants"
+
 import userPageCss from "./styles/user-page.css"
 
 export const links: LinksFunction = () => [
@@ -91,7 +93,7 @@ export default function UserInfo() {
   const [email, setEmail] = useState(user.email)
 
   return (
-    <main className="_user-page">
+    <main className="_user-page" dir={DEAFULT_DIRECTION}>
       <Form method="post">
         <p>ویرایش حساب کاربری</p>
         <div>
