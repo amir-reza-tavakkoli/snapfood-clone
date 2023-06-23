@@ -1,5 +1,5 @@
 :where(._address-page) {
-    inline-size: 75%;
+    inline-size: 50%;
     margin-inline: auto;
     border: solid var(--color-faded-2) var(--border-normal);
 }
@@ -35,6 +35,8 @@
 
 :where(._address-page > form > div:focus-within) {
     background-color: var(--color-faded-4);
+    outline: solid var(--border-thin) var(--color-faded);
+    outline-offset: 0px;
 }
 
 :where(._address-page > form button) {
@@ -75,4 +77,18 @@
 
 :where(._address-page output ._error) {
     color: var(--color-error);
+}
+
+@media (max-width: 37.5rem) {
+    :where(._address-page) {
+        inline-size: 90%;
+
+    }
+}
+
+@media (max-width: 68.75rem) {
+    :where(._address-page) {
+        inline-size: 75%;
+
+    }
 }

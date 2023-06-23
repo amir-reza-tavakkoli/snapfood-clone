@@ -4,7 +4,6 @@ import {
   useLoaderData,
   useOutletContext,
   useRouteError,
-
 } from "@remix-run/react"
 
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
@@ -32,7 +31,7 @@ export const loader = async ({
     const user = await getUserByPhone({ phoneNumber })
 
     if (!user) {
-      throw new Error("No Such User")
+      throw new Error("چنین کاربری وجود ندارد")
     }
 
     if (user.isSuspended || !user.isVerified) {
@@ -40,7 +39,7 @@ export const loader = async ({
     }
 
     const addresses = await getUserAddresses({ phoneNumber })
-    
+
     return addresses
   } catch (error) {
     throw error

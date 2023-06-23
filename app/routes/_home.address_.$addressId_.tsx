@@ -18,11 +18,11 @@ import { requirePhoneNumber } from "~/utils/session.server"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { DEFAULT_CITY, DEFAULT_MIN_ADDRESS_LENGTH } from "../constants"
 
-import addressCss from "./styles/address-page.css"
 import { Button } from "~/components/button"
+import addressPageCss from "./styles/address-page.css"
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: addressCss },
+  { rel: "stylesheet", href: addressPageCss },
 ]
 
 export const action = async ({
@@ -187,6 +187,7 @@ export default function Affresses() {
         <div>
           <label htmlFor="address">نشانی</label>
           <input
+            autoComplete="street-address"
             type="text"
             name="address"
             id="address"
@@ -200,7 +201,7 @@ export default function Affresses() {
 
         <div>
           <label htmlFor="city">شهر</label>
-          <select name="city" id="city">
+          <select name="city" id="city" autoComplete="city">
             {cities?.map((city, index) => (
               <option
                 key={index}
@@ -220,7 +221,7 @@ export default function Affresses() {
             name="title"
             placeholder="..."
             id="title"
-            value={title ?? ""}
+            value={title ?? undefined}
             onChange={e => {
               e.preventDefault()
 
@@ -232,8 +233,10 @@ export default function Affresses() {
         <div>
           <label htmlFor="unit">واحد</label>
           <input
+            autoComplete="unit"
             type="text"
             name="unit"
+            inputMode="numeric"
             id="unit"
             value={unit}
             onChange={e => {
@@ -252,7 +255,7 @@ export default function Affresses() {
             placeholder="..."
             name="details"
             id="details"
-            value={details ?? ""}
+            value={details ?? undefined}
             onChange={e => {
               e.preventDefault()
 
