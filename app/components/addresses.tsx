@@ -8,9 +8,10 @@ import { Icon } from "./icon"
 
 type AddressesProps = {
   addresses: Address[] | null
+  dir?: "lrt" | "rtl"
 }
 
-export function Addresses({ addresses }: AddressesProps) {
+export function Addresses({ addresses, dir }: AddressesProps) {
   const [searchParams] = useSearchParams()
   const [HomeAddressState, setHomeAddressState] = useOutletContext<any>()
 
@@ -34,7 +35,7 @@ export function Addresses({ addresses }: AddressesProps) {
   }, [addressId])
 
   return (
-    <ul className="addresses">
+    <ul aria-label="address" className="addresses" dir={dir}>
       <div>
         <Link
           to="\"
@@ -45,39 +46,50 @@ export function Addresses({ addresses }: AddressesProps) {
         >
           <Icon name="flash" color="action"></Icon>
         </Link>
+
         <p>انتخاب آدرس</p>
+
       </div>
       <div>
         <p className="nonvisual">Availible Addresses</p>
-        {addresses?.map((address, index) => (
-          <li key={index}>
-            <input
-              className="_choosed"
-              type="radio"
-              aria-label="Choosed"
-              checked={addressId == address.id}
-              onChange={() => setChosenAddress(address.id, address.cityName)}
-            />
-            <p aria-label="address">
-              {"شهر" +
-                " " +
-                address.cityName +
-                " " +
-                address.address +
-                " " +
-                "واحد" +
-                " " +
-                address.unit}
-            </p>
-            <button className="_delete" aria-label="Remove Address">
-              <Icon name="bin" color="error"></Icon>
-            </button>
-            <Link to={address.id.toString()} aria-label="Edit Address">
-              <Icon name="edit" color="action"></Icon>
-            </Link>
-          </li>
-        ))}
+        {addresses ? (
+          addresses?.map((address, index) => (
+            <li key={index}>
+              <input
+                className="_choosed"
+                type="radio"
+                aria-label="Choosed"
+                checked={addressId == address.id}
+                onChange={() => setChosenAddress(address.id, address.cityName)}
+              />
+
+              <p aria-label="address">
+                {"شهر" +
+                  " " +
+                  address.cityName +
+                  " " +
+                  address.address +
+                  " " +
+                  "واحد" +
+                  " " +
+                  address.unit}
+              </p>
+
+              <button className="_delete" aria-label="Remove Address">
+                <Icon name="bin" color="error"></Icon>
+              </button>
+
+              <Link to={address.id.toString()} aria-label="Edit Address">
+                <Icon name="edit" color="action"></Icon>
+              </Link>
+            </li>
+          ))
+
+        ) : (
+          <p>آدرسی وجود ندارد</p>
+        )}
       </div>
+
       <Link to={"/home/addresses/new"}>ایجاد آدرس جدید </Link>
     </ul>
   )

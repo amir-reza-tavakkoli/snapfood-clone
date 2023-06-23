@@ -1,19 +1,20 @@
 import {
   Link,
   Outlet,
-  useActionData,
   useLoaderData,
   useOutletContext,
-  useSearchParams,
+  useRouteError,
+
 } from "@remix-run/react"
-import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
-import { createOrUpdateUser, getUserByPhone } from "~/utils/user.query.server"
+import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+
+import type { Address } from "@prisma/client"
+
+import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
-import { useState, useEffect } from "react"
-
 import { getUserAddresses } from "~/utils/address.query.server"
-import { Address } from "@prisma/client"
+
 import { Addresses } from "~/components/addresses"
 
 import addressesCss from "./../components/styles/addresses.css"
@@ -21,35 +22,6 @@ import addressesCss from "./../components/styles/addresses.css"
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: addressesCss },
 ]
-
-export const action = async ({ request }: any) => {
-  try {
-    await requirePhoneNumber(request)
-
-    const form = await request.formData()
-    const phoneNumber = form.get("phoneNumber")
-    const firstName = form.get("firstName")
-    const lastName = form.get("lastName")
-    const gender = form.get("gender")
-    const birthday = form.get("birthday")
-    const email = form.get("email")(gender)
-
-    const user = await createOrUpdateUser({
-      phoneNumber,
-      firstName,
-      lastName,
-      gender,
-      birthday,
-      email,
-    })
-    if (user) return { successful: true }
-    return { unsuccessful: true }
-  } catch (error) {
-    return {
-      unsuccessful: true,
-    }
-  }
-}
 
 export const loader = async ({
   request,
@@ -64,10 +36,11 @@ export const loader = async ({
     }
 
     if (user.isSuspended || !user.isVerified) {
-      throw new Error("User Is Not Verified Or Suspended")
+      throw new Error("کاربر مسدود است")
     }
 
     const addresses = await getUserAddresses({ phoneNumber })
+    
     return addresses
   } catch (error) {
     throw error
@@ -84,5 +57,20 @@ export default function UserInfo() {
       <Addresses addresses={addresses}></Addresses>
       <Outlet></Outlet>
     </>
+  )
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  const errorMessage = error instanceof Error ? error.message : undefined
+  return (
+    <div aria-label="error" role="alert" aria-live="assertive">
+      <h1>مشکلی پیش آمد!</h1>
+
+      {errorMessage ? <p>{errorMessage}</p> : null}
+
+      <Link to="/addresses">دوباره امتحان کنید</Link>
+    </div>
   )
 }
