@@ -1,16 +1,21 @@
-import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 import { Link, useLoaderData } from "@remix-run/react"
 
 import { requirePhoneNumber } from "~/utils/session.server"
-import cartCss from "./../components/styles/cart.css"
 
 import { getCart } from "~/utils/cart.query.server"
-import { FullOrderItem } from "~/utils/order.query.server"
 import { getUserByPhone } from "~/utils/user.query.server"
-import { CartComp, CartCompProps } from "~/components/cart"
+
+import { CartComp } from "~/components/cart"
+import type { CartCompProps } from "~/components/cart"
+
+import cartCss from "./../components/styles/cart.css"
+import pageCss from "./styles/orders.css"
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: cartCss }]
+  { rel: "stylesheet", href: pageCss },
+  { rel: "stylesheet", href: cartCss },
+]
 
 export const loader = async ({
   request,
@@ -21,15 +26,14 @@ export const loader = async ({
     const user = await getUserByPhone({ phoneNumber })
 
     if (!user) {
-      throw new Error("Invalid User")
+      throw new Error("چنین کاربری وجود ندارد")
     }
 
     if (user.isSuspended || !user.isVerified) {
-      throw new Error("User Is Not Verified Or Suspended")
+      throw new Error("کاربر مسدود است")
     }
 
     const cart = await getCart({ phoneNumber, all: true })
-
 
     return cart
   } catch (error) {
@@ -37,13 +41,30 @@ export const loader = async ({
   }
 }
 
-export default function Orders() {
-  const cart = useLoaderData<typeof loader>()
+export default function OrdersPage() {
+  const cart = useLoaderData<typeof loader>() as CartCompProps | undefined
 
-    return (
-      <main className="_orders-page">
-        <p>سفارش‌های من</p>
+  return (
+    <main className="_orders-page">
+      <p>سفارش‌های من</p>
+
+      {cart && cart.orders ? (
         <CartComp orders={cart.orders}></CartComp>
-      </main>
-    )
+      ) : (
+        <p>سفارشی وجود ندارد ! </p>
+      )}
+    </main>
+  )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <div aria-label="error" role="alert" aria-live="assertive">
+      <h1>مشکلی پیش آمد!</h1>
+
+      {error && error.message ? <p>{error.message}</p> : null}
+
+      <Link to="/orders">دوباره امتحان کنید</Link>
+    </div>
+  )
 }
