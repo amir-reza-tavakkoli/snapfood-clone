@@ -41,17 +41,15 @@ export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
         </li>
 
         <li>
-          <Icon name="gift" color="text"></Icon>
-
-          <p className="nonvisual">Reffer</p>
-
           <Link to="/reffer" tabIndex={isShowing ? undefined : -1}>
-            دعوت از دوستان
+            <Icon name="gift" color="text"></Icon>
+
+            <p className="nonvisual">Reffer</p>
+            <span> دعوت از دوستان</span>
           </Link>
         </li>
 
         <li>
-          <Icon name="exit" color="text"></Icon>
 
           <form
             aria-label="Logout"
@@ -59,6 +57,7 @@ export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
             method="post"
             tabIndex={isShowing ? undefined : -1}
           >
+          <Icon name="exit" color="text"></Icon>
             <button type="submit" tabIndex={isShowing ? undefined : -1}>
               خروج
             </button>
