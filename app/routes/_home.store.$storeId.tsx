@@ -38,7 +38,17 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storePageCss },
 ]
 
-export const action = async ({ request, params }: any) => {
+export const action = async ({
+  request,
+  params,
+}: any): Promise<{
+  array: {
+    name: string
+    value: FullOrderItem[]
+  }[]
+  newItems: FullOrderItem[]
+  newTotalPrice: number
+}> => {
   try {
     const storeId = Number(params.storeId)
 
@@ -127,7 +137,7 @@ export const action = async ({ request, params }: any) => {
       value,
     }))
 
-    return { array, newTotalPrice }
+    return { array, newTotalPrice, newItems }
   } catch (error) {
     throw error
   }
@@ -218,7 +228,7 @@ export const loader: LoaderFunction = async ({
 }
 
 export default function StoreId() {
-  const { user, store, items, order, totalPrice, array } =
+  const { user, store, order, totalPrice, array } =
     useLoaderData<typeof loader>()
 
   const navigate = useNavigate()
@@ -290,6 +300,7 @@ export default function StoreId() {
                 <div>
                   {category.value.map((item: FullOrderItem, index: number) => (
                     <FoodCard
+                      storeId={store.id}
                       reRender={reRender}
                       address={address ?? -1}
                       count={item.count ?? 0}

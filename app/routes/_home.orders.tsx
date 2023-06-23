@@ -10,7 +10,7 @@ import { CartComp } from "~/components/cart"
 import type { CartCompProps } from "~/components/cart"
 
 import cartCss from "./../components/styles/cart.css"
-import pageCss from "./styles/orders.css"
+import pageCss from "./styles/orders-page.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
