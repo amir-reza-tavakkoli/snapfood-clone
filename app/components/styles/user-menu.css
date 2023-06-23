@@ -1,8 +1,8 @@
 :where(.user-menu) {
     position: fixed;
     z-index: 2;
-    top: 70px;
-    left: 30px;
+    inset-block-start: 70px;
+    inset-inline-start: 30px;
     inline-size: 380px;
     background-color: var(--color-primary);
     overflow: hidden;
@@ -34,7 +34,6 @@
     color: var(--color-text-2);
     font-size: var(--length-12);
     inline-size: 100%;
-    justify-content: space-between;
     display: flex;
 }
 
