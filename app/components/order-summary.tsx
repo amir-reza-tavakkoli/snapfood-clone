@@ -7,17 +7,9 @@ import { FullOrderItem } from "~/utils/order.query.server"
 import { Button } from "./button"
 
 import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+import { CartCompProps } from "./cart"
 
-type OrderProps = {
-  orders:
-    | {
-        items: FullOrderItem[]
-        order: Order
-        store: Store
-      }[]
-    | undefined
-  dir?: "ltr" | "rtl"
-}
+type OrderProps = CartCompProps
 
 export const Orders = ({ orders, dir }: OrderProps) => {
   console.log(orders)
