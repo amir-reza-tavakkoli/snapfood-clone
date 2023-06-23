@@ -1,0 +1,92 @@
+:where(._user-page) {
+    inline-size: 50%;
+    margin-block: var(--length-12);
+    margin-inline: auto;
+    border: solid var(--color-faded-2) var(--border-thick);
+    color: var(--color-text-2);
+    padding-inline: 12px;
+}
+
+:where(._user-page >form > p) {
+    font-weight: 600;
+    margin-block-start: var(--length-12);
+}
+
+:where(._user-page > form) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+:where(._user-page > form > button) {
+    inline-size: 36px;
+    align-self: center;
+}
+
+:where(._user-page > form input, ._user-page > form select, ._user-page > form textarea) {
+    padding-inline: 24px;
+    text-align: end;
+    margin-inline: 12px;
+    margin-inline-end: 0px;
+    inline-size: 100%;
+    padding-block: var(--length-6);
+    margin-block: var(--length-6);
+    background-color: var(--color-primary);
+    border-radius: 6px;
+    border: none;
+}
+
+:where(._user-page > form > div:focus-within) {
+    background-color: var(--color-faded-4);
+    outline: solid var(--border-thin) var(--color-faded);
+    outline-offset: 0px;
+}
+
+:where(._user-page > form input:focus, ._user-page form select:focus, ._user-page form textarea:focus) {
+    outline: none;
+    background-color: transparent;
+}
+
+:where(._user-page > form > div) {
+    display: flex;
+    inline-size: 100%;
+    padding-block: var(--length-4);
+    margin-inline: 16px;
+    border: solid var(--color-faded-2) var(--border-thick);
+    border-radius: 6px;
+    box-shadow: rgba(58, 61, 66, 0.06) 0px 1px 0px, rgba(0, 0, 0, 0.2) 0px 4px 16px -8px;
+    margin-block: var(--length-14);
+}
+
+:where(._user-page > form > div label) {
+    margin-inline: 12px;
+    font-size: var(--length-12);
+    font-weight: 600;
+    display: inline-block;
+    align-self: center;
+    text-align: center;
+    inline-size: 25%;
+}
+
+:where(._user-page > form output ._success) {
+    color: var(--color-action);
+    font-weight: 600;
+}
+
+:where(._user-page > form output ._error) {
+    color: var(--color-error);
+}
+
+@media (max-width: 37.5rem) {
+    :where(._user-page) {
+        inline-size: 90%;
+
+    }
+}
+
+@media (max-width: 68.75rem) {
+    :where(._user-page) {
+        inline-size: 70%;
+
+    }
+}
