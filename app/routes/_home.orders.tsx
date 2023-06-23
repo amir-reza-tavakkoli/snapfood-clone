@@ -1,5 +1,5 @@
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
-import { Link, useLoaderData } from "@remix-run/react"
+import { Link, useLoaderData, useRouteError } from "@remix-run/react"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
@@ -57,12 +57,15 @@ export default function OrdersPage() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  const errorMessage = error instanceof Error ? error.message : undefined
   return (
     <div aria-label="error" role="alert" aria-live="assertive">
       <h1>مشکلی پیش آمد!</h1>
 
-      {error && error.message ? <p>{error.message}</p> : null}
+      {errorMessage ? <p>{errorMessage}</p> : null}
 
       <Link to="/orders">دوباره امتحان کنید</Link>
     </div>
