@@ -8,43 +8,63 @@ import { DEFAULT_CURRENCY } from "~/constants"
 type UserMenuProps = {
   user: User
   dir?: "rtl" | "lrt"
+  isShowing: boolean
 }
 
-export const UserMenu = ({ user,dir }: UserMenuProps) => {
+export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
+
   return (
-    <dialog open dir={dir}>
-      <nav className="user-menu">
-        <ul>
-          <li>
-            <Link to="i">
-              <Icon name="user" color="text"></Icon>
-              <span className="_user">
-                <span>{user.firstName + " " + user.lastName}</span>
-                <span>مشاهده حساب کاربری</span>
-              </span>
-            </Link>
-          </li>
+    <nav className={isShowing ? "user-menu" : "nonvisual"} dir={dir}>
+      <ul>
+        <li>
+          <Link to="/userInfo" tabIndex={isShowing ? undefined : -1}>
+            <Icon name="user" color="text"></Icon>
 
-          <li>
-            <Link to="i">
-              <Icon name="coupon" color="text"></Icon>
+            <span className="_user">
+              <p className="nonvisual">Name</p>
+              <span>{user.firstName + "   " + user.lastName}</span>
+              <span>مشاهده حساب کاربری</span>
+            </span>
+          </Link>
+        </li>
 
-              <span>کیف پول</span>
-              <span>{user.credit.toLocaleString("fa") + DEFAULT_CURRENCY}</span>
-            </Link>
-          </li>
-          <li>
-            <Icon name="gift" color="text"></Icon>
+        <li>
+          <Link to="/wallet" tabIndex={isShowing ? undefined : -1}>
+            <Icon name="coupon" color="text"></Icon>
 
-            <Link to="i">دعوت از دوستان</Link>
-          </li>
-          <li>
-            <Icon name="exit" color="text"></Icon>
+            <span aria-label="Wallet">کیف پول</span>
 
-            <Link to="/logout"> خروج </Link>
-          </li>
-        </ul>
-      </nav>
-    </dialog>
+            <span>
+              {user.credit.toLocaleString("fa") + "  " + DEFAULT_CURRENCY}
+            </span>
+          </Link>
+        </li>
+
+        <li>
+          <Icon name="gift" color="text"></Icon>
+
+          <p className="nonvisual">Reffer</p>
+
+          <Link to="/reffer" tabIndex={isShowing ? undefined : -1}>
+            دعوت از دوستان
+          </Link>
+        </li>
+
+        <li>
+          <Icon name="exit" color="text"></Icon>
+
+          <form
+            aria-label="Logout"
+            action="/logout"
+            method="post"
+            tabIndex={isShowing ? undefined : -1}
+          >
+            <button type="submit" tabIndex={isShowing ? undefined : -1}>
+              خروج
+            </button>
+          </form>
+        </li>
+      </ul>
+    </nav>
   )
 }

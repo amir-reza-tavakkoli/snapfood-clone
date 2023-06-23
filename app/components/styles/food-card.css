@@ -24,9 +24,14 @@
   padding-block-start: var(--length-8);
 }
 
+:where(.food-card > div:nth-child(1) > a) {
+display: inherit;
+}
+
 :where(.food-card > div:nth-child(1)) {
   margin-block-start: var(--length-8);
 }
+
 :where(.food-card > div:nth-child(n + 1)) {
   justify-content: space-between;
   align-items: center;
