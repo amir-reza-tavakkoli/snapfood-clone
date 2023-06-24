@@ -64,7 +64,12 @@ export function ErrorBoundary() {
 
   const errorMessage = error instanceof Error ? error.message : undefined
   return (
-    <div aria-label="error" role="alert" aria-live="assertive">
+    <div
+      aria-label="error"
+      role="alert"
+      aria-live="assertive"
+      className="boundary-error"
+    >
       <h1>مشکلی پیش آمد!</h1>
 
       {errorMessage ? <p>{errorMessage}</p> : null}

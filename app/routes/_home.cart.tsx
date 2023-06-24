@@ -44,7 +44,8 @@ export const loader = async ({
 export default function CartPage() {
   const cart = useLoaderData<typeof loader>() as CartCompProps | undefined
 
-  return <main className="_orders-page">
+  return (
+    <main className="_orders-page">
       <p>سفارش‌های من</p>
 
       {cart && cart.orders ? (
@@ -53,6 +54,7 @@ export default function CartPage() {
         <p>سفارشی وجود ندارد ! </p>
       )}
     </main>
+  )
 }
 
 export function ErrorBoundary() {
@@ -60,12 +62,17 @@ export function ErrorBoundary() {
 
   const errorMessage = error instanceof Error ? error.message : undefined
   return (
-    <div aria-label="error" role="alert" aria-live="assertive">
+    <div
+      aria-label="error"
+      role="alert"
+      aria-live="assertive"
+      className="boundary-error"
+    >
       <h1>مشکلی پیش آمد!</h1>
 
       {errorMessage ? <p>{errorMessage}</p> : null}
 
-      <Link to="/orders">دوباره امتحان کنید</Link>
+      <Link to="/cart">دوباره امتحان کنید</Link>
     </div>
   )
 }

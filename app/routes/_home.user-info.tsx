@@ -221,7 +221,9 @@ export default function UserInfo() {
           ) : null}
 
           {actionData?.unsuccessful ? (
-            <p className="_error">مشکلی پیش آمد</p>
+            <p aria-label="error" className="_error">
+              مشکلی پیش آمد
+            </p>
           ) : null}
         </output>
       </Form>
@@ -233,13 +235,16 @@ export function ErrorBoundary() {
   const error = useRouteError()
 
   const errorMessage = error instanceof Error ? error.message : undefined
+  console.log(error);
+  
   return (
-    <div aria-label="error" role="alert" aria-live="assertive">
+    <div aria-label="error" role="alert" aria-live="assertive" className="boundary-error">
       <h1>مشکلی پیش آمد!</h1>
 
       {errorMessage ? <p>{errorMessage}</p> : null}
 
       <Link to="/user-info">دوباره امتحان کنید</Link>
+
     </div>
   )
 }
