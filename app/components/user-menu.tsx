@@ -12,12 +12,11 @@ type UserMenuProps = {
 }
 
 export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
-
   return (
     <nav className={isShowing ? "user-menu" : "nonvisual"} dir={dir}>
       <ul>
         <li>
-          <Link to="/userInfo" tabIndex={isShowing ? undefined : -1}>
+          <Link to="/user-info" tabIndex={isShowing ? undefined : -1}>
             <Icon name="user" color="text"></Icon>
 
             <span className="_user">
@@ -50,14 +49,13 @@ export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
         </li>
 
         <li>
-
           <form
             aria-label="Logout"
             action="/logout"
             method="post"
             tabIndex={isShowing ? undefined : -1}
           >
-          <Icon name="exit" color="text"></Icon>
+            <Icon name="exit" color="text"></Icon>
             <button type="submit" tabIndex={isShowing ? undefined : -1}>
               خروج
             </button>
