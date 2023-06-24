@@ -1,15 +1,42 @@
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react"
-import { LoaderArgs, redirect, TypedResponse } from "@remix-run/server-runtime"
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react"
+import {
+  LinksFunction,
+  LoaderArgs,
+  redirect,
+  TypedResponse,
+} from "@remix-run/server-runtime"
+
+import type { Order, Store, User } from "@prisma/client"
+
+import { CartComp } from "~/components/cart"
+import { Button } from "~/components/button"
 
 import {
   billOrder,
   calculateOrder,
+  FullOrderItem,
+  getFullOrderItems,
   getOrder,
-  updateOrder,
 } from "~/utils/order.query.server"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { getStore } from "~/utils/store.query.server"
+
+import { DEFAULT_CURRENCY } from "~/constants"
+
+import cartCss from "./../components/styles/cart.css"
+import pageCss from "./styles/bill-order.css"
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: pageCss },
+  { rel: "stylesheet", href: cartCss },
+]
 
 export const action = async ({
   request,
@@ -28,21 +55,21 @@ export const action = async ({
     const user = await getUserByPhone({ phoneNumber })
 
     if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("No Such User")
+      throw new Error("چنین کاربری وجود ندارد")
     }
 
     if (!orderId || isNaN(orderId)) {
-      throw new Error("Bad Request")
+      throw new Error("مشکلی پیش آمد")
     }
 
     const order = await getOrder({ orderId })
 
     if (!order || order.userPhoneNumber != phoneNumber) {
-      throw new Error("bad req")
+      throw new Error("مشکلی پیش آمد")
     }
 
     if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("No Such User")
+      throw new Error("چنین کاربری وجود ندارد")
     }
 
     const isSuccessful = !!(await billOrder({ orderId }))
@@ -64,30 +91,35 @@ export const action = async ({
   }
 }
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({
+  request,
+  params,
+}: LoaderArgs): Promise<{
+  user: User
+  order: Order
+  price: number
+  store: Store
+  items: (FullOrderItem | undefined)[]
+}> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
     const orderId = Number(params.orderId)
 
     if (!orderId || isNaN(orderId)) {
-      throw new Error("No Such Order")
+      throw new Error("چنین سفارشی وجود ندارد")
     }
 
     const order = await getOrder({ orderId })
 
-    if (
-      !order ||
-      order.userPhoneNumber != phoneNumber ||
-      (order.isBilled && !order.isInCart)
-    ) {
-      throw new Error("Bad Request")
+    if (!order || order.userPhoneNumber != phoneNumber) {
+      throw new Error("مشکلی پیش آمد")
     }
 
     const user = await getUserByPhone({ phoneNumber })
 
     if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("No Such User")
+      throw new Error("چنین کاربری وجود ندارد")
     }
 
     let price: number = order.totalPrice
@@ -98,44 +130,102 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     const store = await getStore({ storeId: order.storeId })
 
     if (!store || price == null || price == undefined) {
-      throw new Error("Could Not Calculate Price")
+      throw new Error("امکان محاسبه وجود ندارد")
     }
 
     if (store.minOrderPrice > price) {
-      throw new Error("Min Order Price Is Not Met")
+      throw new Error("سفارش شما به حداقل مجاز نرسیده است")
     }
 
-    return { user, order, price }
+    const items = await getFullOrderItems({ orderId })
+
+    if (!items || items.length == 0) {
+      throw new Error("مشکلی پیش آمد")
+    }
+
+    return { user, order, price, store, items }
   } catch (error) {
     throw error
   }
 }
 
 export default function BillPage() {
-  const { user, order, price } = useLoaderData<typeof loader>()
+  const { user, order, price, store, items } = useLoaderData<
+    typeof loader
+  >() as unknown as {
+    user: User
+    order: Order
+    price: number
+    store: Store
+    items: FullOrderItem[]
+  }
+
   const actionData = useActionData()
 
   return (
-    <>
-      Bill order : {order.id}
-      Money Left :{user.credit}
-      Order Price {price}
-      <Form method="post">
-        <button type="submit" disabled={user.credit < price || order.isBilled}>
-          Bill Order
-        </button>
-      </Form>
-      <p>
-        {actionData?.isSuccessful || order.isBilled
-          ? "Successfuly Billed"
-          : undefined}
-        {actionData?.isSuccessful || order.isBilled ? (
-          <Link to={`../../order/${order.id}`}>Go To Order</Link>
+    <main className="_bill-page" aria-label="Bill">
+      <h1> پرداخت سفارش </h1>
+
+      {!order.isBilled ? (
+        <div>
+          <p> اعتبار مانده :{" " + user.credit + " " + DEFAULT_CURRENCY}</p>
+
+          <p> هزینه سفارش {" " + price + " " + DEFAULT_CURRENCY} </p>
+
+          <Link to="/wallet">افزایش اعتبار</Link>
+        </div>
+      ) : null}
+
+      <div>
+        <CartComp orders={[{ items, order, store }]}></CartComp>
+
+        <Form method="post">
+          <Button
+            variant="accent"
+            type="submit"
+            disabled={user.credit < price || order.isBilled}
+          >
+            پرداخت سفارش از اعتبار
+          </Button>
+        </Form>
+      </div>
+
+      <output role="alert" aria-aria-live="assertive">
+        {(actionData && actionData.isSuccessful) || order.isBilled ? (
+          <p className="_success" aria-label="success">
+            با موفقیت پرداخت شد
+          </p>
         ) : undefined}
-        {actionData?.isSuccessful ? "Could Not Perform" : undefined}
-        {/* {actionData.isSuccessful ? setTimeout(redirect("/waiting",200) ,3000) : undefined} */}
-        {actionData?.error?.message}
-      </p>
-    </>
+
+        {actionData && actionData.isUnSuccessful ? (
+          <p className="_error" aria-label="error">
+            مشکلی پیش آمد {actionData?.error?.message}
+          </p>
+        ) : undefined}
+      </output>
+
+      <Link to={`/order/${order.id}`}>بازگشت به صفحه سفارش</Link>
+    </main>
+  )
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError()
+  console.log(error)
+
+  const errorMessage = error instanceof Error ? error.message : undefined
+  return (
+    <div
+      aria-label="error"
+      role="alert"
+      aria-live="assertive"
+      className="boundary-error"
+    >
+      <h1>مشکلی پیش آمد!</h1>
+
+      {errorMessage ? <p>{errorMessage}</p> : null}
+
+      <Link to="/wallet">دوباره امتحان کنید</Link>
+    </div>
   )
 }
