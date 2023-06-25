@@ -1,5 +1,7 @@
 :where(.nav) {
   position: sticky;
+  inset-block-start: 0px;
+  inset-inline-start: 0px;
 
 }
 :where(.nav ul) {
