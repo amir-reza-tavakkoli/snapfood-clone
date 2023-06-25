@@ -19,13 +19,14 @@ import iconCss from "./../components/styles/icon.css"
 import categoryNavCss from "./../components/styles/nav.css"
 import storeContainerCss from "./../components/styles/store-container.css"
 import cityListCss from "./../components/styles/city-list.css"
-import footerCss from "./../components/styles/.css"
+import footerCss from "./../components/styles/footer.css"
 import userMenuCss from "./../components/styles/user-menu.css"
 import { UserMenu } from "~/components/user-menu"
 import { DEAFULT_DIRECTION } from "~/constants"
 import { getUserByPhone } from "~/utils/user.query.server"
 
 import addressesCss from "./../components/styles/addresses.css"
+import { validateUser } from "~/utils/utils.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: homeCss },
@@ -40,47 +41,27 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: addressesCss },
 ]
 
-function linksHierarchy() {
-  const location = useLocation().pathname
-  const splits = location.split("/")
-  const hierarchy: string[] = []
-
-  splits.forEach(split => {
-    if (
-      split === "home" ||
-      split === "stores" ||
-      split === "orders" ||
-      split === "orders-summary" ||
-      split === "cart" ||
-      split === "bill"
-    ) {
-      hierarchy.push(split)
-    }
-  })
-
-  // console.log(hierarchy)
-
-  return hierarchy
-}
-
 export const loader = async ({
   request,
 }: LoaderArgs): Promise<{
   addresses: Address[]
   storesKind: StoreKind[]
   cities: City[] | null
-  user : User | null
+  user: User | null
 }> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
-    const user = await getUserByPhone({phoneNumber})
+    const user = await getUserByPhone({ phoneNumber })
+
+    validateUser({user})
 
     const addresses = await getUserAddresses({ phoneNumber })
 
     const storesKind = await getStoresKind()
 
     const cities = await getSupportedCities()
+
     return { addresses, storesKind, cities, user }
   } catch (error) {
     throw error
@@ -92,10 +73,17 @@ function arePropsEqual() {
 }
 
 export default function Home() {
-  linksHierarchy()
+  const { addresses, storesKind, cities, user } = useLoaderData<
+    typeof loader
+  >() as unknown as {
+    addresses: Address[]
+    storesKind: StoreKind[]
+    cities: City[] | null
+    user: User | null
+  }
 
-  const [userMenu, setuserMenu] = useState(false)
-  const { addresses, storesKind, cities, user } = useLoaderData<typeof loader>()
+
+  const [userMenuShowing, setUserMenuShowing] = useState(false)
   const [addressState, setAddressState] = useState<any>()
 
   const [cityName, setCityName] = useState("")
@@ -138,18 +126,21 @@ export default function Home() {
           dir={DEAFULT_DIRECTION}
           type="Categories"
           items={storesKind.map(kind => {
-
             return {
               name: kind.name,
               avatarUrl: kind.avatarUrl,
-              href: `/home/stores/${cityName}/kind/${kind.name}`,
+              href: `/stores/${cityName}/kind/${kind.name}`,
             }
           })}
         ></CategoryNavMemo>
       </div>
-      <button  onClick={() => setuserMenu((prev) =>!prev)} type="button">gdfgfdgfdg</button>
+      <button onClick={() => setUserMenuShowing(prev => !prev)} type="button">
+        gdfgfdgfdg
+      </button>
       <Outlet context={[addresses, setAddressState]}></Outlet>
-      {userMenu && user ? <UserMenu user={user}></UserMenu> : null}
+      {user ? (
+        <UserMenu user={user} isShowing={userMenuShowing}></UserMenu>
+      ) : null}
       {cities ? (
         <CityListMemo
           dir={DEAFULT_DIRECTION}
