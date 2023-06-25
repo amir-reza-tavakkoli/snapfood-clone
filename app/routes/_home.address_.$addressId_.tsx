@@ -16,7 +16,11 @@ import {
 } from "~/utils/address.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { getUserByPhone } from "~/utils/user.query.server"
-import { DEAFULT_DIRECTION, DEFAULT_CITY, DEFAULT_MIN_ADDRESS_LENGTH } from "../constants"
+import {
+  DEAFULT_DIRECTION,
+  DEFAULT_CITY,
+  DEFAULT_MIN_ADDRESS_LENGTH,
+} from "../constants"
 
 import { Button } from "~/components/button"
 import addressPageCss from "./styles/address-page.css"
@@ -268,7 +272,7 @@ export default function Affresses() {
           ثبت
         </Button>
 
-        <output role="alert" aria-aria-live="assertive">
+        <output aria-label="error" role="alert" aria-aria-live="assertive">
           {result && result.isSuccessful ? (
             <p className="_success">تغییرات ثبت شد</p>
           ) : undefined}
@@ -287,7 +291,12 @@ export function ErrorBoundary() {
 
   const errorMessage = error instanceof Error ? error.message : undefined
   return (
-    <div aria-label="error" role="alert" aria-live="assertive">
+    <div
+      aria-label="error"
+      role="alert"
+      aria-live="assertive"
+      className="boundary-error"
+    >
       <h1>مشکلی پیش آمد!</h1>
 
       {errorMessage ? <p>{errorMessage}</p> : null}

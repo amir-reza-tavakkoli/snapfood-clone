@@ -19,7 +19,7 @@ export const loader = async ({
 }: LoaderArgs): Promise<{
   order: Order
   items: (FullOrderItem | undefined)[]
-  store : Store
+  store: Store
 }> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
@@ -27,19 +27,19 @@ export const loader = async ({
     const orderId = Number(params.orderId)
 
     if (!orderId || isNaN(orderId)) {
-      throw new Error("No Such Order")
+      throw new Error("چنین سفارشی وجود ندارد")
     }
 
     const user = await getUserByPhone({ phoneNumber })
 
     if (!user || user.isSuspended) {
-      throw new Error("No Such User")
+      throw new Error("چنین کاربری وجود ندارد")
     }
 
     const order = await getOrder({ orderId })
 
     if (!order) {
-      throw new Error("No Such Order")
+      throw new Error("چنین سفارشی وجود ندارد")
     }
 
     if (order.userPhoneNumber !== phoneNumber) {
@@ -51,7 +51,7 @@ export const loader = async ({
     const store = await getStore({ storeId: order.storeId })
 
     if (!store) {
-      throw new Error("No Such Order")
+      throw new Error("چنین سفارشی وجود ندارد")
     }
 
     return { items, order, store }

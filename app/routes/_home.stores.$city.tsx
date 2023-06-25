@@ -16,7 +16,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<User> => {
     }
 
     if (user.isSuspended || !user.isVerified) {
-      throw new Error("User Is Not Verified Or Suspended")
+      throw new Error("کاربر مسدود است")
     }
 
     return user
