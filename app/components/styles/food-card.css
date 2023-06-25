@@ -25,7 +25,7 @@
 }
 
 :where(.food-card > div:nth-child(1) > a) {
-display: inherit;
+  display: inherit;
 }
 
 :where(.food-card > div:nth-child(1)) {

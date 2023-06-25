@@ -14,6 +14,7 @@ import { getCart } from "~/utils/cart.query.server"
 
 import orderCss from "~/components/styles/order-summary.css"
 import ordersPageCss from "./styles/orders-page.css"
+import { validateUser } from "~/utils/utils.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },
@@ -28,14 +29,8 @@ export const loader = async ({
 
     const user = await getUserByPhone({ phoneNumber })
 
-    if (!user) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
-
-    if (user.isSuspended || !user.isVerified) {
-      throw new Error("کاربر مسدود است")
-    }
-
+    validateUser({ user })
+    
     const cart = await getCart({ phoneNumber, all: true })
 
     return cart
@@ -51,7 +46,7 @@ export default function Ordersx() {
     <main className="_orders-page">
       <p>سفارش‌ های پیشین</p>
 
-      {cart && cart.orders  ? (
+      {cart && cart.orders ? (
         <Orders orders={cart.orders} dir={DEAFULT_DIRECTION}></Orders>
       ) : (
         <p>سفارشی وجود ندارد ! </p>
@@ -65,12 +60,17 @@ export function ErrorBoundary() {
 
   const errorMessage = error instanceof Error ? error.message : undefined
   return (
-    <div aria-label="error" role="alert" aria-live="assertive">
+    <div
+      aria-label="error"
+      role="alert"
+      aria-live="assertive"
+      className="boundary-error"
+    >
       <h1>مشکلی پیش آمد!</h1>
 
       {errorMessage ? <p>{errorMessage}</p> : null}
 
-      <Link to="/orders">دوباره امتحان کنید</Link>
+      <Link to="/orders-summary">دوباره امتحان کنید</Link>
     </div>
   )
 }

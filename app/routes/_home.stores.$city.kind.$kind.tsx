@@ -23,10 +23,11 @@ export const loader = async ({
     let city = params.city
 
     if (!city || city == "") {
-      return redirect("/home/addresses")
+      return redirect("/addresses")
     }
 
-      const kind = params.kind
+    const kind = params.kind
+    
     stores = await getStoresByCity({
       cityName: city,
       storeKindName: kind ?? undefined,

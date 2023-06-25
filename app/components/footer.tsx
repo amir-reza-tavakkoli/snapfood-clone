@@ -18,7 +18,7 @@ type FooterProps = {
   links?: Reference[]
   contacts?: WithIcon[]
   credentials?: WithImage[]
-  dir? : "rtl" | "lrt"
+  dir?: "rtl" | "lrt"
 }
 
 export const Footer = ({
@@ -55,7 +55,8 @@ export const Footer = ({
     { href: "#", logo: { name: "linkedin" } },
     { href: "#", logo: { name: "instagram" } },
     { href: "#", logo: { name: "aparat" } },
-  ],dir
+  ],
+  dir,
 }: FooterProps) => {
   return (
     <footer className="footer" dir={dir}>

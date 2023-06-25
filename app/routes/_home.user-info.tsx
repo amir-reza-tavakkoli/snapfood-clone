@@ -235,16 +235,20 @@ export function ErrorBoundary() {
   const error = useRouteError()
 
   const errorMessage = error instanceof Error ? error.message : undefined
-  console.log(error);
-  
+  console.log(error)
+
   return (
-    <div aria-label="error" role="alert" aria-live="assertive" className="boundary-error">
+    <div
+      aria-label="error"
+      role="alert"
+      aria-live="assertive"
+      className="boundary-error"
+    >
       <h1>مشکلی پیش آمد!</h1>
 
       {errorMessage ? <p>{errorMessage}</p> : null}
 
       <Link to="/user-info">دوباره امتحان کنید</Link>
-
     </div>
   )
 }

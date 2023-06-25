@@ -24,6 +24,7 @@ import {
 
 import { Button } from "~/components/button"
 import addressPageCss from "./styles/address-page.css"
+import { validateUser } from "~/utils/utils.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: addressPageCss },
@@ -109,16 +110,10 @@ export const loader = async ({
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
-    const user = await getUserByPhone({ phoneNumber })
+    let user = await getUserByPhone({ phoneNumber })
 
-    if (!user) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
-
-    if (user.isSuspended || !user.isVerified) {
-      throw new Error("کاربر مسدود است")
-    }
-
+    user = validateUser({ user })
+    
     let isNew = false
     if (params.addressId === "new") {
       isNew = true

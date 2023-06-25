@@ -12,7 +12,7 @@ type OptionNotesProps = {
   dir?: "rtl" | "lrt"
 }
 
-export const OptionNotes = ({ options,dir }: OptionNotesProps) => {
+export const OptionNotes = ({ options, dir }: OptionNotesProps) => {
   return (
     <dl className="options-card" dir={dir}>
       <dt className="nonvisual">Options</dt>

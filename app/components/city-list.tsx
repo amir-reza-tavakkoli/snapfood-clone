@@ -5,10 +5,15 @@ type CityListProps = {
     name: string
     href?: string
   }[]
-  dir? : "lrt" | "rtl"
+  dir?: "lrt" | "rtl"
 }
 
-export const CityList = ({ title, type = "City", items, dir }: CityListProps) => {
+export const CityList = ({
+  title,
+  type = "City",
+  items,
+  dir,
+}: CityListProps) => {
   return (
     <article className="city-list" dir={dir}>
       <p>{title}</p>

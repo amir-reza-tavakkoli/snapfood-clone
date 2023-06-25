@@ -1,10 +1,13 @@
 import type { Store } from "@prisma/client"
-import { LinksFunction, LoaderArgs, redirect, TypedResponse } from "@remix-run/node"
+import {
+  LinksFunction,
+  LoaderArgs,
+  redirect,
+  TypedResponse,
+} from "@remix-run/node"
 import { Link, Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
 
-import {
-  getStoresByCity,
-} from "~/utils/store.query.server"
+import { getStoresByCity } from "~/utils/store.query.server"
 
 import storeCardCss from "./../components/styles/store-card.css"
 import { StoreContainer } from "~/components/store-container"
@@ -19,14 +22,12 @@ export const loader = async ({
     let stores: Store[] | null = []
     let city = params.city
 
-
     if (!city || city == "") {
       return redirect("/home/addresses")
     }
 
     stores = await getStoresByCity({
       cityName: city,
-
     })
 
     return stores

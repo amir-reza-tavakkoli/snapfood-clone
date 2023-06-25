@@ -4,20 +4,15 @@ import { Link, Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
 import { getUserByPhone } from "~/utils/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { User } from "@prisma/client"
+import { validateUser } from "~/utils/utils.server"
 
 export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
-    const user = await getUserByPhone({ phoneNumber })
+    let user = await getUserByPhone({ phoneNumber })
 
-    if (!user) {
-      throw new Error("Not SuchUser")
-    }
-
-    if (user.isSuspended || !user.isVerified) {
-      throw new Error("کاربر مسدود است")
-    }
+    user = validateUser({ user })
 
     return user
   } catch (error) {

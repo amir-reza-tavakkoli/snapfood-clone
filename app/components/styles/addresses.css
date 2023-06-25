@@ -1,94 +1,94 @@
 :where(.addresses) {
-    display: flex;
-    flex-direction: column;
-    max-block-size: 100%;
-    inline-size: 60%;
-    margin-inline: auto;
-    margin-block-start: var(--length-12);
+  display: flex;
+  flex-direction: column;
+  max-block-size: 100%;
+  inline-size: 60%;
+  margin-inline: auto;
+  margin-block-start: var(--length-12);
 }
 
 :where(.addresses > div:first-of-type) {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-block-end: var(--length-8);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-block-end: var(--length-8);
 }
 
 :where(.addresses > div:first-of-type > p) {
-    margin-inline-end: auto;
-    margin-block: var(--length-6);
-    font-weight: 700;
-    font-size: var(--length-14);
+  margin-inline-end: auto;
+  margin-block: var(--length-6);
+  font-weight: 700;
+  font-size: var(--length-14);
 }
 
 :where(.addresses > div:first-of-type > a) {
-    margin-inline-end: auto;
+  margin-inline-end: auto;
 }
 
 :where(.addresses > div:first-of-type > a > svg) {
-    margin-block-start: var(--length-12);
+  margin-block-start: var(--length-12);
 }
 
 :where(.addresses > div:last-of-type) {
-    display: flex;
-    flex-direction: column;
-    inline-size: 100%;
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  overflow-y: auto;
 }
 
 :where(.addresses > div:last-of-type > li) {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding-inline: 8px;
-    padding-inline-start: 12px;
-    padding-block: var(--length-28);
-    margin-block-start: var(--length-4);
-    margin-block-end: var(--length-12);
-    border: var(--border-normal) solid var(--color-faded-4);
-    border-radius: 6px;
-    color: var(--color-text-2);
-    font-size: var(--length-14);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-inline: 8px;
+  padding-inline-start: 12px;
+  padding-block: var(--length-28);
+  margin-block-start: var(--length-4);
+  margin-block-end: var(--length-12);
+  border: var(--border-normal) solid var(--color-faded-4);
+  border-radius: 6px;
+  color: var(--color-text-2);
+  font-size: var(--length-14);
 }
 
 :where(.addresses > div:last-of-type > li > p) {
-    margin-inline-start: 24px;
-    font-size: var(--length-12);
+  margin-inline-start: 24px;
+  font-size: var(--length-12);
 }
 
 :where(.addresses > div:last-of-type > li button._delete) {
-    margin-inline-start: auto;
-    background-color: transparent;
-    border: none;
+  margin-inline-start: auto;
+  background-color: transparent;
+  border: none;
 }
 
 :where(.addresses > a) {
-    text-decoration: none;
-    color: var(--color-action);
-    font-size: var(--length-16);
-    font-weight: 700;
+  text-decoration: none;
+  color: var(--color-action);
+  font-size: var(--length-16);
+  font-weight: 700;
 }
 
 @media (max-width: 68.75rem) {
-    :where(.addresses) {
-        inline-size: 90%;
-    }
+  :where(.addresses) {
+    inline-size: 90%;
+  }
 }
 
 @media (max-width: 34.375rem) {
-    :where(.addresses) {
-        inline-size: 100%;
-    }
+  :where(.addresses) {
+    inline-size: 100%;
+  }
 
-    :where(.addresses > div:last-of-type > li) {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
+  :where(.addresses > div:last-of-type > li) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 
-    :where(.addresses > div:last-of-type > li > *) {
-        text-align: center;
-        margin-block: var(--length-4);
-        margin-inline: initial;
-    }
+  :where(.addresses > div:last-of-type > li > *) {
+    text-align: center;
+    margin-block: var(--length-4);
+    margin-inline: initial;
+  }
 }

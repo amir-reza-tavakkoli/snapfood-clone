@@ -19,14 +19,17 @@ export type VendorCardProps = {
 export const VendorCard = ({
   name,
   logo,
-  image,ratingRange,ratingValue,
+  image,
+  ratingRange,
+  ratingValue,
   ratingCount,
   deliveryMethod,
   type,
   discount,
   tags,
   deliveryCurrency,
-  deliveryPrice,dir
+  deliveryPrice,
+  dir,
 }: VendorCardProps) => {
   return (
     <dl className="vendor-card" dir={dir}>

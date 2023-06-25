@@ -11,6 +11,7 @@ import type { CartCompProps } from "~/components/cart"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
+import { validateUser } from "~/utils/utils.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -25,13 +26,7 @@ export const loader = async ({
 
     const user = await getUserByPhone({ phoneNumber })
 
-    if (!user) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
-
-    if (user.isSuspended || !user.isVerified) {
-      throw new Error("کاربر مسدود است")
-    }
+    validateUser({ user })
 
     const cart = await getCart({ phoneNumber, all: true })
 

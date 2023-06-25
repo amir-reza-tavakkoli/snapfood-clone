@@ -10,7 +10,7 @@ type BreadCrumbsProps = {
   dir?: "rtl" | "lrt"
 }
 
-export const BreadCrumbs = ({ items,dir }: BreadCrumbsProps) => {
+export const BreadCrumbs = ({ items, dir }: BreadCrumbsProps) => {
   return (
     <nav aria-label="Breadcrumb" className="bread-crumbs" dir={dir}>
       <ol>

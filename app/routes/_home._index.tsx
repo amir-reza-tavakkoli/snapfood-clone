@@ -4,7 +4,6 @@ import { ImageItem } from "~/components/image-item"
 import { LinksFunction, LoaderArgs } from "@remix-run/node"
 import { getItemCategories } from "~/utils/store.query.server"
 
-
 import imageItemCss from "./../components/styles/image-item.css"
 import homeIndexCss from "./styles/home-index.css"
 import { DEFAULT_CITY } from "~/constants"
@@ -42,7 +41,7 @@ export default function Home() {
 
   return (
     <>
-      <Link to={`stores/${city}`}>Go To Stores</Link>
+      <Link to={`stores/${city}`}>رفتن به فروشگاه ها</Link>
       <p className="_category-container-p">دسته بندی ها</p>
       <article className="_category-container">
         {categories

@@ -48,7 +48,6 @@ export function Addresses({ addresses, dir }: AddressesProps) {
         </Link>
 
         <p>انتخاب آدرس</p>
-
       </div>
       <div>
         <p className="nonvisual">Availible Addresses</p>
@@ -84,7 +83,6 @@ export function Addresses({ addresses, dir }: AddressesProps) {
               </Link>
             </li>
           ))
-
         ) : (
           <p>آدرسی وجود ندارد</p>
         )}

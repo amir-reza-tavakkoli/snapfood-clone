@@ -32,6 +32,7 @@ import { DEFAULT_CURRENCY } from "~/constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-order.css"
+import { validateNumberParam, validateOrder, validateStore, validateUser } from "~/utils/utils.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -106,30 +107,26 @@ export const loader = async ({
 
     const orderId = Number(params.orderId)
 
-    if (!orderId || isNaN(orderId)) {
-      throw new Error("چنین سفارشی وجود ندارد")
-    }
+    validateNumberParam(orderId)
 
-    const order = await getOrder({ orderId })
+    let order = await getOrder({ orderId })
 
-    if (!order || order.userPhoneNumber != phoneNumber) {
-      throw new Error("مشکلی پیش آمد")
-    }
+    order = validateOrder({ order, phoneNumber })
 
-    const user = await getUserByPhone({ phoneNumber })
+    let user = await getUserByPhone({ phoneNumber })
 
-    if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
+    user = validateUser({ user })
 
     let price: number = order.totalPrice
     if (!price || price == 0) {
       price = await calculateOrder({ orderId })
     }
 
-    const store = await getStore({ storeId: order.storeId })
+    let store = await getStore({ storeId: order.storeId })
 
-    if (!store || price == null || price == undefined) {
+    store = validateStore({ store })
+
+    if (price == null || price == undefined) {
       throw new Error("امکان محاسبه وجود ندارد")
     }
 

@@ -1,54 +1,53 @@
 :where(._bill-page) {
-    display: flex;
-    flex-direction: column;
-    inline-size: 75%;
-    margin-inline: auto;
-    margin-block: var(--length-10);
-    border: solid var(--color-faded-4) var(--border-extra-thin);
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  inline-size: 75%;
+  margin-inline: auto;
+  margin-block: var(--length-10);
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+  align-items: center;
 }
 
 :where(._bill-page > h1) {
-    font-size: var(--length-24);
-    font-weight: 500;
+  font-size: var(--length-24);
+  font-weight: 500;
 }
 
 :where(._bill-page > *) {
-    margin-block: var(--length-10);
+  margin-block: var(--length-10);
 }
 
 :where(._bill-page > a) {
-    
 }
 
 :where(._bill-page > div p) {
-    font-weight: 600;
-    font-size: var(--length-14);
+  font-weight: 600;
+  font-size: var(--length-14);
 }
 
 :where(._bill-page > div form) {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
-:where(._bill-page > div form  > button) {
-    margin-block: var(--length-16);
-    inline-size: 44px;
-    align-self: center;
-    text-align: center;
+:where(._bill-page > div form > button) {
+  margin-block: var(--length-16);
+  inline-size: 44px;
+  align-self: center;
+  text-align: center;
 }
 
 :where(._bill-page output ._success) {
-    color: var(--color-action);
-    font-weight: 600;
+  color: var(--color-action);
+  font-weight: 600;
 }
 
 :where(._bill-page output ._error) {
-    color: var(--color-error);
+  color: var(--color-error);
 }
 
 @media (max-width: 68.75rem) {
-    :where(._bill-page) {
-        inline-size: 90%;
-    }
+  :where(._bill-page) {
+    inline-size: 90%;
+  }
 }

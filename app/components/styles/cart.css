@@ -1,97 +1,97 @@
 :where(.cart) {
-    inline-size: 100%;
-    display: flex;
-    flex-direction: column;
-    border-start-start-radius: 8px;
-    border-start-end-radius: 8px;
-    justify-content: center;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  border-start-start-radius: 8px;
+  border-start-end-radius: 8px;
+  justify-content: center;
 }
 
 :where(.cart > a) {
-    color: var(--color-text);
+  color: var(--color-text);
 }
 
 :where(.cart ._order) {
-    margin-inline: 12px;
-    display: flex;
-    border: solid var(--color-faded-4) var(--border-extra-thin);
-    flex-direction: column;
+  margin-inline: 12px;
+  display: flex;
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+  flex-direction: column;
 }
 
 :where(.cart ._order > div) {
-    display: flex;
+  display: flex;
 
-    margin-block-end: var(--length-8);
+  margin-block-end: var(--length-8);
 }
 
 :where(.cart ._order > div > img) {
-    margin-inline: 16px;
-    margin-block: var(--length-16);
-    inline-size: 48px;
-    aspect-ratio: 1/1;
-    border: solid var(--color-faded-4) var(--border-extra-thin);
-    border-radius: 6px;
+  margin-inline: 16px;
+  margin-block: var(--length-16);
+  inline-size: 48px;
+  aspect-ratio: 1/1;
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+  border-radius: 6px;
 }
 
 :where(.cart ._order > div > span) {
-    align-self: center;
+  align-self: center;
 }
 
 :where(.cart ._order > div > span > p:first-of-type) {
-    margin-block-end: var(--length-12);
-    font-size: var(--length-14);
-    font-weight: 700;
+  margin-block-end: var(--length-12);
+  font-size: var(--length-14);
+  font-weight: 700;
 }
 
 :where(.cart ._order svg) {
-    inline-size: 14px;
-    block-size: 14px;
-    margin-inline: 4px;
-    aspect-ratio: 1/1;
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline: 4px;
+  aspect-ratio: 1/1;
 }
 
 :where(.cart ._order > div > span > time) {
-    display: block;
-    color: vat(--color-faded);
-    font-size: var(--length-10);
+  display: block;
+  color: vat(--color-faded);
+  font-size: var(--length-10);
 }
 
 :where(.cart ._order > div > p:last-of-type) {
-    align-self: flex-end;
-    font-weight: 700;
-    font-size: var(--length-12);
-    margin-inline-start: auto;
-    margin-inline-end: 12px;
+  align-self: flex-end;
+  font-weight: 700;
+  font-size: var(--length-12);
+  margin-inline-start: auto;
+  margin-inline-end: 12px;
 }
 
 :where(.cart ul) {
-    display: flex;
-    flex-wrap: wrap;
-    margin-inline-start: 54px;
-    margin-block-end: var(--length-16);
-    max-inline-size: 70%;
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline-start: 54px;
+  margin-block-end: var(--length-16);
+  max-inline-size: 70%;
 }
 
 :where(.cart ul img) {
-    margin-inline: 6px;
-    inline-size: 42px;
-    aspect-ratio: 1/1;
-    border: solid var(--color-faded-4) var(--border-extra-thin);
-    margin-block: var(--length-2);
-    border-radius: 4px;
-    margin-inline: 2px;
+  margin-inline: 6px;
+  inline-size: 42px;
+  aspect-ratio: 1/1;
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+  margin-block: var(--length-2);
+  border-radius: 4px;
+  margin-inline: 2px;
 }
 
 :where(.cart ul ._item span) {
-    position: relative;
-    inset-inline-start: -16px;
-    inset-block-end: -6px;
-    display: inline-block;
-    inline-size: 14px;
-    block-size: 14px;
-    text-align: center;
-    font-size: var(--length-10);
-    color:var(--color-primary) ;
-    background-color: var(--color-accent);
-    border-radius: 10000000px;
+  position: relative;
+  inset-inline-start: -16px;
+  inset-block-end: -6px;
+  display: inline-block;
+  inline-size: 14px;
+  block-size: 14px;
+  text-align: center;
+  font-size: var(--length-10);
+  color: var(--color-primary);
+  background-color: var(--color-accent);
+  border-radius: 10000000px;
 }

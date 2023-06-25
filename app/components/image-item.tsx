@@ -7,7 +7,12 @@ export type ImageItemProps = {
   dir?: "rtl" | "lrt"
 }
 
-export const ImageItem = ({ title, image, type = "Category", dir }: ImageItemProps) => {
+export const ImageItem = ({
+  title,
+  image,
+  type = "Category",
+  dir,
+}: ImageItemProps) => {
   return (
     <article className="image-item" aria-label={type ?? undefined} dir={dir}>
       <img src={image} alt="" role="presentation" />

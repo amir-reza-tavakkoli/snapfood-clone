@@ -7,10 +7,15 @@ type HeaderProps = {
   address: string
   about?: string
   dir?: "rtl" | "lrt"
-  x?: React.Dispatch<React.SetStateAction<{z : number}>>
+  x?: React.Dispatch<React.SetStateAction<{ z: number }>>
 }
 
-export const Header = ({ about = "SnappFood", address ,dir, x}: HeaderProps) => {
+export const Header = ({
+  about = "SnappFood",
+  address,
+  dir,
+  x,
+}: HeaderProps) => {
   return (
     <header className="header" dir={dir}>
       <a href="/" aria-label="Home">
@@ -21,7 +26,7 @@ export const Header = ({ about = "SnappFood", address ,dir, x}: HeaderProps) => 
         <Icon name="navigation" role="presentation"></Icon>
         <Link
           aria-label="Address"
-          to={"/home/addresses"}
+          to={"/addresses"}
           onClick={() => (x ? x({ z: 7 }) : undefined)}
         >
           {address}
@@ -62,7 +67,7 @@ export const Header = ({ about = "SnappFood", address ,dir, x}: HeaderProps) => 
         <div></div>
       </form>
       <span className="_buttons">
-        <Link to={'/home/userInfo'}>
+        <Link to={"/home/user-info"}>
           <Button
             variant="primary"
             icon={{ name: "user", color: "text" }}

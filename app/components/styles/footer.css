@@ -249,7 +249,6 @@
 
   :where(.footer ._vendor) {
     flex-direction: column;
-
   }
 }
 

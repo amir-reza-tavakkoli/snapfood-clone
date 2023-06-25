@@ -16,20 +16,13 @@ import {
   generateVerificationExpiry,
   validatePhoneNumber,
   validateUrl,
-} from "~/utils/request.server"
+} from "~/utils/utils.server"
 import { User } from "@prisma/client"
-
-export const ALLOWED_PHONE_PREFIX = "09"
-export const VERIFICATION_CODE_FIGURES = 4
-export const VERIFICATION_CODE_EXPIRY_TIME = 5
-export const ALLOWED_URLS = [
-  "/home",
-  "/",
-  "/home/stores",
-  "/home/orders",
-  "/login",
-  "/home/addresses",
-]
+import {
+  ALLOWED_URLS,
+  VERIFICATION_CODE_EXPIRY_TIME,
+  VERIFICATION_CODE_FIGURES,
+} from "~/constants"
 
 export async function verify() {}
 
@@ -214,6 +207,7 @@ export default function Login() {
                   type="text"
                   id="phoneNumber"
                   name="phoneNumber"
+                  inputMode="tel"
                   defaultValue=""
                   placeholder="09******"
                   aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
@@ -256,6 +250,8 @@ export default function Login() {
 
                 <label htmlFor="verification">Verification Code</label>
                 <input
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
                   type="text"
                   id="verification"
                   name="verification"

@@ -29,29 +29,40 @@
 
   --length-coarse-min: 40px;
 
-  --length-fluid-text: clamp(var(--length-12),
-      var(--length-4) + 1.45vw,
-      var(--length-20));
-  --length-fluid-extra-small: clamp(var(--length-16),
-      var(--length-8) + 1.45vw,
-      var(--length-24));
-  --length-fluid-small: clamp(var(--length-20),
-      var(--length-12) + 1.45vw,
-      var(--length-28));
-  --length-fluid-normal: clamp(var(--length-24),
-      var(--length-16) + 1.45vw,
-      var(--length-32));
-  --length-fluid-big: clamp(var(--length-28),
-      var(--length-20) + 1.45vw,
-      2.25rem);
-  --length-fluid-extra-big: clamp(var(--length-32),
-      var(--length-24) + 1.45vw,
-      var(--length-40));
+  --length-fluid-text: clamp(
+    var(--length-12),
+    var(--length-4) + 1.45vw,
+    var(--length-20)
+  );
+  --length-fluid-extra-small: clamp(
+    var(--length-16),
+    var(--length-8) + 1.45vw,
+    var(--length-24)
+  );
+  --length-fluid-small: clamp(
+    var(--length-20),
+    var(--length-12) + 1.45vw,
+    var(--length-28)
+  );
+  --length-fluid-normal: clamp(
+    var(--length-24),
+    var(--length-16) + 1.45vw,
+    var(--length-32)
+  );
+  --length-fluid-big: clamp(
+    var(--length-28),
+    var(--length-20) + 1.45vw,
+    2.25rem
+  );
+  --length-fluid-extra-big: clamp(
+    var(--length-32),
+    var(--length-24) + 1.45vw,
+    var(--length-40)
+  );
 
   --small: 34.375rem;
   --normal: 68.75rem;
   --big: 137.5rem;
-
 
   --border-extra-thin: 0.01px;
   --border-thin: 0.5px;
@@ -106,8 +117,7 @@
   margin: 0;
   outline-offset: var(--length-8);
   font-family: "IRANSans", system-ui, -apple-system,
-    /* Firefox supports this but not yet `system-ui` */
-    Helvetica, Roboto,
+    /* Firefox supports this but not yet `system-ui` */ Helvetica, Roboto,
     "Segoe UI", sans-serif, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
@@ -188,7 +198,7 @@ input[type="radio"]:checked {
 }
 
 input[type="radio"]:checked::before {
-  transform: scale(1.50) translatex(-0.25px) translateY(-0.25px);
+  transform: scale(1.5) translatex(-0.25px) translateY(-0.25px);
 }
 
 input[type="radio"]:focus,
@@ -206,7 +216,7 @@ input[type="radio"]:hover {
 ::-webkit-scrollbar-track {
   background-color: #0000;
   border-radius: 7px;
-  cursor: pointer
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar-track:hover {
@@ -216,8 +226,8 @@ input[type="radio"]:hover {
 ::-webkit-scrollbar-thumb {
   background-color: var(--color-faded);
   border-radius: 16px;
-  -webkit-transition: all .2s linear;
-  transition: all .2s linear
+  -webkit-transition: all 0.2s linear;
+  transition: all 0.2s linear;
 }
 
 ::-webkit-scrollbar-thumb:hover {
