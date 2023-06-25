@@ -34,11 +34,17 @@ export default function App() {
 export function ErrorBoundary() {
   const error = useRouteError()
 
-  const errorMessage = error instanceof Error ? error.message : "Unknown error"
+  const errorMessage = error instanceof Error ? error.message : undefined
   return (
-    <div>
-      <h1>Error</h1>
-      <pre>{errorMessage}</pre>
+    <div
+      aria-label="error"
+      role="alert"
+      aria-live="assertive"
+      className="boundary-error"
+    >
+      <h1>مشکلی پیش آمد!</h1>
+
+      {errorMessage ? <p>{errorMessage}</p> : null}
     </div>
   )
 }
