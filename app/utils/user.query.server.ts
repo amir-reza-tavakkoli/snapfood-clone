@@ -32,7 +32,7 @@ export async function createOrUpdateUser({
   phoneNumber: string
   firstName?: string
   lastName?: string
-  gender?: string
+  gender?: boolean
   birthday?: string
   email?: string
   isSuspended?: boolean

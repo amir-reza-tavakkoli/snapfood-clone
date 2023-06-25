@@ -43,19 +43,19 @@ export async function getStoresByCity({
   storeKindName,
 }: {
   cityName: string
-  storeKindName? : string
+  storeKindName?: string
 }): Promise<Store[] | null> {
   try {
     const city = await db.city.findUnique({ where: { name: cityName } })
 
     if (!city) {
-      throw new Error("Unsupported City")
+      throw new Error("این شهر پشتیبانی نمی شود")
     }
 
     const stores = await db.store.findMany({
       where: {
         cityName,
-        storeKindName
+        storeKindName,
       },
       orderBy: { id: "desc" },
     })
@@ -143,7 +143,7 @@ export async function getStoreCategories({
     const store = await getStore({ storeId })
 
     if (!store) {
-      throw new Error("No Such Store")
+      throw new Error("فروشگاهی با این مشخصات وجود ندارد")
     }
 
     const { items } = await getStoreItems({ storeId })
@@ -229,7 +229,7 @@ export async function getStoresKind(): Promise<StoreKind[]> {
 
 export async function getItemCategories() {
   try {
-    const categories = await db.itemCategory.findMany({take: 12})
+    const categories = await db.itemCategory.findMany({ take: 12 })
 
     return categories
   } catch (error) {

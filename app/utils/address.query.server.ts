@@ -43,7 +43,7 @@ export async function createAddress({
     const cities = await getCities()
 
     if (!cities || !cities.find(city => city.name === cityName)) {
-      throw new Error("Unsupported City")
+      throw new Error("این شهر پشتیبانی نمی شود")
     }
 
     const newAddress = await db.address.create({
@@ -88,13 +88,17 @@ export async function updateAddress({
     const previousAddress = await getAddressById({ addressId: id })
 
     if (!previousAddress) {
-      throw new Error("Not Such Address")
+      throw new Error("آدرس اشتباه است")
     }
 
     const cities = await getCities()
 
-    if (!cities || !cities.find(city => city.name === cityName)) {
-      throw new Error("Unsupported City")
+    if (!cities) {
+      throw new Error("مشکلی پیش آمده")
+    }
+
+    if (!cities.find(city => city.name === cityName)) {
+      throw new Error("این شهر پشتیبانی نمی شود")
     }
 
     const newAddress: Address = await db.address.update({
