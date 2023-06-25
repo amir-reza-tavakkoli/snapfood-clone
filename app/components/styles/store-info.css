@@ -132,6 +132,24 @@
   border-color: var(--color-action-4);
 }
 
+:where(.store-info ._categories) {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text-2);
+  font-size: var(--length-14);
+  margin-block-start: min(16px, var(--length-12));
+  font-weight: 600;
+}
+
+:where(.store-info ._categories > li) {
+  padding-block: var(--length-6);
+  align-self: flex-end;
+}
+
+:where(.store-info ._categories > li > a) {
+  color: var(--color-text-2);
+}
+
 @media (prefers-contrast: more) {
   :where(.store-info ._rating-count) {
     color: var(--color-text);
