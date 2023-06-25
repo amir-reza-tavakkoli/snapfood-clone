@@ -5,7 +5,7 @@ import { getStoreCategories } from "./../app/utils/store.query.server"
 
 const prisma = new PrismaClient()
 
-async function constants() {
+async function seedConstants() {
   await prisma.storeKind.createMany({
     data: [
       {
@@ -266,16 +266,23 @@ async function constants() {
       {
         name: "نوشیدنی",
       },
+      {
+        name: "خوراک",
+      },
+      {
+        name: "ویژه",
+      },
     ],
   })
 }
 
-async function seedFirstStore() {
+async function seedFirstData() {
   const user = await prisma.user.create({
     data: {
       phoneNumber: "09900249950",
       firstName: "Amir",
       lastName: "Tavakkoli",
+      gender: false,
       credit: 1000000,
     },
   })
@@ -285,6 +292,7 @@ async function seedFirstStore() {
       phoneNumber: "09121234567",
       firstName: "Ahmad",
       lastName: "Sadeghi",
+      gender: false,
       credit: 1000000,
     },
   })
@@ -317,6 +325,7 @@ async function seedFirstStore() {
         description:
           "یک سیخ جوجه کباب زعفرانی، ۲۶۰ گرم برنج خارجی، دورچین: گوجه کبابی، فلفل کبابی، لیمو، کره",
         basePrice: 175000,
+        estimatedDeliveryTime: 45,
         avatarUrl:
           "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb855bcb2ec.jpg",
         itemCategoryName: "ایرانی",
@@ -330,6 +339,7 @@ async function seedFirstStore() {
         name: "زرشک پلو با مرغ",
         description: `یک عدد ران مرغ ۴۰۰ گرمی سس پز، ۴۵۰ گرم برنج خارجی، دورچین: لیموترش`,
         basePrice: 155000,
+        estimatedDeliveryTime: 45,
         avatarUrl:
           "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb8ada4c81c.jpg",
         itemCategoryName: "ایرانی",
@@ -340,9 +350,63 @@ async function seedFirstStore() {
   items.push(
     await prisma.item.create({
       data: {
+        name: "خوراک کباب شیشلیک با استخوان",
+        description: `یک سیخ کباب شیشلیک گوشت دنده گوسفندی ۴۵۰ گرمی، دورچین: گوجه کبابی، فلفل کبابی، لیمو، یک عدد نان لواش`,
+        basePrice: 355000,
+        estimatedDeliveryTime: 75,
+        itemCategoryName: "خوراک",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چلو خورشت قورمه سبزی",
+        description: `۴۰۰ گرم خورشت قورمه، ۵ تکه گوشت گوسفندی، ۴۵۰ گرم برنج خارجی`,
+        basePrice: 125000,
+        estimatedDeliveryTime: 35,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb878ed4727.jpg",
+        itemCategoryName: "ایرانی",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چلو میگو ویژه",
+        description: `۳۰۰ گرم میگو، طعم دار شده با سس مخصوص، دوپیازه میگو، دورچین: لیمو، یک عدد نان لواش`,
+        basePrice: 225000,
+        estimatedDeliveryTime: 75,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/5d5543b4a75ae.jpg",
+        itemCategoryName: "دریایی",
+      },
+    }),
+  )
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چلو ماهی ویژه",
+        description: `۳۰۰ گرم ماهی طعم دار شده با سس مخصوص، دوپیازه ماهی دورچین: لیمو، یک عدد نان لواش`,
+        basePrice: 205000,
+        estimatedDeliveryTime: 75,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/5d5543b4a75ae.jpg",
+        itemCategoryName: "دریایی",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
         name: "دوغ قوطی پارسی",
         description: "۳۳۰ میلی لیتر",
         basePrice: 8000,
+        estimatedDeliveryTime: 5,
         avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/5d4416dec86cf.jpg`,
         itemCategoryName: "نوشیدنی",
       },
@@ -419,12 +483,13 @@ async function seedFirstStore() {
   })
 }
 
-async function seedSecondStore() {
+async function seedSecondData() {
   const user = await prisma.user.create({
     data: {
       phoneNumber: "09173196544",
       firstName: "Reza",
       lastName: "Habibi",
+      gender: false,
       credit: 1000000,
     },
   })
@@ -433,6 +498,7 @@ async function seedSecondStore() {
     data: {
       phoneNumber: "09825486201",
       firstName: "Ghader",
+      gender: false,
       lastName: "Eskandari",
       credit: 1000000,
     },
@@ -465,6 +531,7 @@ async function seedSecondStore() {
         description:
           "گوشت گوساله خالص ،گردو، سوسیس چوریتسو،پنیرورقه ای، قارچ، نان مک دونالد",
         basePrice: 220000,
+        estimatedDeliveryTime: 75,
         avatarUrl:
           "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/6329709095616.jpeg",
         itemCategoryName: "برگر",
@@ -478,6 +545,7 @@ async function seedSecondStore() {
         name: "فیله استریپس (چهار تکه)",
         description: `۴ تکه فیله سوخاری، سیب زمینی سرخ شده، سالاد کلم، نان بروتچن`,
         basePrice: 305000,
+        estimatedDeliveryTime: 45,
         avatarUrl:
           "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296fbdb7975.jpeg",
         itemCategoryName: "فست فود",
@@ -491,6 +559,7 @@ async function seedSecondStore() {
         name: "ساندویچ برگر تنوری سینگل",
         description: `برگر دست ساز گوشت گوساله خالص ، میکس پنیر پیتزا، چیپس، سس قارچ، نان باگت فرانسوی`,
         basePrice: 180000,
+        estimatedDeliveryTime: 55,
         avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/630dcf51c29db.jpeg`,
         itemCategoryName: "ساندویچ",
       },
@@ -503,6 +572,7 @@ async function seedSecondStore() {
       data: {
         name: "فانتا قوطی",
         description: "۳۳۰ میلی لیتر",
+        estimatedDeliveryTime: 5,
         basePrice: 19000,
         avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296e4b8b231.jpeg`,
         itemCategoryName: "نوشیدنی",
@@ -580,7 +650,212 @@ async function seedSecondStore() {
   })
 }
 
-constants()
+async function seedThirdData() {
+  const user = await prisma.user.create({
+    data: {
+      phoneNumber: "09901234568",
+      gender: true,
+      credit: 1000000,
+    },
+  })
+
+  const storeOwner = await prisma.user.create({
+    data: {
+      phoneNumber: "09121231111",
+      firstName: "Ahmad",
+      lastName: "Saberi",
+      gender: false,
+      credit: 1000000,
+    },
+  })
+
+  const storeAddress = await prisma.address.create({
+    data: {
+      address: "شهرک اسلام خیابان بندر جنب بانک ملی",
+      unit: 5,
+      cityName: "شیراز",
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const userAddress = await prisma.address.create({
+    data: {
+      address: "شهرک اسلام کوچه 9",
+      unit: 4,
+      cityName: "شیراز",
+      userPhoneNumber: user.phoneNumber,
+    },
+  })
+
+  let items: Item[] = []
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چلو جوجه کباب زعفرانی",
+        description:
+          "یک سیخ جوجه کباب زعفرانی، ۲۶۰ گرم برنج خارجی، دورچین: گوجه کبابی، فلفل کبابی، لیمو، کره",
+        basePrice: 175000,
+        estimatedDeliveryTime: 45,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb855bcb2ec.jpg",
+        itemCategoryName: "ایرانی",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "زرشک پلو با مرغ",
+        description: `یک عدد ران مرغ ۴۰۰ گرمی سس پز، ۴۵۰ گرم برنج خارجی، دورچین: لیموترش`,
+        basePrice: 155000,
+        estimatedDeliveryTime: 45,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb8ada4c81c.jpg",
+        itemCategoryName: "ایرانی",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "خوراک کباب شیشلیک با استخوان",
+        description: `یک سیخ کباب شیشلیک گوشت دنده گوسفندی ۴۵۰ گرمی، دورچین: گوجه کبابی، فلفل کبابی، لیمو، یک عدد نان لواش`,
+        basePrice: 355000,
+        estimatedDeliveryTime: 75,
+        itemCategoryName: "خوراک",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چلو خورشت قورمه سبزی",
+        description: `۴۰۰ گرم خورشت قورمه، ۵ تکه گوشت گوسفندی، ۴۵۰ گرم برنج خارجی`,
+        basePrice: 125000,
+        estimatedDeliveryTime: 35,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/63cb878ed4727.jpg",
+        itemCategoryName: "ایرانی",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چلو میگو ویژه",
+        description: `۳۰۰ گرم میگو، طعم دار شده با سس مخصوص، دوپیازه میگو، دورچین: لیمو، یک عدد نان لواش`,
+        basePrice: 225000,
+        estimatedDeliveryTime: 75,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/5d5543b4a75ae.jpg",
+        itemCategoryName: "دریایی",
+      },
+    }),
+  )
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چلو ماهی ویژه",
+        description: `۳۰۰ گرم ماهی طعم دار شده با سس مخصوص، دوپیازه ماهی دورچین: لیمو، یک عدد نان لواش`,
+        basePrice: 205000,
+        estimatedDeliveryTime: 75,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/5d5543b4a75ae.jpg",
+        itemCategoryName: "دریایی",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "دوغ قوطی پارسی",
+        description: "۳۳۰ میلی لیتر",
+        basePrice: 8000,
+        estimatedDeliveryTime: 5,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/27/15/9/product_image/zoodfood/5d4416dec86cf.jpg`,
+        itemCategoryName: "نوشیدنی",
+      },
+      // {name:"", description:"", basePrice:,avatarUrl:"",},
+    }),
+  )
+
+  const store = await prisma.store.create({
+    data: {
+      name: "کترینگ پُرس",
+      avatarUrl:
+        "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
+      minOrderPrice: 20000,
+      storeKindName: "رستوران",
+      cityName: storeAddress.cityName,
+      addressId: storeAddress.id,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const itemsInStore = await Promise.all(
+    items.map(item =>
+      prisma.storeHasItems.create({
+        data: {
+          storeId: store.id,
+          itemId: item.id,
+          price: item.basePrice!,
+          remainingCount: 100,
+          infiniteSupply: true,
+        },
+      }),
+    ),
+  )
+
+  const storeCategories = await getStoreCategories({ storeId: store.id })
+
+  await prisma.storeHasItemCategories.createMany({
+    data: storeCategories.map(category => {
+      return { storeId: store.id, itemCategoryName: category }
+    }),
+  })
+
+  const order = await prisma.order.create({
+    data: {
+      packagingPrice: 10000,
+      storeId: store.id,
+      userPhoneNumber: user.phoneNumber,
+      addressId: userAddress.id,
+      taxPercent: 10,
+      estimatedDeliveryTime: 55,
+      shipmentPrice: 0,
+      totalPrice: 0,
+    },
+  })
+
+  const itemsInOrder = await Promise.all(
+    items.map(item =>
+      prisma.orderHasItems.create({
+        data: {
+          count: 1,
+          itemId: item.id,
+          orderId: order.id,
+        },
+      }),
+    ),
+  )
+
+  const comment = await prisma.comment.create({
+    data: {
+      orderId: order.id,
+      isPositive: true,
+      score: 5,
+      description: "عالییی",
+    },
+  })
+}
+
+seedConstants()
   .then(async () => {
     await seed()
     await prisma.$disconnect()
@@ -593,7 +868,7 @@ constants()
   })
 
 async function seed() {
-  await seedFirstStore()
+  await seedFirstData()
     .then(async () => {
       await prisma.$disconnect()
     })
@@ -604,7 +879,18 @@ async function seed() {
       process.exit(1)
     })
 
-  await seedSecondStore()
+  await seedSecondData()
+    .then(async () => {
+      await prisma.$disconnect()
+    })
+
+    .catch(async e => {
+      console.error(e)
+      await prisma.$disconnect()
+      process.exit(1)
+    })
+
+  await seedThirdData()
     .then(async () => {
       await prisma.$disconnect()
     })

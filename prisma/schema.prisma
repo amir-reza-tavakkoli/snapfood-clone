@@ -80,13 +80,14 @@ model StoreKind {
 }
 
 model Item {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String
-  description String?
-  avatarUrl   String?
-  basePrice   Float?
+  id                    Int      @id @default(autoincrement())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  name                  String
+  description           String?
+  avatarUrl             String?
+  basePrice             Float?
+  estimatedDeliveryTime Int @default(15)
 
   isAvailible Boolean @default(true)
   isVerified  Boolean @default(true)
@@ -121,6 +122,7 @@ model StoreHasItems {
   discountPercent    Float?
   remainingCount     Int
   estimatedReadyTime Int      @default(10)
+  infiniteSupply Boolean @default(false)
 
   isAvailible Boolean @default(true)
   isVerified  Boolean @default(true)
@@ -157,10 +159,10 @@ model storeSchedule {
 
 model User {
   phoneNumber            String    @id
-  firstName              String?
+  firstName              String?   @default("کاربر")
   lastName               String?
   birthday               DateTime?
-  gender                 String?
+  gender                 Boolean @default(false) //DENORMALIZED
   email                  String?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
@@ -185,16 +187,17 @@ model Order {
   taxPercent            Int
   packagingPrice        Float
   estimatedDeliveryTime Int
-  dsescription  String?
+  dsescription          String?
 
-  isBilled          Boolean @default(false)
-  isInCart          Boolean @default(false)
-  isVerifiedByAdmin Boolean @default(true)
-  isVerifiedByStore Boolean @default(true)
-  isShipped         Boolean @default(false)
-  isDelivered       Boolean @default(false)
-  isCanceled        Boolean @default(false)
-  isDelayedByStore  Boolean @default(false)
+  billDate          DateTime?
+  isBilled          Boolean   @default(true)
+  isInCart          Boolean   @default(false)
+  isVerifiedByAdmin Boolean   @default(true)
+  isVerifiedByStore Boolean   @default(true)
+  isShipped         Boolean   @default(false)
+  isDelivered       Boolean   @default(false)
+  isCanceled        Boolean   @default(false)
+  isDelayedByStore  Boolean   @default(false)
 
   storeId         Int
   store           Store   @relation(fields: [storeId], references: [id])
