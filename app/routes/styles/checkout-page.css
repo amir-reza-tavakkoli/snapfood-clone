@@ -1,0 +1,46 @@
+:where(._checkout-page) {
+    margin-inline: auto;
+    border: solid var(--color-faded-4) var(--border-extra-thin);
+    inline-size: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+:where(._checkout-page > h1) {
+    margin-block: var(--length-16);
+        font-size: var(--length-20);
+    font-weight: 600;
+}
+
+:where(._checkout-page > form > button) {
+    margin-block: var(--length-12);
+        inline-size: 44px;
+}
+
+:where(._checkout-page form textarea) {
+    margin-block: var(--length-12);
+    inline-size: 100%;
+    border: solid var(--color-faded-4) var(--border-thin);
+    block-size: var(--length-64);
+}
+
+:where(._checkout-page form) {
+    inline-size: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+@media (max-width: 37.5rem) {
+    :where(._checkout-page) {
+        inline-size: 90%;
+    }
+}
+
+@media (max-width: 68.75rem) {
+    :where(._checkout-page) {
+        inline-size: 75%;
+    }
+}
