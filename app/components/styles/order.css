@@ -1,0 +1,65 @@
+:where(.order) {
+    display: block;
+    inline-size: 100%;
+    border: solid var(--color-faded-4) var(--border-extra-thin);
+    color: var(--color-text-2);
+}
+
+:where(.order ul) {
+    inline-size: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-block: var(--length-10);
+    padding-inline: var(--length-10);
+}
+
+:where(.order ul li) {
+    font-size: var(--length-12);
+    inline-size: 100%;
+    padding-block: var(--length-10);
+    padding-inline: var(--length-10);
+    justify-content: space-between;
+    display: flex;
+    color: var(--color-text-2);
+}
+
+:where(.order ul li img) {
+    inline-size: 40px;
+    aspect-ratio: 1/1;
+    padding-block: var(--length-6);
+    padding-inline: var(--length-4);
+}
+
+:where(.order ._item-name) {
+    padding-inline: var(--length-4);
+    /* font-size: var(--length-12); */
+    align-self: center;
+}
+
+:where(.order ._total) {
+    font-weight: 600;
+}
+
+:where(.order ._discount) {
+    color: var(--color-accent);
+}
+
+:where(.order ._price) {
+    font-weight: 600;
+}
+
+:where(.order ._count) {
+    margin-inline-start: auto;
+}
+
+:where(.order ._store > span) {
+    margin-inline-end: auto;
+    align-self: flex-end;
+}
+
+:where(.order ._store-img) {
+    inline-size: 60px;
+    /* margin-inline-start: auto; */
+}
