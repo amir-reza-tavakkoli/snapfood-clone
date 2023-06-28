@@ -23,7 +23,7 @@ import {
   DEFAULT_MIN_ADDRESS_LENGTH,
 } from "../constants"
 
-import { ClientOnly } from "../components/client"
+import { ClientOnly } from "../client"
 import { MapComponent } from "../components/map.client"
 
 import { Button } from "~/components/button"
