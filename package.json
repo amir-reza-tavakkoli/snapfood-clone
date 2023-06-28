@@ -21,9 +21,12 @@
     "@remix-run/react": "^1.16.1",
     "@remix-run/serve": "^1.16.1",
     "@remix-run/server-runtime": "^1.16.1",
+    "@types/leaflet": "^1.9.3",
     "isbot": "^3.6.8",
+    "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
     "sanitize.css": "^13.0.0"
   },
   "devDependencies": {
