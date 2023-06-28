@@ -312,6 +312,8 @@ async function seedFirstData() {
       address: "شیراز فرهنگ شهر کوچه 35",
       unit: 4,
       cityName: "شیراز",
+      xAxis: 35,
+      yAxis: 42,
       userPhoneNumber: user.phoneNumber,
     },
   })
