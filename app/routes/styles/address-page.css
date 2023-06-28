@@ -87,6 +87,10 @@
   color: var(--color-error);
 }
 
+:where(._address-page > form #__map) {
+  inline-size: 100%;
+}
+
 @media (max-width: 37.5rem) {
   :where(._address-page) {
     inline-size: 90%;
