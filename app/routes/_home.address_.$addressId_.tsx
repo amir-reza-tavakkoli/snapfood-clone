@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import type { Address, City } from "@prisma/client"
 import {
   Form,
@@ -19,15 +19,25 @@ import { getUserByPhone } from "~/utils/user.query.server"
 import {
   DEAFULT_DIRECTION,
   DEFAULT_CITY,
+  DEFAULT_COORDINATIONS,
   DEFAULT_MIN_ADDRESS_LENGTH,
 } from "../constants"
+
+import { ClientOnly } from "../components/client"
+import { MapComponent } from "../components/map.client"
 
 import { Button } from "~/components/button"
 import addressPageCss from "./styles/address-page.css"
 import { validateUser } from "~/utils/utils.server"
 
+import type { LatLngTuple, Map } from "leaflet"
+
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: addressPageCss },
+  {
+    rel: "stylesheet",
+    href: "https://unpkg.com/leaflet@1.8.0/dist/leaflet.css",
+  },
 ]
 
 export const action = async ({
@@ -47,8 +57,10 @@ export const action = async ({
     const address: string | undefined = form.get("address")
     const title: string | undefined = form.get("title")
     const unit: number | undefined = Number(form.get("unit"))
+    const xAxis: number | undefined = Number(form.get("xAxis"))
+    const yAxis: number | undefined = Number(form.get("yAxis"))
     const details: string | undefined = form.get("details")
-    console.log(cityName, "jjjjj")
+    console.log("ooo",xAxis)
 
     if (
       !address ||
@@ -56,7 +68,9 @@ export const action = async ({
       !addressId ||
       !unit ||
       !Number(addressId) ||
-      !cityName
+      !cityName ||
+      isNaN(xAxis) ||
+      isNaN(yAxis)
     ) {
       return {
         isUnsuccessful: true,
@@ -88,6 +102,8 @@ export const action = async ({
       cityName,
       address,
       title,
+      xAxis,
+      yAxis,
       unit: Number(unit),
       details,
     }))
@@ -113,7 +129,7 @@ export const loader = async ({
     let user = await getUserByPhone({ phoneNumber })
 
     user = validateUser({ user })
-    
+
     let isNew = false
     if (params.addressId === "new") {
       isNew = true
@@ -140,6 +156,8 @@ export const loader = async ({
         cityName: DEFAULT_CITY,
         unit: 0,
         id: -1,
+        xAxis: 0,
+        yAxis: 0,
         isAvailible: false,
         isValid: false,
         createdAt: new Date(Date.now()),
@@ -177,12 +195,35 @@ export default function Affresses() {
   const [title, setTitle] = useState(address.title)
   const [unit, setUnit] = useState(address.unit)
   const [details, setDetails] = useState(address.details)
+  console.log(address)
+
+  const [map, setMap] = useState<Map | null>(null)
 
   return (
     <main className="_address-page" dir={DEAFULT_DIRECTION}>
       <p>جزییات آدرس</p>
+
       <Form method="post">
-        <input type="text" name="addressId" hidden value={address.id} />
+        <p className="nonvisual">Map</p>
+
+        <ClientOnly
+          fallback={<div style={{ height: 400, background: "#d1d1d1" }} />}
+        >
+          {() => (
+            <MapComponent
+              map={map}
+              setMap={setMap}
+              height={"400px"}
+              initPosition={[
+                address.xAxis ?? DEFAULT_COORDINATIONS.xAxis,
+                address.yAxis ?? DEFAULT_COORDINATIONS.yAxis,
+              ]}
+            />
+          )}
+        </ClientOnly>
+
+        <input type="hidden" name="addressId" value={address.id} />
+
         <div>
           <label htmlFor="address">نشانی</label>
           <input
