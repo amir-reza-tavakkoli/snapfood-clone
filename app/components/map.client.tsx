@@ -1,91 +1,23 @@
-// import { LatLngTuple, Marker, Popup } from "leaflet"
-import { LatLngTuple } from "leaflet"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import type { LatLngTuple, Map, Marker } from "leaflet"
+import {
+  MapContainer,
+  TileLayer,
+  Marker as MarkerComponent,
+} from "react-leaflet"
+import { DEFAULT_MAP_ZOOM } from "~/constants"
 
-// import { useCallback, useEffect, useMemo, useState } from "react"
-// import { MapContainer, TileLayer } from "react-leaflet"
-
-// const center = {
-//   lat: 51.505,
-//   lng: -0.09,
-// }
-
-// function DraggableMarker() {
-//   const [draggable, setDraggable] = useState(false)
-//   const [position, setPosition] = useState(center)
-//   const markerRef = useRef(null)
-//   const eventHandlers = useMemo(
-//     () => ({
-//       dragend() {
-//         const marker:any = markerRef.current
-//         if (marker != null) {
-//           setPosition(marker.getLatLng())
-//         }
-//       },
-//     }),
-//     [],
-//   )
-//   const toggleDraggable = useCallback(() => {
-//     setDraggable(d => !d)
-//   }, [])
-
-//   return (
-//     <Marker
-//       draggable={draggable}
-//       eventHandlers={eventHandlers}
-//       position={position}
-//       ref={markerRef}
-//     >
-//       <Popup minWidth={90}>
-//         <span onClick={toggleDraggable}>
-//           {draggable
-//             ? "Marker is draggable"
-//             : "Click here to make marker draggable"}
-//         </span>
-//       </Popup>
-//     </Marker>
-//   )
-// }
-
-// export function Map({ height, position }: { height: string; position: LatLngTuple }) {
-//      const x: LatLngTuple = [51.505, -0.09]
-// let [map, setMap] = useState(null);
-//   return (
-//     <div style={{ height }}>
-//       <MapContainer
-//         style={{
-//           height: "100%",
-//         }}
-//         center={position}
-//         zoom={13}
-//         scrollWheelZoom={false} doubleClickZoom={"center"}
-//         ref={setMap}
-//       >
-//         <TileLayer
-//           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//         />
-//         <Marker position={position}>
-//           <Popup>
-//             A pretty CSS3 popup. <br /> Easily customizable.
-//           </Popup>
-//         </Marker>
-//         <DraggableMarker />
-//       </MapContainer>
-//     </div>
-//   )
-// }
-const center = [51.505, -0.09]
-const zoom = 13
-function DisplayPosition({ map }: any) {
+function DisplayPosition({ map, marker }: { map: Map; marker: Marker | null }) {
   const [position, setPosition] = useState(() => map.getCenter())
 
   const onClick = useCallback(() => {
-    map.setView(center, zoom)
+    map.setView(map.getCenter(), DEFAULT_MAP_ZOOM)
   }, [map])
 
   const onMove = useCallback(() => {
+    if (marker) {
+      marker.setLatLng(map.getCenter())
+    }
     setPosition(map.getCenter())
   }, [map])
 
@@ -97,36 +29,52 @@ function DisplayPosition({ map }: any) {
   }, [map, onMove])
 
   return (
-    <p>
-      latitude: {position.lat.toFixed(4)}, longitude: {position.lng.toFixed(4)}{" "}
-      <button onClick={onClick}>reset</button>
-    </p>
+    <>
+      <HiddenInput
+        position={{
+          lat: Number(position.lat.toFixed(4)),
+          lng: Number(position.lng.toFixed(4)),
+        }}
+      ></HiddenInput>
+    </>
   )
 }
 
-export function Map({
-  height,
-  position,
+export function MapComponent({
+  height = "400px",
+  initPosition,
+  map,
+  setMap,
 }: {
-  height: string
-  position: LatLngTuple
+  map: Map | null
+  setMap: React.Ref<Map> | undefined
+  height?: string
+  initPosition: LatLngTuple
 }) {
-  const [map, setMap] = useState(null)
+  const [marker, setMarker] = useState<Marker | null>(null)
 
   const displayMap = useMemo(
     () => (
       <MapContainer
-        center={position}
+        center={initPosition}
         zoom={13}
         scrollWheelZoom={false}
+        doubleClickZoom="center"
+        easeLinearity={1}
+        maxZoom={17}
+        minZoom={2}
         ref={setMap}
         style={{ height }}
+        id="__map"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        // <Marker position={position}></Marker>
+        <MarkerComponent
+          position={initPosition}
+          ref={setMarker}
+        ></MarkerComponent>
       </MapContainer>
     ),
     [],
@@ -134,8 +82,21 @@ export function Map({
 
   return (
     <div>
-      {map ? <DisplayPosition map={map} /> : null}
+      {map ? <DisplayPosition map={map} marker={marker} /> : null}
       {displayMap}
+    </div>
+  )
+}
+
+export function HiddenInput({
+  position,
+}: {
+  position: { lng: number; lat: number }
+}) {
+  return (
+    <div style={{width : 0}}>
+      <input type="hidden" name="xAxis" value={position.lat} />
+      <input type="hidden" name="yAxis" value={position.lng} />
     </div>
   )
 }
