@@ -9,3 +9,8 @@ export const ALLOWED_PHONE_PREFIX = "09"
 export const VERIFICATION_CODE_FIGURES = 4
 export const VERIFICATION_CODE_EXPIRY_TIME = 5 //mins
 export const ALLOWED_URLS = ["/", "/stores", "/orders", "/login", "/addresses"]
+export const DEFAULT_COORDINATIONS = {
+  xAxis: 35.7152,
+  yAxis: 51.4043,
+} // tehran
+export const DEFAULT_MAP_ZOOM = 13
