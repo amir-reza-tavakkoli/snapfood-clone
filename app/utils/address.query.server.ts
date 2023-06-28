@@ -74,6 +74,8 @@ export async function updateAddress({
   isValid,
   title,
   unit,
+  xAxis,
+  yAxis,
 }: {
   id: number
   address?: string
@@ -82,6 +84,8 @@ export async function updateAddress({
   isAvailible?: boolean
   isValid?: boolean
   title?: string
+  xAxis: number
+  yAxis: number
   unit?: number
 }): Promise<Address> {
   try {
@@ -113,6 +117,8 @@ export async function updateAddress({
         isValid,
         title,
         unit,
+        xAxis,
+        yAxis,
       },
     })
 
