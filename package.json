@@ -12,6 +12,7 @@
     "prisma-format": "npx prisma format",
     "seed": "ts-node --esm prisma/seed.ts",
     "prisma-push": "npx prisma db push",
+    "prisma-studio": "npx prisma studio",
     "prisma-reset": "npx prisma db push --force-reset"
   },
   "dependencies": {
