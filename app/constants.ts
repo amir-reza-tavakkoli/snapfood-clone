@@ -1,3 +1,4 @@
+export const VENDOR_NAME = "اسنپ فود"
 export const DEFAULT_CURRENCY = "تومان"
 export const DEFAULT_DELIVERY_METHOD = "ارسال اکسپرس"
 export const DEFAULT_CITY = "تهران"
@@ -14,3 +15,9 @@ export const DEFAULT_COORDINATIONS = {
   yAxis: 51.4043,
 } // tehran
 export const DEFAULT_MAP_ZOOM = 13
+export const DEFAULT_DELIVERY_PRICE = 0
+export const DEFAULT_READY_TIME = 15
+export const DEFAULT_SHIPMENT_TIME = 15
+export const DEFAULT_USER_NAME = "کاربر"
+export const DEFAULT_DELIVERY_RADIUS = 10
+export type RESPONDED_BY = "مدیر رستوران" | typeof VENDOR_NAME
