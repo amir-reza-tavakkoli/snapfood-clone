@@ -83,7 +83,7 @@ model Store {
   userPhone       User   @relation(fields: [userPhoneNumber], references: [phoneNumber])
 
   storeHasItems          StoreHasItems[]
-  storeHasItemCategories StoreHasCategories[]
+
   Schedules              storeSchedule[]
   orders                 Order[]
 }
@@ -132,7 +132,7 @@ model ItemCategory {
   isMain    Boolean @default(false)
 
   items                  Item[]
-  storeHasItemCategories StoreHasCategories[]
+
 }
 
 model StoreHasItems {
@@ -154,23 +154,6 @@ model StoreHasItems {
   isVerified  Boolean @default(true)
 
   @@unique([storeId, itemId])
-}
-
-model StoreHasCategories {
-  storeId          Int
-  store            Store        @relation(fields: [storeId], references: [id])
-  itemCategoryName String
-  itemCategory     ItemCategory @relation(fields: [itemCategoryName], references: [name])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  discountPercent Int?
-
-  isAvailible Boolean @default(true)
-  isVerified  Boolean @default(true)
-
-  @@unique([storeId, itemCategoryName])
 }
 
 model storeSchedule {
