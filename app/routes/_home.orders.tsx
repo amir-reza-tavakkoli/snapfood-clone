@@ -1,17 +1,17 @@
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
-import { Link, useLoaderData, useRouteError } from "@remix-run/react"
+import { isRouteErrorResponse, Link, useLoaderData, useRouteError } from "@remix-run/react"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
-import { getCart } from "~/utils/cart.query.server"
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getCart } from "~/queries.server/cart.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 
 import { CartComp } from "~/components/cart"
 import type { CartCompProps } from "~/components/cart"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
-import { validateUser } from "~/utils/utils.server"
+import { validateUser } from "~/utils/validate.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -56,6 +56,16 @@ export function ErrorBoundary() {
   const error = useRouteError()
 
   const errorMessage = error instanceof Error ? error.message : undefined
+
+    if (isRouteErrorResponse(error) && error.status === 404) {
+      return (
+        <div className="error-container">
+          <p>There are no jokes to display.</p>
+          <Link to="new">Add your own</Link>
+        </div>
+      )
+    }
+
   return (
     <div
       aria-label="error"

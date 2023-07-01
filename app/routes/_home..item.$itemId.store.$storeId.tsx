@@ -9,17 +9,17 @@ import { json, LoaderArgs, LoaderFunction } from "@remix-run/server-runtime"
 import { useEffect, useState } from "react"
 import { Button } from "~/components/button"
 import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
-import { getStoreOrderInCart } from "~/utils/cart.query.server"
-import { getItem } from "~/utils/item.query.server"
-import { FullOrderItem, getOrder } from "~/utils/order.query.server"
+import { getStoreOrderInCart } from "~/queries.server/cart.query.server"
+import { getItemById } from "~/queries.server/item.query.server"
+import { FullOrderItem, getOrder } from "~/queries.server/order.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
   getStoreItems,
-} from "~/utils/store.query.server"
-import { getUserByPhone } from "~/utils/user.query.server"
+} from "~/queries.server/store.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 
 export const loader: LoaderFunction = async ({
   params,
@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async ({
       throw new Error("404")
     }
 
-    const item = await getItem({ itemId })
+    const item = await getItemById({ itemId })
 
     if (!item) {
       throw new Error("چنین آیتمی وجود ندارد")
@@ -52,7 +52,7 @@ export const loader: LoaderFunction = async ({
       throw new Error("فروشگاهی با این مشخصات وجود ندارد")
     }
 
-    let items: any = []
+    let items: FullOrderItem[] = []
 
     let order = await getStoreOrderInCart({ storeId: store.id, phoneNumber })
 

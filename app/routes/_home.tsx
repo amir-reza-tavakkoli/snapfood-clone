@@ -5,10 +5,11 @@ import { memo, useEffect, useState } from "react"
 import { Header } from "~/components/header"
 import { CategoryNav } from "~/components/nav"
 
-import { getUserAddresses } from "~/utils/address.query.server"
+import { getUserAddresses } from "~/queries.server/address.query.server"
 
 import { requirePhoneNumber } from "~/utils/session.server"
-import { getStoresKind, getSupportedCities } from "~/utils/store.query.server"
+import { getStoresKinds, } from "~/queries.server/store.query.server"
+import { getSupportedCities } from "~/queries.server/address.query.server"
 import { CityList } from "~/components/city-list"
 import { Footer } from "~/components/footer"
 
@@ -23,12 +24,15 @@ import footerCss from "./../components/styles/footer.css"
 import userMenuCss from "./../components/styles/user-menu.css"
 import { UserMenu } from "~/components/user-menu"
 import { DEAFULT_DIRECTION } from "~/constants"
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 
 import addressesCss from "./../components/styles/addresses.css"
-import { validateUser } from "~/utils/utils.server"
+import { validateUser } from "~/utils/validate.server"
+import { searchStore } from "~/queries.server/search.server"
+import ratingsCss from "@smastrom/react-rating/style.css"
 
 export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: ratingsCss },
   { rel: "stylesheet", href: homeCss },
   { rel: "stylesheet", href: buttonCss },
   { rel: "stylesheet", href: iconCss },
@@ -52,13 +56,16 @@ export const loader = async ({
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
+    console.log(await searchStore("ddd"));
+
+
     const user = await getUserByPhone({ phoneNumber })
 
-    validateUser({user})
+    validateUser({ user })
 
     const addresses = await getUserAddresses({ phoneNumber })
 
-    const storesKind = await getStoresKind()
+    const storesKind = await getStoresKinds()
 
     const cities = await getSupportedCities()
 
@@ -81,7 +88,6 @@ export default function Home() {
     cities: City[] | null
     user: User | null
   }
-
 
   const [userMenuShowing, setUserMenuShowing] = useState(false)
   const [addressState, setAddressState] = useState<any>()

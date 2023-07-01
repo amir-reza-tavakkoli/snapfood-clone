@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react"
 
 import type { Order, Store } from "@prisma/client"
 
-import { FullOrderItem } from "~/utils/order.query.server"
+import { FullOrderItem } from "~/queries.server/order.query.server"
 
 import { Button } from "./button"
 
@@ -46,13 +46,14 @@ export const Orders = ({ orders, dir }: OrderProps) => {
                     <span className="_space">&nbsp;</span>
                   </time>
                 </div>
-              </div>
-              <div className="_comment" aria-label="Comment">
-                <p>
-                  <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
+            </div>
 
-                  <Link to={`/comment/${order.order.id}`}>ثبت نظر</Link>
-                </p>
+              <div className="_comment" aria-label="Comment">
+              {!order.comment ? <p>
+                <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
+
+                <Link to={`/comment/${order.order.id}`}>ثبت نظر</Link>
+              </p> : <span>نظر شما با موفقیت ثبت شد</span>}
               </div>
               <span className="_buttons">
                 <Link to={`/order/${order.order.id}`}>

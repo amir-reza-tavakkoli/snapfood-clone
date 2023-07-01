@@ -61,7 +61,7 @@
   margin-inline: min(12px, var(--length-8));
   margin-block: min(16px, var(--length-8));
   margin-block-start: calc(var(--length-6) * -1);
-  font-size: var(--length-fluid-extra-small);
+  font-size: var(--length-14);
   line-height: var(--length-28);
   word-break: keep-all;
   color: var(--color-accent);

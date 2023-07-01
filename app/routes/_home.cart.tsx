@@ -3,15 +3,15 @@ import { Link, useLoaderData, useRouteError } from "@remix-run/react"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
-import { getCart } from "~/utils/cart.query.server"
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getCart } from "~/queries.server/cart.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 
 import { CartComp } from "~/components/cart"
 import type { CartCompProps } from "~/components/cart"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
-import { validateUser } from "~/utils/utils.server"
+import { validateUser } from "~/utils/validate.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -25,7 +25,7 @@ export const loader = async ({
     const phoneNumber = await requirePhoneNumber(request)
 
     const user = await getUserByPhone({ phoneNumber })
-    
+
     validateUser({ user })
 
     const cart = await getCart({ phoneNumber })

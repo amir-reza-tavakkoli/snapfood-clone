@@ -3,7 +3,7 @@ import { Form, Link, useLoaderData, useRouteError } from "@remix-run/react"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 
 import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/checkout-page.css"
@@ -13,15 +13,15 @@ import {
   validateOrder,
   validateStore,
   validateUser,
-} from "~/utils/utils.server"
+} from "~/utils/validate.server"
 import {
   FullOrderItem,
   getFullOrderItems,
   getOrder,
   updateOrder,
-} from "~/utils/order.query.server"
+} from "~/queries.server/order.query.server"
 import { Order, Store } from "@prisma/client"
-import { getStore } from "~/utils/store.query.server"
+import { getStore } from "~/queries.server/store.query.server"
 import { Button } from "~/components/button"
 import { OrderComp } from "~/components/order"
 

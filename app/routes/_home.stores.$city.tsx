@@ -1,10 +1,10 @@
 import type { LoaderArgs } from "@remix-run/node"
 import { Link, Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
 
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import { User } from "@prisma/client"
-import { validateUser } from "~/utils/utils.server"
+import { validateUser } from "~/utils/validate.server"
 
 export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   try {

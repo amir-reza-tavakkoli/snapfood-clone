@@ -23,16 +23,16 @@ import {
   FullOrderItem,
   getFullOrderItems,
   getOrder,
-} from "~/utils/order.query.server"
-import { getUserByPhone } from "~/utils/user.query.server"
+} from "~/queries.server/order.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
-import { getStore } from "~/utils/store.query.server"
+import { getStore } from "~/queries.server/store.query.server"
 
 import { DEFAULT_CURRENCY } from "~/constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-order.css"
-import { validateNumberParam, validateOrder, validateStore, validateUser } from "~/utils/utils.server"
+import { validateNumberParam, validateOrder, validateStore, validateUser } from "~/utils/validate.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },

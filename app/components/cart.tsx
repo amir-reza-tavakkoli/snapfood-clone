@@ -1,14 +1,14 @@
 import { Link } from "@remix-run/react"
 
-import type { Order, Store } from "@prisma/client"
+import type { Comment, Order, Store } from "@prisma/client"
 
-import type { FullOrderItem } from "~/utils/order.query.server"
+import type { FullOrderItem } from "~/queries.server/order.query.server"
 
 import { Icon } from "./icon"
 
 import { DEFAULT_CURRENCY } from "./../constants"
 
-import { toPersianDay } from "~/utils/utils.server"
+import { toPersianDay } from "~/utils/utils.client"
 
 export type CartCompProps = {
   orders:
@@ -16,6 +16,7 @@ export type CartCompProps = {
         items: FullOrderItem[]
         order: Order
         store: Store
+        comment?: Comment
       }[]
     | undefined
 

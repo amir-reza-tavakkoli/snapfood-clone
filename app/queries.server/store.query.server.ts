@@ -1,14 +1,19 @@
 import type {
-  City,
   Item,
+  ItemCategory,
   Store,
   StoreHasItems,
   StoreKind,
 } from "@prisma/client"
-import { db } from "./db.server"
+
+import { db } from "../utils/db.server"
 
 import type { FullOrderItem } from "./order.query.server"
+
 import { getOrder, getOrderItems } from "./order.query.server"
+
+import { validateStore } from "../utils/validate.server"
+import { validateCity } from "../utils/validate.server"
 
 export async function getStore({
   storeId,
@@ -46,11 +51,7 @@ export async function getStoresByCity({
   storeKindName?: string
 }): Promise<Store[] | null> {
   try {
-    const city = await db.city.findUnique({ where: { name: cityName } })
-
-    if (!city) {
-      throw new Error("این شهر پشتیبانی نمی شود")
-    }
+    await validateCity({ cityName })
 
     const stores = await db.store.findMany({
       where: {
@@ -122,7 +123,7 @@ export async function getFullStoreItems({
       const found = items.find(item => item && item.id == itemInStore.itemId)
 
       if (!found) {
-        throw new Error("Item Not Found")
+        throw new Error("آیتم یافت نشد")
       }
 
       return { ...found, ...itemInStore }
@@ -142,9 +143,7 @@ export async function getStoreCategories({
   try {
     const store = await getStore({ storeId })
 
-    if (!store) {
-      throw new Error("فروشگاهی با این مشخصات وجود ندارد")
-    }
+    validateStore({ store })
 
     const { items } = await getStoreItems({ storeId })
 
@@ -201,7 +200,7 @@ export async function getFullStoreOrdersItems({
       const found = items.find(item => item && item.id == itemInStore.itemId)
 
       if (!found) {
-        throw new Error("Item Not Found")
+        throw new Error("آیتم یافت نشد")
       }
 
       const itemInOrder = itemsInOrder.find(
@@ -217,7 +216,7 @@ export async function getFullStoreOrdersItems({
   }
 }
 
-export async function getStoresKind(): Promise<StoreKind[]> {
+export async function getStoresKinds(): Promise<StoreKind[]> {
   try {
     const kinds = await db.storeKind.findMany()
 
@@ -227,9 +226,11 @@ export async function getStoresKind(): Promise<StoreKind[]> {
   }
 }
 
-export async function getItemCategories() {
+export async function getItemCategories(): Promise<ItemCategory[]> {
   try {
-    const categories = await db.itemCategory.findMany({ take: 12 })
+    const takeThisMany = 12
+
+    const categories = await db.itemCategory.findMany({ take: takeThisMany })
 
     return categories
   } catch (error) {
@@ -247,6 +248,7 @@ export async function getStoresByKind({
       where: {
         storeKindName: kind,
       },
+      orderBy: { id: "desc" },
     })
 
     return stores
@@ -255,30 +257,14 @@ export async function getStoresByKind({
   }
 }
 
-export async function getStoreItemCategories({ storeId }: { storeId: number }) {
+export async function getStoreSchedule({ store }: { store: Store }) {
   try {
-    const items = (await getStoreItems({ storeId })).items
+    const schedule = await db.storeSchedule.findMany({
+      where: { storeId: store.id },
+      orderBy: { dayNumber: "asc", startTime: "asc" },
+    })
 
-    const kinds: string[] = []
-
-    items.map(item =>
-      item && !kinds.includes(item.itemCategoryName)
-        ? kinds.push(item.itemCategoryName)
-        : undefined,
-    )
-
-    console.log(kinds)
-    return kinds
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function getSupportedCities(): Promise<City[] | null> {
-  try {
-    const cities = await db.city.findMany()
-
-    return cities
+    return schedule
   } catch (error) {
     throw error
   }

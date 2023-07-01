@@ -1,4 +1,3 @@
-import type { LinksFunction } from "@remix-run/node"
 import {
   Links,
   LiveReload,
@@ -6,15 +5,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useRouteError,
 } from "@remix-run/react"
+
+import type { LinksFunction } from "@remix-run/node"
+
+import { GlobalErrorBoundary } from "./components/error-boundary"
 
 import baseCss from "./index.css"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: baseCss }]
+
 export default function App() {
   return (
-    <html lang="en">
+    <html lang="fa">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -31,20 +34,4 @@ export default function App() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary

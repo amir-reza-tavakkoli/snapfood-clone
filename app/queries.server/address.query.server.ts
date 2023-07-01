@@ -1,5 +1,8 @@
 import type { Address, City } from "@prisma/client"
-import { db } from "./db.server"
+
+import { db } from "../utils/db.server"
+
+import { validateAddress, validateCity } from "../utils/validate.server"
 
 export async function getUserAddresses({
   phoneNumber,
@@ -29,22 +32,16 @@ export async function createAddress({
   isValid,
   title,
   unit,
-}: {
+}: Partial<Address> & {
   userPhoneNumber: string
   address: string
   cityName: string
-  details?: string
-  isAvailible?: boolean
-  isValid?: boolean
-  title?: string
   unit: number
 }): Promise<Address> {
   try {
-    const cities = await getCities()
+    await validateCity({ cityName })
 
-    if (!cities || !cities.find(city => city.name === cityName)) {
-      throw new Error("این شهر پشتیبانی نمی شود")
-    }
+    validateAddress({ address, unit })
 
     const newAddress = await db.address.create({
       data: {
@@ -74,35 +71,21 @@ export async function updateAddress({
   isValid,
   title,
   unit,
+  postalCode,
   xAxis,
   yAxis,
-}: {
-  id: number
-  address?: string
-  cityName?: string
-  details?: string
-  isAvailible?: boolean
-  isValid?: boolean
-  title?: string
-  xAxis: number
-  yAxis: number
-  unit?: number
-}): Promise<Address> {
+}: Partial<Address> & { id: number }): Promise<Address> {
   try {
     const previousAddress = await getAddressById({ addressId: id })
 
     if (!previousAddress) {
-      throw new Error("آدرس اشتباه است")
+      throw new Response("آدرس اشتباه است", { status: 404 })
     }
 
-    const cities = await getCities()
+    await validateCity({ cityName: previousAddress.cityName })
 
-    if (!cities) {
-      throw new Error("مشکلی پیش آمده")
-    }
-
-    if (!cities.find(city => city.name === cityName)) {
-      throw new Error("این شهر پشتیبانی نمی شود")
+    if (address || unit) {
+      validateAddress({ address,unit})
     }
 
     const newAddress: Address = await db.address.update({
@@ -112,6 +95,7 @@ export async function updateAddress({
       data: {
         address,
         cityName,
+        postalCode,
         details,
         isAvailible,
         isValid,
@@ -146,20 +130,19 @@ export async function getAddressById({
   }
 }
 
-// to be fully implemented by GPS API
-export async function getNearestAddress({
-  phoneNumber,
+export async function deleteAddressById({
+  addressId,
 }: {
-  phoneNumber: string
+  addressId: number
 }): Promise<Address | null> {
   try {
-    const addresses = await getUserAddresses({ phoneNumber })
+    const address = await db.address.delete({
+      where: {
+        id: addressId,
+      },
+    })
 
-    if (!addresses || addresses.length == 0) {
-      return null
-    }
-
-    return addresses[0]
+    return address
   } catch (error) {
     throw error
   }
@@ -168,5 +151,17 @@ export async function getNearestAddress({
 export async function getCities(): Promise<City[] | undefined> {
   try {
     return await db.city.findMany()
-  } catch (error) {}
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getSupportedCities(): Promise<City[]> {
+  try {
+    const cities = await db.city.findMany({ where: { isAvailible: true } })
+
+    return cities
+  } catch (error) {
+    throw error
+  }
 }

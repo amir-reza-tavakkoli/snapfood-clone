@@ -1,8 +1,8 @@
 import { Link } from "@remix-run/react"
 
-import type { Order, Store } from "@prisma/client"
+import type { Comment, Order, Store } from "@prisma/client"
 
-import type { FullOrderItem } from "~/utils/order.query.server"
+import type { FullOrderItem } from "~/queries.server/order.query.server"
 
 import { DEFAULT_CURRENCY } from "./../constants"
 
@@ -10,11 +10,19 @@ export type CartCompProps = {
   items: FullOrderItem[]
   order: Order
   store: Store
-totalPrice? : number
+  totalPrice?: number
   dir?: "rtl" | "lrt"
+  comment?: Comment | null
 }
 
-export const OrderComp = ({ order, items, store, dir,totalPrice }: CartCompProps) => {
+export const OrderComp = ({
+  order,
+  items,
+  store,
+  dir,
+  totalPrice,
+  comment = null,
+}: CartCompProps) => {
   const total = items.reduce(
     (prev, item) => (item.price ?? 0) * (item.count ?? 0) + prev,
     0,
@@ -37,6 +45,18 @@ export const OrderComp = ({ order, items, store, dir,totalPrice }: CartCompProps
             </p>
           </span>
         </li>
+
+          <div className="_comment" aria-label="Comment">
+            {!comment ? (
+              <p>
+                <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
+
+                <Link to={`/comment/${order.id}`}>ثبت نظر</Link>
+              </p>
+            ) : (
+              <span>نظر شما با موفقیت ثبت شد</span>
+            )}
+          </div>
 
         <li>
           <ul>
@@ -75,7 +95,7 @@ export const OrderComp = ({ order, items, store, dir,totalPrice }: CartCompProps
 
           <span className="_price">
             {" "}
-            {store.shipmentPrice.toLocaleString("fa-IR") +
+            {store.baseShipmentPrice.toLocaleString("fa-IR") +
               " " +
               DEFAULT_CURRENCY}
           </span>
@@ -96,7 +116,9 @@ export const OrderComp = ({ order, items, store, dir,totalPrice }: CartCompProps
           <span>تخفیف</span>
 
           <span className="_price">
-            {(total - (totalPrice ?? order.totalPrice)).toLocaleString("fa-IR") +
+            {(total - (totalPrice ?? order.totalPrice)).toLocaleString(
+              "fa-IR",
+            ) +
               " " +
               DEFAULT_CURRENCY}
           </span>

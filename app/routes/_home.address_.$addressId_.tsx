@@ -13,9 +13,9 @@ import {
   getAddressById,
   getCities,
   updateAddress,
-} from "~/utils/address.query.server"
+} from "~/queries.server/address.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 import {
   DEAFULT_DIRECTION,
   DEFAULT_CITY,
@@ -23,12 +23,12 @@ import {
   DEFAULT_MIN_ADDRESS_LENGTH,
 } from "../constants"
 
-import { ClientOnly } from "../client"
+import { ClientOnly } from "../client.map"
 import { MapComponent } from "../components/map.client"
 
 import { Button } from "~/components/button"
 import addressPageCss from "./styles/address-page.css"
-import { validateUser } from "~/utils/utils.server"
+import { validateUser } from "~/utils/validate.server"
 
 import type { LatLngTuple, Map } from "leaflet"
 
@@ -60,7 +60,7 @@ export const action = async ({
     const xAxis: number | undefined = Number(form.get("xAxis"))
     const yAxis: number | undefined = Number(form.get("yAxis"))
     const details: string | undefined = form.get("details")
-    console.log("ooo",xAxis)
+    console.log("ooo", xAxis)
 
     if (
       !address ||
@@ -158,13 +158,14 @@ export const loader = async ({
         id: -1,
         xAxis: 0,
         yAxis: 0,
+        postalCode: null,
         isAvailible: false,
         isValid: false,
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
         userPhoneNumber: user.phoneNumber,
-        details: "",
-        title: "",
+        details: null,
+        title: null,
       }
     } else {
       address = await getAddressById({ addressId: addressId })

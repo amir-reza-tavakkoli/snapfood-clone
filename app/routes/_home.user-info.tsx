@@ -12,7 +12,7 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
-import { createOrUpdateUser, getUserByPhone } from "~/utils/user.query.server"
+import { createOrUpdateUser, getUserByPhone } from "~/queries.server/user.query.server"
 
 import type { User } from "@prisma/client"
 

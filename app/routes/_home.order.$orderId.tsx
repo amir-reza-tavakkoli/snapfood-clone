@@ -1,21 +1,30 @@
-import { Order, Store } from "@prisma/client"
-import { Link, useLoaderData } from "@remix-run/react"
-import { LoaderArgs } from "@remix-run/server-runtime"
+import type { Order,Comment as xxx, Store } from "@prisma/client"
+import { useLoaderData } from "@remix-run/react"
+import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
-import { getFullOrderItems, getOrder } from "~/utils/order.query.server"
-import type { FullOrderItem } from "~/utils/order.query.server"
+import type { FullOrderItem } from "~/queries.server/order.query.server"
+import { getFullOrderItems, getOrder } from "~/queries.server/order.query.server"
 
+import { OrderComp } from "~/components/order"
 import { requirePhoneNumber } from "~/utils/session.server"
-import { getUserByPhone } from "~/utils/user.query.server"
-import { getStore } from "~/utils/store.query.server"
+import { getStore } from "~/queries.server/store.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 import {
   validateItems,
   validateNumberParam,
   validateOrder,
   validateStore,
   validateUser,
-} from "~/utils/utils.server"
-import { OrderComp } from "~/components/order"
+} from "~/utils/validate.server"
+import { getComment } from "~/queries.server/comment.query"
+import { Button } from "~/components/button"
+import orderCss from "~/components/styles/order.css"
+import ordersPageCss from "./styles/orders-page.css"
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: orderCss },
+  { rel: "stylesheet", href: ordersPageCss },
+]
 
 export const loader = async ({
   request,
@@ -24,6 +33,7 @@ export const loader = async ({
   order: Order
   items: (FullOrderItem | undefined)[]
   store: Store
+  comment: xxx | null
 }> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
@@ -47,72 +57,30 @@ export const loader = async ({
     let items = await getFullOrderItems({ orderId })
 
     items = validateItems({ items })
-    return { items, order, store }
+
+    const comment = await getComment({ orderId })
+
+    return { items, order, store, comment }
   } catch (error) {
     throw error
   }
 }
 
-function getOrderStatus({ order }: { order: Order }) {
-  if (order.isCanceled) {
-    return {
-      status: "canceled",
-    }
-  }
-
-  if (order.isBilled && !order.isInCart) {
-    return {
-      status: "fullfilled",
-    }
-  }
-
-  if (order.isBilled && !order.isVerifiedByAdmin) {
-    return {
-      status: "adminNotVerified",
-    }
-  }
-
-  if (order.isBilled && !order.isVerifiedByStore) {
-    return {
-      status: "storeNotVerified",
-    }
-  }
-
-  if (order.isBilled && order.isInCart) {
-    if (order.isDelivered) {
-      return { status: "toBeFullfilled" }
-    }
-
-    if (order.isDelayedByStore) {
-      return {status : "toBeAskedAgain"}
-    }
-
-    const now = new Date(Date.now()).getTime()
-    const billedAt = order.billDate ? new Date(order.billDate).getTime() : null
-    if (billedAt) {
-      const mins = (now - billedAt) * 1000 * 60
-      if (mins > order.estimatedDeliveryTime) {
-        return {
-          status: "toBeDelayed",
-        }
-      }
-    }
-  }
-}
-
 export default function Order() {
-  const { items, order, store } = useLoaderData<typeof loader>() as unknown as {
+  const { items, order, store, comment } = useLoaderData<typeof loader>() as unknown as {
     order: Order
     items: FullOrderItem[]
     store: Store
+    comment: xxx | null
   }
 
   return (
-    <main>
+    <main className="_order-page">
       <h1>بررسی وضعیت سفارش</h1>
       {items ? (
-        <OrderComp order={order} items={items} store={store}></OrderComp>
+        <OrderComp comment={comment} order={order} items={items} store={store}></OrderComp>
       ) : null}
+
     </main>
   )
 }

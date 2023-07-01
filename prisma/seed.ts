@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client"
 
 import type { Item } from "@prisma/client"
 
-import { getStoreCategories } from "./../app/utils/store.query.server"
-import { calculateOrder } from "../app/utils/order.query.server"
+import { getStoreCategories } from "../app/queries.server/store.query.server"
+import { calculateOrder } from "../app/queries.server/order.query.server"
 
 import {
   DEFAULT_DELIVERY_RADIUS,
@@ -465,14 +465,6 @@ async function seedFirstDataChunk() {
     ),
   )
 
-  const storeCategories = await getStoreCategories({ storeId: store.id })
-
-  await prisma.storeHasCategories.createMany({
-    data: storeCategories.map(category => {
-      return { storeId: store.id, itemCategoryName: category }
-    }),
-  })
-
   const order = await prisma.order.create({
     data: {
       packagingPrice: 0,
@@ -659,14 +651,6 @@ async function seedSecondDataChunk() {
       }),
     ),
   )
-
-  const storeCategories = await getStoreCategories({ storeId: store.id })
-
-  await prisma.storeHasCategories.createMany({
-    data: storeCategories.map(category => {
-      return { storeId: store.id, itemCategoryName: category }
-    }),
-  })
 
   const order = await prisma.order.create({
     data: {
@@ -878,14 +862,6 @@ async function seedThirdDataChunk() {
       }),
     ),
   )
-
-  const storeCategories = await getStoreCategories({ storeId: store.id })
-
-  await prisma.storeHasCategories.createMany({
-    data: storeCategories.map(category => {
-      return { storeId: store.id, itemCategoryName: category }
-    }),
-  })
 
   const order = await prisma.order.create({
     data: {

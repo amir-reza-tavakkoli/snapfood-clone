@@ -3,18 +3,18 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 
 import { Orders } from "~/components/order-summary"
 
 import { DEAFULT_DIRECTION } from "./../constants"
 import type { CartCompProps } from "~/components/cart"
 
-import { getCart } from "~/utils/cart.query.server"
+import { getCart } from "~/queries.server/cart.query.server"
 
 import orderCss from "~/components/styles/order-summary.css"
 import ordersPageCss from "./styles/orders-page.css"
-import { validateUser } from "~/utils/utils.server"
+import { validateUser } from "~/utils/validate.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },
@@ -30,7 +30,7 @@ export const loader = async ({
     const user = await getUserByPhone({ phoneNumber })
 
     validateUser({ user })
-    
+
     const cart = await getCart({ phoneNumber, all: true })
 
     return cart
@@ -47,7 +47,7 @@ export default function Ordersx() {
       <p>سفارش‌ های پیشین</p>
 
       {cart && cart.orders ? (
-        <Orders orders={cart.orders} dir={DEAFULT_DIRECTION}></Orders>
+        <Orders  orders={cart.orders} dir={DEAFULT_DIRECTION}></Orders>
       ) : (
         <p>سفارشی وجود ندارد ! </p>
       )}

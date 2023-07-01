@@ -1,9 +1,9 @@
 import type { Comment, Item, Order, OrderHasItems } from "@prisma/client"
-import { db } from "./db.server"
+import { db } from "../utils/db.server"
 
 import { getAddressById } from "./address.query.server"
 import { getOrdersInCart } from "./cart.query.server"
-import { getItem } from "./item.query.server"
+import { getItemById } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
 
@@ -14,7 +14,6 @@ export type FullOrderStore = {
   totalPrice: number
   taxPercent: number
   packagingPrice: number
-  estimatedDeliveryTime: number
   addressId: number
 
   isBilled: boolean
@@ -35,6 +34,8 @@ export type FullOrderStore = {
   cityName?: string
   minOrderPrice?: number
   shipmentPrice?: number
+  estimatedShipmentTime : number
+  estimatedReadyTime : number
 }
 
 export type FullOrderItem = {
@@ -119,6 +120,8 @@ export async function createOrder({
   isVerifiedByStore,
   packagingPrice,
   shipmentPrice,
+  estimatedShipmentTime,
+  estimatedReadyTime,
   taxPercent,
   totalPrice,
 }: {
@@ -135,7 +138,9 @@ export async function createOrder({
   isVerifiedByAdmin?: boolean
   isVerifiedByStore?: boolean
   packagingPrice: number
-  shipmentPrice: number
+    shipmentPrice: number
+    estimatedShipmentTime : number
+  estimatedReadyTime : number
   taxPercent: number
   totalPrice: number
 }): Promise<Order> {
@@ -182,7 +187,8 @@ export async function createOrder({
         userPhoneNumber,
         storeId,
         addressId,
-        estimatedDeliveryTime,
+        estimatedShipmentTime,
+        estimatedReadyTime,
         isBilled: false,
         isCanceled,
         isDelayedByStore,
@@ -218,6 +224,8 @@ export async function updateOrder({
   isShipped,
   isVerifiedByAdmin,
   isVerifiedByStore,
+  estimatedShipmentTime,
+  estimatedReadyTime,
   packagingPrice,
   shipmentPrice,
   taxPercent,
@@ -227,7 +235,7 @@ export async function updateOrder({
   userPhoneNumber?: string
   storeId?: number
   addressId?: number
-  description? :string
+  description?: string
   estimatedDeliveryTime?: number
   isBilled?: boolean
   isCanceled?: boolean
@@ -238,7 +246,9 @@ export async function updateOrder({
   isVerifiedByAdmin?: boolean
   isVerifiedByStore?: boolean
   packagingPrice?: number
-  shipmentPrice?: number
+    shipmentPrice?: number
+    estimatedShipmentTime? : number
+  estimatedReadyTime? : number
   taxPercent?: number
   totalPrice?: number
 }): Promise<Order> {
@@ -287,7 +297,8 @@ export async function updateOrder({
         userPhoneNumber,
         storeId,
         addressId,
-        estimatedDeliveryTime,
+        estimatedShipmentTime,
+        estimatedReadyTime,
         isBilled,
         isCanceled,
         isDelayedByStore,
@@ -300,7 +311,7 @@ export async function updateOrder({
         shipmentPrice,
         taxPercent,
         totalPrice,
-        dsescription :  description
+        description,
       },
     })
     return newOrder
@@ -323,7 +334,7 @@ export async function changeOrderItems({
   state: ChangeOrderItemState
 }): Promise<OrderHasItems> {
   try {
-    const item = await getItem({ itemId })
+    const item = await getItemById({ itemId })
 
     if (!item || !item.isAvailible || !item.isVerified) {
       throw new Error("چنین آیتمی وجود ندارد")
@@ -716,62 +727,10 @@ export async function getFullOrderItems({
   }
 }
 
-export async function addComment({
-  orderId,
-  description,
-  isPositive,
-  score,
-}: Comment): Promise<Comment> {
-  try {
-    const order = await getOrder({ orderId })
-
-    if (
-      !order ||
-      !order.isBilled ||
-      order.isCanceled ||
-      !order.isVerifiedByAdmin ||
-      !order.isVerifiedByStore
-    ) {
-      throw new Error("چنین سفارشی وجود ندارد")
-    }
-
-    const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
-
-    if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
-
-    const comment = await db.comment.findUnique({
-      where: {
-        orderId,
-      },
-    })
-
-    if (comment) {
-      throw new Error("Comment Already Exists")
-    }
-
-    // need to  evaluate comment
-
-    const newComment = await db.comment.create({
-      data: {
-        isPositive,
-        score,
-        description,
-        orderId,
-      },
-    })
-
-    return newComment
-  } catch (error) {
-    throw error
-  }
-}
-
 export async function changeComment({
   orderId,
   description,
-  isPositive,
+  wasPositive,
   score,
   isVerified,
   isVisible,
@@ -791,7 +750,7 @@ export async function changeComment({
 
     const changedComment = await db.comment.update({
       data: {
-        isPositive,
+        wasPositive,
         score,
         description,
         isVerified,
@@ -894,20 +853,9 @@ export async function getFullOrdersStore({
     const fullOrder = await Promise.all(
       orders.map(
         order => getFullOrderStore({ orderId: order.id }),
-        //   const store = db.store.findUnique({
-        //     where: {
-        //       id: order.id,
-        //     },
-        //   })
 
-        //   if (!store || !order) {
-        //     throw new Error("فروشگاهی با این مشخصات وجود ندارد")
-        //   }
-
-        //   return { ...store, ...order }
       ),
     )
-    console.log("hhh", fullOrder)
 
     return fullOrder
   } catch (error) {

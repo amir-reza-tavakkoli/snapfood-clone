@@ -45,7 +45,7 @@
 :where(.store-info ._name) {
   order: 3;
   padding-inline-start: min(24px, var(--length-16));
-  font-size: var(--length-fluid-extra-small);
+  font-size: var(--length-14);
   font-weight: 700;
   overflow-wrap: normal;
   margin-block-end: min(var(--length-10), 20px);

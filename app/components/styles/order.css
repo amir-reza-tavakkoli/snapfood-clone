@@ -63,3 +63,53 @@
     inline-size: 60px;
     /* margin-inline-start: auto; */
 }
+
+:where(.order ._comment p *) {
+    display: block;
+    margin-inline: 8px;
+}
+
+:where(.order ._comment p) {
+    display: block;
+    inline-size: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+:where(.order ._comment) {
+    align-self: start;
+    inline-size: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: var(--length-10);
+    font-weight: 400;
+}
+
+:where(.order ._comment) {
+    display: flex;
+    justify-content: flex-start;
+    font-size: var(--length-10);
+    background-color: var(--color-action-4);
+    padding-inline: var(--length-8);
+    margin-inline: var(--length-6);
+    padding-block: var(--length-6);
+    border-radius: var(--length-4);
+    white-space: nowrap;
+}
+
+:where(.order ._comment > span) {
+    font-size: var(--length-12);
+    font-weight: 600;
+    align-self: start;
+    text-align: start;
+}
+
+:where(.order ._comment a) {
+    border: none;
+    background-color: transparent;
+    margin-inline: 4px;
+    color: var(--color-action);
+    font-weight: 600;
+    font-size: var(--length-12);
+    margin-left: auto;
+}

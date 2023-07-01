@@ -10,14 +10,14 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
 import type { Address } from "@prisma/client"
 
-import { getUserByPhone } from "~/utils/user.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
-import { getUserAddresses } from "~/utils/address.query.server"
+import { getUserAddresses } from "~/queries.server/address.query.server"
 
 import { Addresses } from "~/components/addresses"
 
 import addressesCss from "./../components/styles/addresses.css"
-import { validateUser } from "~/utils/utils.server"
+import { validateUser } from "~/utils/validate.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: addressesCss },
@@ -32,7 +32,7 @@ export const loader = async ({
     const user = await getUserByPhone({ phoneNumber })
 
     validateUser({ user })
-    
+
     const addresses = await getUserAddresses({ phoneNumber })
 
     return addresses

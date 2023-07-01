@@ -20,15 +20,15 @@ import {
   createOrder,
   FullOrderItem,
   getFullOrderItems,
-} from "~/utils/order.query.server"
-import { getStoreOrderInCart } from "~/utils/cart.query.server"
+} from "~/queries.server/order.query.server"
+import { getStoreOrderInCart } from "~/queries.server/cart.query.server"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
-} from "~/utils/store.query.server"
-import { getUserByPhone } from "~/utils/user.query.server"
-import { getAddressById } from "~/utils/address.query.server"
+} from "~/queries.server/store.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
+import { getAddressById } from "~/queries.server/address.query.server"
 
 import type { Order, Store, User } from "@prisma/client"
 
@@ -41,7 +41,7 @@ import foodCardCss from "./../components/styles/food-card.css"
 import storeInfoCss from "./../components/styles/store-info.css"
 import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/store-page.css"
-import { categorizeItems } from "~/utils/utils.server"
+import { categorizeItems } from "~/queries.server/db.utils.query"
 import { OrderComp } from "~/components/order"
 
 export const links: LinksFunction = () => [
@@ -89,6 +89,8 @@ export const action = async ({
     if (!orderInCart && addressId) {
       orderInCart = await createOrder({
         addressId,
+        estimatedReadyTime: 0,
+        estimatedShipmentTime: 0,
         storeId,
         isInCart: true,
         isCanceled: false,
@@ -395,8 +397,8 @@ export default function StoreId() {
             <OrderComp
               items={orderItemsState}
               order={orderState}
-                store={store}
-                totalPrice={totalPriceState}
+              store={store}
+              totalPrice={totalPriceState}
             ></OrderComp>
           ) : null}
         </main>

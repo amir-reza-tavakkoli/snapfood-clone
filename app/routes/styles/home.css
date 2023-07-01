@@ -5,21 +5,3 @@
   z-index: 1;
   color: var(--color-text-2);
 }
-
-:where(.boundary-error) {
-  inline-size: 100%;
-  text-align: center;
-  align-self: center;
-  justify-content: center;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-
-:where(.boundary-error > h1) {
-  color: var(--color-error);
-}
-
-:where(.boundary-error > p) {
-  color: var(--color-error);
-}

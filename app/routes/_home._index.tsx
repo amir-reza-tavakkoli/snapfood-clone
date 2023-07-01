@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useLoaderData, useNavigate } from "@remix-run/react"
 import { ImageItem } from "~/components/image-item"
 import { LinksFunction, LoaderArgs } from "@remix-run/node"
-import { getItemCategories } from "~/utils/store.query.server"
+import { getItemCategories } from "~/queries.server/store.query.server"
 
 import imageItemCss from "./../components/styles/image-item.css"
 import homeIndexCss from "./styles/home-index.css"

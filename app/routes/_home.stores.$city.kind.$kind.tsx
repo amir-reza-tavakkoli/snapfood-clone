@@ -7,7 +7,7 @@ import {
 } from "@remix-run/node"
 import { Link, Outlet, useLoaderData } from "@remix-run/react"
 
-import { getStoresByCity } from "~/utils/store.query.server"
+import { getStoresByCity } from "~/queries.server/store.query.server"
 
 import storeCardCss from "./../components/styles/store-card.css"
 import { StoreContainer } from "~/components/store-container"
@@ -27,7 +27,7 @@ export const loader = async ({
     }
 
     const kind = params.kind
-    
+
     stores = await getStoresByCity({
       cityName: city,
       storeKindName: kind ?? undefined,

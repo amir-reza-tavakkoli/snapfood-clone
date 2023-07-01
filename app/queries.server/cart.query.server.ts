@@ -1,5 +1,6 @@
 import type { Order } from "@prisma/client"
 import { CartCompProps } from "~/components/cart"
+import { getComment } from "./comment.query"
 
 import { getFullOrderItems, getOrders } from "./order.query.server"
 import { getStore } from "./store.query.server"
@@ -24,6 +25,10 @@ export async function getCart({
       orders.map(order => getStore({ storeId: order.storeId })),
     )
 
+    const comments = await Promise.all(
+      orders.map(order => getComment({ orderId: order.id })),
+    )
+
     stores.forEach(store => {
       if (!store) throw new Error("فروشگاهی با این مشخصات وجود ندارد")
     })
@@ -37,7 +42,12 @@ export async function getCart({
     })
 
     const cartOrders = orders.map((order, index) => {
-      return { store: stores[index], order, items: items[index] }
+      return {
+        store: stores[index],
+        order,
+        items: items[index],
+        comment: comments[index],
+      }
     })
 
     return { orders: cartOrders } as CartCompProps
