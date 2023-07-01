@@ -1,55 +1,89 @@
 import { useEffect, useState } from "react"
 
-import { useActionData, useSearchParams } from "@remix-run/react"
+import { useActionData, useLoaderData, useSearchParams } from "@remix-run/react"
+
 import { Form } from "@remix-run/react"
 
 import {
   createOrUpdateUser,
   getUserByPhone,
   updateVerificationCode,
-} from "~/utils/user.query.server"
+} from "~/queries.server/user.query.server"
 
-import { createUserSession } from "~/utils/session.server"
+import type {
+  ActionArgs,
+  LoaderArgs,
+  TypedResponse,
+} from "@remix-run/server-runtime"
+
+import { createUserSession, getPhoneNumber } from "~/utils/session.server"
 import {
   badRequest,
   generateVerificationCode,
   generateVerificationExpiry,
-  validatePhoneNumber,
-  validateUrl,
 } from "~/utils/utils.server"
-import { User } from "@prisma/client"
+
+import { checkPhoneNumber, validateUrl } from "~/utils/validate.server"
+
+import type { User } from "@prisma/client"
+
 import {
   ALLOWED_URLS,
+  INDEX_URL,
   VERIFICATION_CODE_EXPIRY_TIME,
   VERIFICATION_CODE_FIGURES,
 } from "~/constants"
 
-export async function verify() {}
+import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { Button } from "~/components/button"
 
 type FieldErrors = {
-  phoneNumber?: string | undefined
-  verificationCode?: string | undefined
+  phoneNumber?: string
+  verificationCode?: string
 }
 
-export const action = async ({ request }: any) => {
+export const action = async ({
+  request,
+}: ActionArgs): Promise<
+  | {
+      codeSent?: boolean
+      fieldErrors?: FieldErrors
+      fields?: string
+      formError?: string
+      state?: LoginPageState
+    }
+  | TypedResponse<never>
+> => {
   try {
     const form = await request.formData()
 
-    const state: string | undefined = form.get("state")
-    const submittedPhone: string | undefined = form.get("phoneNumber")
+    let state = form.get("state")
+
+    const submittedPhone = form.get("phoneNumber")
+
+    if (typeof submittedPhone !== "string") {
+      throw new Response("شماره تلفن را صحیح وارد کنید", { status: 400 })
+    }
+
+    if (
+      typeof state !== "string" ||
+      (state !== "verification" && state !== "phoneNumber")
+    ) {
+      throw new Response("مشکلی بوجود آمد", { status: 400 })
+    }
 
     const fieldErrors: FieldErrors = {
       phoneNumber: submittedPhone
-        ? validatePhoneNumber(submittedPhone)
+        ? checkPhoneNumber(submittedPhone)
         : undefined,
     }
 
     if (typeof submittedPhone !== "string" || !state) {
-      return badRequest({
-        fieldErrors: null,
-        fields: null,
+      return {
+        fieldErrors: undefined,
+        fields: undefined,
         formError: "Form Not Submitted Correctly.",
-      })
+      }
     }
 
     if (fieldErrors.phoneNumber) {
@@ -65,29 +99,29 @@ export const action = async ({ request }: any) => {
       user = await getUserByPhone({ phoneNumber: submittedPhone })
     } catch {
       return {
-        formError: "Internal Error",
+        formError: "مشکلی بوجود آمد.",
       }
     }
 
     if (state === "verification") {
       if (!user) {
         return {
-          formError: "Internal Error",
+          formError: "مشکلی بوجود آمد.",
         }
       }
 
-      const submittedCode: String = form.get("verification")
+      const submittedCode = form.get("verification")
 
       if (typeof submittedCode !== "string" || !submittedCode) {
-        return badRequest({
-          fieldErrors: null,
-          fields: null,
-          formError: "Form Not Submitted Correctly.",
-        })
+        return {
+          fieldErrors: undefined,
+          fields: undefined,
+          formError: "فرم به درستی کامل نشده است.",
+        }
       }
 
       const redirectTo = validateUrl(
-        (form.get("redirectTo") as string) || "/home",
+        (form.get("redirectTo") as string) || INDEX_URL,
         ALLOWED_URLS,
       )
 
@@ -95,14 +129,14 @@ export const action = async ({ request }: any) => {
         user.verificationCode! !== submittedCode ||
         user.verificationCodeExpiry! < new Date(Date.now())
       ) {
-        fieldErrors.verificationCode = "Verification Code Wrong, Try Again"
+        fieldErrors.verificationCode = "رمز یک بار مصرف اشتباه است."
       }
 
       if (Object.values(fieldErrors).some(Boolean)) {
         return {
           fieldErrors,
-          fields,
-          formError: null,
+
+          formError: undefined,
           state: "verification",
         }
       }
@@ -115,7 +149,7 @@ export const action = async ({ request }: any) => {
         user = await createOrUpdateUser({ phoneNumber: submittedPhone })
       } catch {
         return {
-          formError: "Internal Error",
+          formError: "مشکلی بوجود آمد.",
         }
       }
     }
@@ -143,7 +177,7 @@ export const action = async ({ request }: any) => {
       )
     } catch {
       return {
-        formError: "Internal Error",
+        formError: "مشکلی بوجود آمد.",
       }
     }
 
@@ -155,12 +189,42 @@ export const action = async ({ request }: any) => {
   }
 }
 
-type State = "phoneNumber" | "verification"
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<{ isLoggedIn: boolean }> => {
+  try {
+    const phoneNumber = await getPhoneNumber(request)
 
-export default function Login() {
-  const actionData = useActionData()
-  // const loaderData = useLoaderData<typeof loader>()
-  const loaderData = { isLoggedIn: false }
+    if (!phoneNumber) {
+      return { isLoggedIn: false }
+    }
+
+    const user = await getUserByPhone({ phoneNumber })
+
+    if (!user) {
+      return { isLoggedIn: false }
+    }
+
+    return { isLoggedIn: true }
+  } catch (error) {
+    throw error
+  }
+}
+
+const phoneCookieName = "phoneNumber"
+
+type LoginPageState = "phoneNumber" | "verification"
+
+export default function LoginPage() {
+  const loaderData = useLoaderData<typeof loader>()
+
+  const actionData = useActionData() as {
+    codeSent?: boolean
+    fieldErrors?: FieldErrors
+    fields?: string
+    formError?: string
+    state?: LoginPageState
+  }
 
   const [searchParams] = useSearchParams()
 
@@ -168,47 +232,45 @@ export default function Login() {
 
   const [verificationCode, setVerificationCode] = useState<String>("")
 
-  const [state, setState] = useState<State>(actionData?.state ?? "phoneNumber")
-
-  // (phoneNumber,"ph", );
+  const [pgaeState, setPageState] = useState<LoginPageState>("phoneNumber")
 
   useEffect(() => {
-    if (state === "phoneNumber" && actionData?.codeSent)
-      setState("verification")
+    if (pgaeState === "phoneNumber" && actionData && actionData.codeSent) {
+      setPageState("verification")
+    }
   }, [actionData?.codeSent])
 
   useEffect(() => {
-    if (state === "verification")
-      setPhoneNumber(sessionStorage.getItem("phoneNumber")!)
+    if (pgaeState === "verification") {
+      setPhoneNumber(sessionStorage.getItem(phoneCookieName)!)
+    }
   }, [verificationCode])
 
   useEffect(() => {
-    if (state === "phoneNumber") {
-      if (phoneNumber == "") {
-        return
-      }
-
-      sessionStorage.setItem("phoneNumber", phoneNumber)
+    if (pgaeState === "phoneNumber" && phoneNumber && phoneNumber !== "") {
+      sessionStorage.setItem(phoneCookieName, phoneNumber)
     }
   }, [phoneNumber])
 
   return (
-    <div>
-      <h1>Login</h1>
+    <main>
+      <h1>ورود</h1>
+
       {loaderData.isLoggedIn ? (
-        <p>Already Logged In</p>
+        <p>قبلا وارد شده اید</p>
       ) : (
         <>
           <Form method="post">
-            {state === "phoneNumber" ? (
+            {pgaeState === "phoneNumber" ? (
               <>
-                <label htmlFor="phoneNumber">Phone Number</label>
+                <label htmlFor="phoneNumber">شماره تماس</label>
+
                 <input
                   type="text"
                   id="phoneNumber"
+                  autoComplete="tel"
                   name="phoneNumber"
                   inputMode="tel"
-                  defaultValue=""
                   placeholder="09******"
                   aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
                   aria-errormessage={
@@ -223,45 +285,42 @@ export default function Login() {
                     }
                   }}
                 />
-                <input type="hidden" name="state" value={"phoneNumber"} />
 
-                {actionData?.fieldErrors?.phoneNumber ? (
-                  <p role="alert">{actionData.fieldErrors.phoneNumber}</p>
+                <input type="hidden" name="state" value="phoneNumber" />
+
+                <Button type="submit" variant="accent">
+                  دریافت کد تایید ورود
+                </Button>
+
+                {actionData?.fieldErrors?.verificationCode ? (
+                  <output role="alert" aria-label="error" aria-live="assertive">
+                    {actionData.fieldErrors.phoneNumber}
+                  </output>
                 ) : null}
-                <div>
-                  {actionData?.formError ? (
-                    <p role="alert">{actionData.formError}</p>
-                  ) : null}
-                </div>
-                <div>
-                  <button type="submit">Submit</button>
-                </div>
               </>
             ) : (
               <>
-                <input
-                  type="hidden"
-                  name="redirectTo"
-                  value={searchParams.get("redirectTo") ?? undefined}
-                />
+                <Button
+                  type="button"
+                  onClick={() => setPageState("phoneNumber")}
+                >
+                  بازگشت
+                </Button>
 
-                <input type="hidden" name="phoneNumber" value={phoneNumber} />
-                <input type="hidden" name="state" value={"verification"} />
+                <label htmlFor="verification">کد تایید</label>
 
-                <label htmlFor="verification">Verification Code</label>
                 <input
+                  type="text"
                   autoComplete="one-time-code"
                   inputMode="numeric"
-                  type="text"
                   id="verification"
                   name="verification"
-                  defaultValue=""
                   placeholder="1234"
                   aria-invalid={Boolean(
-                    actionData?.fieldErrors?.verificationCode,
+                    actionData.fieldErrors?.verificationCode,
                   )}
                   aria-errormessage={
-                    actionData?.fieldErrors?.verificationCode
+                    actionData.fieldErrors?.verificationCode
                       ? "Verification Code Error"
                       : undefined
                   }
@@ -272,21 +331,43 @@ export default function Login() {
                     }
                   }}
                 />
+
+                <input
+                  type="hidden"
+                  name="redirectTo"
+                  value={searchParams.get("redirectTo") ?? undefined}
+                />
+
+                <input type="hidden" name="phoneNumber" value={phoneNumber} />
+
+                <input type="hidden" name="state" value="verification" />
+
+                <Button variant="accent" type="submit">
+                  Submit
+                </Button>
+
                 {actionData?.fieldErrors?.verificationCode ? (
-                  <p role="alert">{actionData.fieldErrors.verificationCode}</p>
+                  <output role="alert" aria-label="error" aria-live="assertive">
+                    {actionData.fieldErrors.verificationCode}
+                  </output>
                 ) : null}
-                <button type="submit">Submit</button>
               </>
             )}
           </Form>
 
-          <div>
-            {actionData?.formError ? (
-              <p role="alert">{actionData.formError}</p>
-            ) : null}
-          </div>
+          {actionData && actionData.formError ? (
+            <output aria-label="error" aria-live="assertive" role="alert">
+              <>
+                <p className="nonvisual">Error</p>
+
+                <p>{actionData.formError}</p>
+              </>
+            </output>
+          ) : null}
         </>
       )}
-    </div>
+    </main>
   )
 }
+
+export const ErrorBoundary = GlobalErrorBoundary
