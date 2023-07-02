@@ -30,13 +30,15 @@ export const links: LinksFunction = () => [
 ]
 
 // Prepare to redirect user to bank page
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionArgs) : Promise<User>=> {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
-    const user = await getUserByPhone({ phoneNumber })
+    let user = await getUserByPhone({ phoneNumber })
 
-    validateUser({ user })
+    user = validateUser({ user })
+
+    return user
   } catch (error) {
     throw error
   }
@@ -46,11 +48,11 @@ export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
-    const user = await getUserByPhone({ phoneNumber })
+    let user = await getUserByPhone({ phoneNumber })
 
-    validateUser({ user })
+    user = validateUser({ user })
 
-    return user!
+    return user
   } catch (error) {
     throw error
   }
