@@ -1,0 +1,17 @@
+:where(.boundary-error) {
+    align-self: center;
+    inline-size: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+:where(.boundary-error > h1) {
+    color: var(--color-error);
+}
+
+:where(.boundary-error > p) {
+    color: var(--color-error);
+}
