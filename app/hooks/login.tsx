@@ -38,7 +38,7 @@ export function useLogin(actionData: LoginActionData) {
     setPhoneNumber,
     verificationCode,
     setVerificationCode,
-    TimerFinished: timerFinished,
+    timerFinished,
     setTimerFinished,
   }
 }
