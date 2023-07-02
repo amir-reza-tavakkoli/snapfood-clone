@@ -1,14 +1,9 @@
-import { useEffect, useState } from "react"
-
-import { useActionData, useLoaderData, useSearchParams } from "@remix-run/react"
-
-import { Form } from "@remix-run/react"
-
 import {
-  createOrUpdateUser,
-  getUserByPhone,
-  updateVerificationCode,
-} from "~/queries.server/user.query.server"
+  Form,
+  useActionData,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react"
 
 import type {
   ActionArgs,
@@ -16,23 +11,25 @@ import type {
   TypedResponse,
 } from "@remix-run/server-runtime"
 
-import { createUserSession, getPhoneNumber } from "~/utils/session.server"
-import {
-  badRequest,
-  generateVerificationCode,
-  generateVerificationExpiry,
-} from "~/utils/utils.server"
-
-import { checkPhoneNumber, validateUrl } from "~/utils/validate.server"
-
 import type { User } from "@prisma/client"
 
 import {
-  ALLOWED_URLS,
-  INDEX_URL,
-  VERIFICATION_CODE_EXPIRY_TIME,
-  VERIFICATION_CODE_FIGURES,
-} from "~/constants"
+  createOrUpdateUser,
+  getUserByPhone,
+} from "~/queries.server/user.query.server"
+
+import { createUserSession, getPhoneNumber } from "~/utils/session.server"
+import { checkFieldsErrors } from "~/utils/utils.server"
+
+import {
+  checkPhoneNumber,
+  sendVerification,
+  validateUrl,
+} from "~/utils/validate.server"
+
+import { useLogin } from "~/hooks/login"
+
+import { ALLOWED_URLS, INDEX_URL } from "~/constants"
 
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 import { Button } from "~/components/button"
@@ -42,34 +39,35 @@ type FieldErrors = {
   verificationCode?: string
 }
 
+type ActionDataFileds = {
+  codeSent?: boolean
+  fieldErrors?: FieldErrors
+  formError?: string
+  state?: LoginPageState
+}
+
 export const action = async ({
   request,
-}: ActionArgs): Promise<
-  | {
-      codeSent?: boolean
-      fieldErrors?: FieldErrors
-      fields?: string
-      formError?: string
-      state?: LoginPageState
-    }
-  | TypedResponse<never>
-> => {
+}: ActionArgs): Promise<ActionDataFileds | TypedResponse<never>> => {
   try {
     const form = await request.formData()
 
-    let state = form.get("state")
+    let pageState = form.get("state")
 
     const submittedPhone = form.get("phoneNumber")
 
-    if (typeof submittedPhone !== "string") {
-      throw new Response("شماره تلفن را صحیح وارد کنید", { status: 400 })
-    }
-
     if (
-      typeof state !== "string" ||
-      (state !== "verification" && state !== "phoneNumber")
+      typeof pageState !== "string" ||
+      (pageState !== "verification" && pageState !== "phoneNumber") ||
+      !pageState
     ) {
       throw new Response("مشکلی بوجود آمد", { status: 400 })
+    }
+
+    if (!submittedPhone || typeof submittedPhone !== "string") {
+      return {
+        formError: "فرم به درستی کامل نشده است.",
+      }
     }
 
     const fieldErrors: FieldErrors = {
@@ -78,21 +76,11 @@ export const action = async ({
         : undefined,
     }
 
-    if (typeof submittedPhone !== "string" || !state) {
-      return {
-        fieldErrors: undefined,
-        fields: undefined,
-        formError: "Form Not Submitted Correctly.",
-      }
-    }
-
     if (fieldErrors.phoneNumber) {
       return {
         fieldErrors,
       }
     }
-
-    const fields = { phoneNumber: submittedPhone }
 
     let user: User | null
     try {
@@ -103,7 +91,7 @@ export const action = async ({
       }
     }
 
-    if (state === "verification") {
+    if (pageState === "verification") {
       if (!user) {
         return {
           formError: "مشکلی بوجود آمد.",
@@ -114,8 +102,6 @@ export const action = async ({
 
       if (typeof submittedCode !== "string" || !submittedCode) {
         return {
-          fieldErrors: undefined,
-          fields: undefined,
           formError: "فرم به درستی کامل نشده است.",
         }
       }
@@ -129,14 +115,19 @@ export const action = async ({
         user.verificationCode! !== submittedCode ||
         user.verificationCodeExpiry! < new Date(Date.now())
       ) {
-        fieldErrors.verificationCode = "رمز یک بار مصرف اشتباه است."
+        fieldErrors.verificationCode = "رمز وارد شده اشتباه است."
       }
 
-      if (Object.values(fieldErrors).some(Boolean)) {
+      checkFieldsErrors(fieldErrors, "verification")
+
+      try {
+        await createOrUpdateUser({
+          phoneNumber: submittedPhone,
+          isVerified: true,
+        })
+      } catch (error) {
         return {
           fieldErrors,
-
-          formError: undefined,
           state: "verification",
         }
       }
@@ -155,34 +146,21 @@ export const action = async ({
     }
 
     if (user.isSuspended) {
-      fieldErrors.phoneNumber = "User Is Suspended"
+      fieldErrors.phoneNumber = "کاربر مسدود است."
     }
 
-    if (Object.values(fieldErrors).some(Boolean)) {
-      return {
-        fieldErrors,
-      }
-    }
-
-    const verificationCode = generateVerificationCode(VERIFICATION_CODE_FIGURES)
-    const verificationCodeExpiry = generateVerificationExpiry(
-      VERIFICATION_CODE_EXPIRY_TIME,
-    )
+    checkFieldsErrors(fieldErrors)
 
     try {
-      user = await updateVerificationCode(
-        submittedPhone,
-        verificationCode,
-        verificationCodeExpiry,
-      )
+      user = await sendVerification({ phoneNumber: submittedPhone })
+
+      return {
+        codeSent: true,
+      }
     } catch {
       return {
         formError: "مشکلی بوجود آمد.",
       }
-    }
-
-    return {
-      codeSent: true,
     }
   } catch (error) {
     throw error
@@ -211,49 +189,26 @@ export const loader = async ({
   }
 }
 
-const phoneCookieName = "phoneNumber"
-
-type LoginPageState = "phoneNumber" | "verification"
+export type LoginPageState = "phoneNumber" | "verification"
 
 export default function LoginPage() {
   const loaderData = useLoaderData<typeof loader>()
 
-  const actionData = useActionData() as {
-    codeSent?: boolean
-    fieldErrors?: FieldErrors
-    fields?: string
-    formError?: string
-    state?: LoginPageState
-  }
+  const actionData = useActionData() as ActionDataFileds
 
   const [searchParams] = useSearchParams()
 
-  const [phoneNumber, setPhoneNumber] = useState<string>("")
-
-  const [verificationCode, setVerificationCode] = useState<String>("")
-
-  const [pgaeState, setPageState] = useState<LoginPageState>("phoneNumber")
-
-  useEffect(() => {
-    if (pgaeState === "phoneNumber" && actionData && actionData.codeSent) {
-      setPageState("verification")
-    }
-  }, [actionData?.codeSent])
-
-  useEffect(() => {
-    if (pgaeState === "verification") {
-      setPhoneNumber(sessionStorage.getItem(phoneCookieName)!)
-    }
-  }, [verificationCode])
-
-  useEffect(() => {
-    if (pgaeState === "phoneNumber" && phoneNumber && phoneNumber !== "") {
-      sessionStorage.setItem(phoneCookieName, phoneNumber)
-    }
-  }, [phoneNumber])
+  const {
+    pgaeState,
+    setPageState,
+    phoneNumber,
+    setPhoneNumber,
+    setVerificationCode,
+    verificationCode,
+  } = useLogin(actionData)
 
   return (
-    <main>
+    <main className="_login-page  ">
       <h1>ورود</h1>
 
       {loaderData.isLoggedIn ? (
@@ -271,7 +226,8 @@ export default function LoginPage() {
                   autoComplete="tel"
                   name="phoneNumber"
                   inputMode="tel"
-                  placeholder="09******"
+                  required={true}
+                  placeholder={Number("09").toLocaleString("fa-IR") + "*******"}
                   aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
                   aria-errormessage={
                     actionData?.fieldErrors?.phoneNumber
@@ -280,7 +236,7 @@ export default function LoginPage() {
                   }
                   onChange={e => {
                     e.preventDefault()
-                    if (e.target.value) {
+                    if (e.target.value && !isNaN(Number(e.target.value))) {
                       setPhoneNumber(e.target.value)
                     }
                   }}
@@ -314,8 +270,10 @@ export default function LoginPage() {
                   autoComplete="one-time-code"
                   inputMode="numeric"
                   id="verification"
+                  required={true}
                   name="verification"
-                  placeholder="1234"
+                  defaultValue=""
+                  placeholder={Number("1234").toLocaleString("fa-IR")}
                   aria-invalid={Boolean(
                     actionData.fieldErrors?.verificationCode,
                   )}
@@ -326,7 +284,7 @@ export default function LoginPage() {
                   }
                   onChange={e => {
                     e.preventDefault()
-                    if (e.target.value) {
+                    if (e.target.value && !isNaN(Number(e.target.value))) {
                       setVerificationCode(e.target.value)
                     }
                   }}
@@ -343,7 +301,7 @@ export default function LoginPage() {
                 <input type="hidden" name="state" value="verification" />
 
                 <Button variant="accent" type="submit">
-                  Submit
+                  ورود
                 </Button>
 
                 {actionData?.fieldErrors?.verificationCode ? (
@@ -371,3 +329,6 @@ export default function LoginPage() {
 }
 
 export const ErrorBoundary = GlobalErrorBoundary
+
+export { type ActionDataFileds as LoginActionData }
+export { type FieldErrors as LoginFieldErrors }
