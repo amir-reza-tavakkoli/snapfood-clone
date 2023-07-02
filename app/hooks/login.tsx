@@ -11,6 +11,8 @@ export function useLogin(actionData: LoginActionData) {
 
   const [pgaeState, setPageState] = useState<LoginPageState>("phoneNumber")
 
+  const [timerFinished, setTimerFinished] = useState(false)
+
   useEffect(() => {
     if (pgaeState === "phoneNumber" && actionData && actionData.codeSent) {
       setPageState("verification")
@@ -36,5 +38,7 @@ export function useLogin(actionData: LoginActionData) {
     setPhoneNumber,
     verificationCode,
     setVerificationCode,
+    TimerFinished: timerFinished,
+    setTimerFinished,
   }
 }

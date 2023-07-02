@@ -33,6 +33,7 @@ import { ALLOWED_URLS, INDEX_URL } from "~/constants"
 
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 import { Button } from "~/components/button"
+import { Timer } from "~/components/timer"
 
 type FieldErrors = {
   phoneNumber?: string
@@ -111,16 +112,11 @@ export const action = async ({
         ALLOWED_URLS,
       )
 
-      if (
-
-        user.verificationCodeExpiry < new Date(Date.now())
-      ) {
+      if (user.verificationCodeExpiry < new Date(Date.now())) {
         fieldErrors.verificationCode = "مهلت ورود به پایان رسید."
       }
 
-      if (
-        user.verificationCode !== submittedCode
-      ) {
+      if (user.verificationCode !== submittedCode) {
         fieldErrors.verificationCode = "رمز وارد شده اشتباه است."
       }
 
@@ -211,6 +207,8 @@ export default function LoginPage() {
     setPhoneNumber,
     setVerificationCode,
     verificationCode,
+    timerFinished,
+    setTimerFinished,
   } = useLogin(actionData)
 
   return (
@@ -270,6 +268,24 @@ export default function LoginPage() {
                 </Button>
 
                 <label htmlFor="verification">کد تایید</label>
+
+                <Timer
+                  initialSeconds={0}
+                  initialMinute={5}
+                  setTimerFinished={setTimerFinished}
+                ></Timer>
+
+                {timerFinished ? (
+                  <Button
+                    type="button"
+                    aria-label="Resend"
+                    onClick={() => {
+                      setPageState("phoneNumber")
+                    }}
+                  >
+                    ارسال دوباره
+                  </Button>
+                ) : null}
 
                 <input
                   type="text"
