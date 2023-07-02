@@ -92,7 +92,7 @@ export const action = async ({
     }
 
     if (pageState === "verification") {
-      if (!user) {
+      if (!user || !user.verificationCode || !user.verificationCodeExpiry) {
         return {
           formError: "مشکلی بوجود آمد.",
         }
@@ -112,8 +112,14 @@ export const action = async ({
       )
 
       if (
-        user.verificationCode! !== submittedCode ||
-        user.verificationCodeExpiry! < new Date(Date.now())
+
+        user.verificationCodeExpiry < new Date(Date.now())
+      ) {
+        fieldErrors.verificationCode = "مهلت ورود به پایان رسید."
+      }
+
+      if (
+        user.verificationCode !== submittedCode
       ) {
         fieldErrors.verificationCode = "رمز وارد شده اشتباه است."
       }
