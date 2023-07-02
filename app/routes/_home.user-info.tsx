@@ -129,7 +129,9 @@ export default function UserInfo() {
             type="text"
             name="phoneNumber"
             id="phoneNumber"
-            value={user.phoneNumber}
+            value={Number(user.phoneNumber)
+              .toLocaleString("fa")
+              .replace(/٬/g, "")}
           />
         </div>
 
