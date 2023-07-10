@@ -88,7 +88,7 @@ export function Addresses({ addresses, dir }: AddressesProps) {
         )}
       </div>
 
-      <Link to={"/home/addresses/new"}>ایجاد آدرس جدید </Link>
+      <Link to={"/addresses/new"}>ایجاد آدرس جدید </Link>
     </ul>
   )
 }

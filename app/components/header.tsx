@@ -2,18 +2,21 @@ import { Link } from "@remix-run/react"
 
 import { Icon } from "./icon"
 import { Button } from "./button"
+import { VENDOR_NAME } from "~/constants"
 
 type HeaderProps = {
   address: string
   about?: string
   dir?: "rtl" | "lrt"
   x?: React.Dispatch<React.SetStateAction<{ z: number }>>
+  toggleMenu?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const Header = ({
-  about = "SnappFood",
+  about = VENDOR_NAME,
   address,
   dir,
+  toggleMenu,
   x,
 }: HeaderProps) => {
   return (
@@ -64,15 +67,16 @@ export const Header = ({
         >
           <span className="nonvisual">Search</span>
         </Button>
-        <div></div>
+        <div role="presentation"></div>
       </form>
       <span className="_buttons">
-        <Link to={"/home/user-info"}>
+        <Link to={"/user-info"}>
           <Button
             variant="primary"
             icon={{ name: "user", color: "text" }}
             type="button"
             aria-label="Account"
+            onClick={() => (toggleMenu ? toggleMenu(prev => !prev) : null)}
           >
             <span className="nonvisual">User</span>
           </Button>
@@ -84,7 +88,7 @@ export const Header = ({
           dir={dir}
         >
           <Icon name="order"></Icon>
-          <Link to={"/home/orders"}> سفارش ها</Link>
+          <Link to={"/orders"}> سفارش ها</Link>
         </Button>
       </span>
     </header>

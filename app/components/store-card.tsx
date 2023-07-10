@@ -123,7 +123,7 @@ export const VendorCard = ({
                     <Icon name="delivery" role="presentation" />
                     <div>
                       <span>{deliveryMethod} </span>
-                      <span>{deliveryPrice ?? null} </span>
+                      <span>{deliveryPrice ? deliveryPrice : "رایگان"} </span>
                       <span>{deliveryCurrency ?? null}</span>
                     </div>
                   </dd>

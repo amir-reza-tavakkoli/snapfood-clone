@@ -20,6 +20,7 @@ import {
   getStoreItems,
 } from "~/queries.server/store.query.server"
 import { getUserByPhone } from "~/queries.server/user.query.server"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const loader: LoaderFunction = async ({
   params,
@@ -110,7 +111,7 @@ export default function ItemInStore() {
       isNaN(Number(choosedAddress)) ||
       !Number(choosedAddress)
     ) {
-      setTimeout(() => navigate(`/home/addresses?storeId=${store.id}`), 2000)
+      setTimeout(() => navigate(`/addresses?storeId=${store.id}`), 2000)
       setAddress(-1)
     }
 
@@ -156,3 +157,5 @@ export default function ItemInStore() {
     </dl>
   )
 }
+
+export const ErrorBoundary = GlobalErrorBoundary
