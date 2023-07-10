@@ -1,5 +1,19 @@
 import { json } from "@remix-run/node"
 
+import type { Store } from "@prisma/client"
+
+import {
+  getStoresByKind,
+  getStoresKinds,
+  getStoresWithDiscount,
+  getStoresWithFreeShipment,
+} from "~/queries.server/store.query.server"
+
+import { LoginFieldErrors } from "~/routes/login"
+
+import { AllowedStoresFeatures } from "~/constants"
+
+
 export const badRequest = <T>(data: T) => json<T>(data, { status: 400 })
 
 export function generateVerificationCode(figures: number) {
@@ -28,3 +42,81 @@ export function generateVerificationExpiry(mins: number): Date {
     new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + mins),
   )
 }
+
+export function checkFieldsErrors(
+  fieldErrors: LoginFieldErrors,
+  state?: string,
+) {
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return {
+      fieldErrors,
+      state,
+    }
+  }
+}
+
+type Features = ({
+  name: AllowedStoresFeatures
+  getStores: ({
+    kind,
+    stores,
+  }: {
+    kind?: string
+    stores: Store[]
+  }) => Promise<Store[]>
+  title?: string
+})[]
+export const features: Features = [
+  {
+    name: "kind",
+    getStores: async ({ kind, stores }: { kind?: string; stores: Store[] }) => {
+      const kinds = await getStoresKinds()
+
+      if (!kind || kinds.find(storeKind => storeKind.name === kind))
+        throw new Error("این نوع وجود ندارد.")
+
+      const featureStores = await getStoresByKind({ kind })
+
+      let kindFeature = features.find(feat => feat.name === "kind")
+
+      if (kindFeature) kindFeature.title = kind
+
+      return featureStores
+    },
+  },
+
+  {
+    name: "discount",
+    title: "دارای تخفیف",
+    getStores: async ({ stores }: { stores: Store[] }) => {
+      const featureStores = await getStoresWithDiscount({ stores })
+
+      if (!featureStores) {
+        throw new Error("خطا")
+      }
+
+      return featureStores
+    },
+  },
+
+  {
+    name: "freeShipment",
+    title: "دارای ارسال رایگان",
+    getStores: async ({ stores }: { stores: Store[] }) => {
+      const featureStores = await getStoresWithFreeShipment({ stores })
+      if (!featureStores) {
+        throw new Error("خطا")
+      }
+
+      return featureStores
+    },
+  },
+
+  {
+    name: "all",
+    title: "همه فروشگاه ها",
+    getStores: async ({ stores }: { stores: Store[] }) => {
+      return stores
+    },
+  },
+]
