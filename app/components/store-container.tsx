@@ -1,13 +1,11 @@
 import { Link } from "@remix-run/react"
 
-import type { Store } from "@prisma/client"
-
 import { Icon } from "./icon"
 import { VendorCard } from "./store-card"
-import { DEFAULT_CURRENCY, DEFAULT_DELIVERY_METHOD } from "~/constants"
+import { DEFAULT_CURRENCY, DEFAULT_DELIVERY_METHOD, DEFAULT_IMG_PLACEHOLDER, type StoreWithTags } from "~/constants"
 
 type StoreContainerProps = {
-  stores?: Store[] | null
+  stores?: StoreWithTags[] | null
   moreHref?: string
   title: string
   dir?: "rtl" | "lrt"
@@ -32,19 +30,19 @@ export function StoreContainer({
       <div>
         {stores &&
           stores.map((store, index) => (
-            <Link to={`home/store/${store.id}`} key={index}>
+            <Link to={`/store/${store.id}`} key={index}>
               <li>
                 <VendorCard
-                  image={store.avatarUrl ?? ""}
+                  image={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                   name={store.name}
                   type={store.storeKindName}
-                  ratingValue="4.3"
-                  ratingCount={320}
+                  ratingValue={store.score }
+                  ratingCount={store.scoreCount ?? "جدید"}
                   dir="rtl"
-                  tags={["فست فود"]}
+                  tags={store.tags ?? ["فست فود"]}
                   deliveryMethod={DEFAULT_DELIVERY_METHOD}
                   deliveryCurrency={DEFAULT_CURRENCY}
-                  deliveryPrice={store.shipmentPrice ?? undefined}
+                  deliveryPrice={store.baseShipmentPrice ?? 0}
                   logo="https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/634bff2c452e0.jpg"
                 ></VendorCard>
               </li>
