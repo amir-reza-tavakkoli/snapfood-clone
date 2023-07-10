@@ -33,6 +33,7 @@ import { DEFAULT_CURRENCY } from "~/constants"
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-order.css"
 import { validateNumberParam, validateOrder, validateStore, validateUser } from "~/utils/validate.server"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -206,23 +207,4 @@ export default function BillPage() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-  console.log(error)
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-
-      <Link to="/wallet">دوباره امتحان کنید</Link>
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary

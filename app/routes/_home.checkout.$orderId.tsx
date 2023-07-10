@@ -24,6 +24,7 @@ import { Order, Store } from "@prisma/client"
 import { getStore } from "~/queries.server/store.query.server"
 import { Button } from "~/components/button"
 import { OrderComp } from "~/components/order"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -143,22 +144,4 @@ export default function OrdersPage() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-
-      <Link to="/orders">دوباره امتحان کنید</Link>
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary

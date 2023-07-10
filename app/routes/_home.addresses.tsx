@@ -18,6 +18,7 @@ import { Addresses } from "~/components/addresses"
 
 import addressesCss from "./../components/styles/addresses.css"
 import { validateUser } from "~/utils/validate.server"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: addressesCss },
@@ -54,22 +55,4 @@ export default function UserInfo() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-
-      <Link to="/addresses">دوباره امتحان کنید</Link>
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary
