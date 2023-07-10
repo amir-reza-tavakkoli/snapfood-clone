@@ -108,3 +108,13 @@ export async function updateVerificationCode(
     throw error
   }
 }
+
+export async function getUserByEmail({ email }: { email: string }) {
+  try {
+    const user = await db.user.findUnique({ where: { email } })
+
+    return user
+  } catch (error) {
+    throw error
+  }
+}

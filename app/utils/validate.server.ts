@@ -3,7 +3,17 @@ import { getCities } from "../queries.server/address.query.server"
 import type { Order, Store, User } from "@prisma/client"
 import type { FullOrderItem } from "../queries.server/order.query.server"
 
-import { ALLOWED_PHONE_PREFIX, DEFAULT_MIN_ADDRESS_LENGTH } from "~/constants"
+import {
+  ALLOWED_PHONE_PREFIX,
+  DEFAULT_MIN_ADDRESS_LENGTH,
+  VERIFICATION_CODE_EXPIRY_MINS,
+  VERIFICATION_CODE_FIGURES,
+} from "~/constants"
+import {
+  generateVerificationCode,
+  generateVerificationExpiry,
+} from "./utils.server"
+import { updateVerificationCode } from "~/queries.server/user.query.server"
 
 export function checkPhoneNumber(phoneNumber: string) {
   if (
@@ -57,15 +67,15 @@ export async function validateCity({ cityName }: { cityName: string }) {
 
 export function validateUser({ user }: { user: User | null }) {
   if (!user) {
-    throw new Response("کاربر وجود ندارد.", {status : 404})
+    throw new Response("کاربر وجود ندارد.", { status: 404 })
   }
 
   if (user.isSuspended) {
-    throw new Response("کاربر مسدود است", {status : 403})
+    throw new Response("کاربر مسدود است", { status: 403 })
   }
 
   if (!user.isVerified) {
-    throw new Response("کاربر تایید نشده است", {status : 401})
+    throw new Response("کاربر تایید نشده است", { status: 401 })
   }
 
   return user
@@ -74,10 +84,10 @@ export function validateUser({ user }: { user: User | null }) {
 export function validateItems({
   items,
 }: {
-  items: (FullOrderItem | undefined)[] | null
+  items: (FullOrderItem)[] | null
 }) {
   if (!items || items.length == 0) {
-    throw new Response("آیتمی وجود ندارد", {status : 404})
+    throw new Response("آیتمی وجود ندارد", { status: 404 })
   }
 
   return items
@@ -91,11 +101,11 @@ export function validateOrder({
   phoneNumber: string
 }): Order {
   if (!order) {
-    throw new Response("چنین سفارشی وجود ندارد", {status : 404})
+    throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
   }
 
   if (order.userPhoneNumber !== phoneNumber) {
-    throw new Response("اجازه ندارید", {status : 403})
+    throw new Response("اجازه ندارید", { status: 403 })
   }
 
   return order
@@ -123,4 +133,30 @@ export function validateNumberParam(param: number) {
   }
 
   return param
+}
+
+export async function sendVerification({
+  phoneNumber,
+}: {
+  phoneNumber: string
+}) {
+  const verificationCode = generateVerificationCode(VERIFICATION_CODE_FIGURES)
+
+  const verificationCodeExpiry = generateVerificationExpiry(
+    VERIFICATION_CODE_EXPIRY_MINS,
+  )
+
+  const user = await updateVerificationCode(
+    phoneNumber,
+    verificationCode,
+    verificationCodeExpiry,
+  )
+
+  if (!user) {
+    throw new Error("An error occured")
+  }
+
+  // sending ver code by SMS goes here
+
+  return user
 }

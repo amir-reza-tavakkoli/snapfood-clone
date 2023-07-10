@@ -45,3 +45,10 @@ export function toPersianDay(day: number) {
 
 //   return hierarchy
 // }
+
+export function replaceAll(string: string, rip : string) {
+  const regex = new RegExp(`/${rip}/g`)
+
+  return string.replace(regex, "")
+}
+
