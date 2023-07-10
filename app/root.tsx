@@ -12,8 +12,12 @@ import type { LinksFunction } from "@remix-run/node"
 import { GlobalErrorBoundary } from "./components/error-boundary"
 
 import baseCss from "./index.css"
+import errorBoundaryCss from "./components/styles/error-boundary.css"
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: baseCss }]
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: baseCss },
+  { rel: "stylesheet", href: errorBoundaryCss },
+]
 
 export default function App() {
   return (
