@@ -1,19 +1,31 @@
-import { Address, City, StoreKind, User } from "@prisma/client"
-import { Outlet, useLoaderData, useLocation } from "@remix-run/react"
-import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
-import { memo, useEffect, useState } from "react"
+import { memo, useState } from "react"
+
+import { Outlet, useLoaderData } from "@remix-run/react"
+
+import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+
+import type { Address, City, StoreKind, User } from "@prisma/client"
+
 import { Header } from "~/components/header"
 import { CategoryNav } from "~/components/nav"
-
-import { getUserAddresses } from "~/queries.server/address.query.server"
-
-import { requirePhoneNumber } from "~/utils/session.server"
-import { getStoresKinds, } from "~/queries.server/store.query.server"
-import { getSupportedCities } from "~/queries.server/address.query.server"
 import { CityList } from "~/components/city-list"
 import { Footer } from "~/components/footer"
+import { UserMenu } from "~/components/user-menu"
 
-import homeCss from "./styles/home.css"
+import { requirePhoneNumber } from "~/utils/session.server"
+
+import { getUserAddresses } from "~/queries.server/address.query.server"
+import { getStoresKinds } from "~/queries.server/store.query.server"
+import { getSupportedCities } from "~/queries.server/address.query.server"
+import { getUserByPhone } from "~/queries.server/user.query.server"
+
+import { validateUser } from "~/utils/validate.server"
+
+import { DEAFULT_DIRECTION } from "~/constants"
+
+import addressesCss from "./../components/styles/addresses.css"
+import ratingsCss from "@smastrom/react-rating/style.css"
+import pageCss from "./styles/home.css"
 import headerCss from "./../components/styles/header.css"
 import buttonCss from "./../components/styles/button.css"
 import iconCss from "./../components/styles/icon.css"
@@ -22,46 +34,37 @@ import storeContainerCss from "./../components/styles/store-container.css"
 import cityListCss from "./../components/styles/city-list.css"
 import footerCss from "./../components/styles/footer.css"
 import userMenuCss from "./../components/styles/user-menu.css"
-import { UserMenu } from "~/components/user-menu"
-import { DEAFULT_DIRECTION } from "~/constants"
-import { getUserByPhone } from "~/queries.server/user.query.server"
-
-import addressesCss from "./../components/styles/addresses.css"
-import { validateUser } from "~/utils/validate.server"
-import { searchStore } from "~/queries.server/search.server"
-import ratingsCss from "@smastrom/react-rating/style.css"
+import { useForceAddress } from "~/hooks/forceAddress"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: ratingsCss },
-  { rel: "stylesheet", href: homeCss },
   { rel: "stylesheet", href: buttonCss },
   { rel: "stylesheet", href: iconCss },
   { rel: "stylesheet", href: headerCss },
   { rel: "stylesheet", href: categoryNavCss },
-  { rel: "stylesheet", href: storeContainerCss },
   { rel: "stylesheet", href: cityListCss },
+  { rel: "stylesheet", href: storeContainerCss },
   { rel: "stylesheet", href: footerCss },
   { rel: "stylesheet", href: userMenuCss },
   { rel: "stylesheet", href: addressesCss },
+  { rel: "stylesheet", href: pageCss },
 ]
 
-export const loader = async ({
-  request,
-}: LoaderArgs): Promise<{
+type LoaderType = {
   addresses: Address[]
   storesKind: StoreKind[]
   cities: City[] | null
-  user: User | null
-}> => {
+  user: User
+}
+
+export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
-    console.log(await searchStore("ddd"));
+    let user = await getUserByPhone({ phoneNumber })
 
-
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
+    user = validateUser({ user })
 
     const addresses = await getUserAddresses({ phoneNumber })
 
@@ -75,59 +78,28 @@ export const loader = async ({
   }
 }
 
-function arePropsEqual() {
-  return true
-}
-
-export default function Home() {
-  const { addresses, storesKind, cities, user } = useLoaderData<
-    typeof loader
-  >() as unknown as {
-    addresses: Address[]
-    storesKind: StoreKind[]
-    cities: City[] | null
-    user: User | null
-  }
-
-  const [userMenuShowing, setUserMenuShowing] = useState(false)
-  const [addressState, setAddressState] = useState<any>()
-
-  const [cityName, setCityName] = useState("")
-
-  useEffect(() => {
-    const choosedCity = localStorage.getItem("city")
-    if (choosedCity) setCityName(choosedCity)
-  })
+export default function HomePage() {
+  const { addresses, storesKind, cities, user } =
+    useLoaderData() as unknown as LoaderType
 
   const FooterMemo = memo(Footer, arePropsEqual)
   const CategoryNavMemo = memo(CategoryNav, arePropsEqual)
   const CityListMemo = memo(CityList, arePropsEqual)
 
-  useEffect(() => {
-    const choosedAddressId = Number(localStorage.getItem("addressId"))
+  const [userMenuShowing, setUserMenuShowing] = useState(false)
 
-    if (!choosedAddressId) return
-
-    const choosedAddress = addresses.find(
-      address => address.id == choosedAddressId,
-    )
-
-    if (!choosedAddress) return
-
-    if (!addressState) setAddressState(choosedAddress)
-
-    if (choosedAddressId !== addressState?.id) {
-      setAddressState(choosedAddress)
-    }
-  })
+  const { addressState, setAddressState, citystate, setCityState } =
+    useForceAddress({ addresses })
 
   return (
     <>
-      <div className="_home_container">
+      <div className="_headers-container">
         <Header
           dir={DEAFULT_DIRECTION}
           address={addressState?.address ?? "آدرس را آنتخاب کنید"}
+          toggleMenu={setUserMenuShowing}
         ></Header>
+
         <CategoryNavMemo
           dir={DEAFULT_DIRECTION}
           type="Categories"
@@ -135,18 +107,16 @@ export default function Home() {
             return {
               name: kind.name,
               avatarUrl: kind.avatarUrl,
-              href: `/stores/${cityName}/kind/${kind.name}`,
+              href: `/stores/${citystate}/kind/${kind.name}`,
             }
           })}
         ></CategoryNavMemo>
       </div>
-      <button onClick={() => setUserMenuShowing(prev => !prev)} type="button">
-        gdfgfdgfdg
-      </button>
+
+      <UserMenu user={user} isShowing={userMenuShowing}></UserMenu>
+
       <Outlet context={[addresses, setAddressState]}></Outlet>
-      {user ? (
-        <UserMenu user={user} isShowing={userMenuShowing}></UserMenu>
-      ) : null}
+
       {cities ? (
         <CityListMemo
           dir={DEAFULT_DIRECTION}
@@ -154,14 +124,19 @@ export default function Home() {
           items={cities?.map(city => {
             return {
               name: city.name,
-              href: city.latinName
-                ? `/home/stores/${city.latinName}`
-                : undefined,
+              href: city.latinName ? `/stores/${city.latinName}` : undefined,
             }
           })}
         ></CityListMemo>
       ) : undefined}
+
       <FooterMemo dir={DEAFULT_DIRECTION}></FooterMemo>
     </>
   )
 }
+
+function arePropsEqual() {
+  return true
+}
+
+export const ErrorBoundary = GlobalErrorBoundary

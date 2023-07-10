@@ -12,6 +12,7 @@ import type { CartCompProps } from "~/components/cart"
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
 import { validateUser } from "~/utils/validate.server"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -52,22 +53,4 @@ export default function CartPage() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-
-      <Link to="/cart">دوباره امتحان کنید</Link>
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary

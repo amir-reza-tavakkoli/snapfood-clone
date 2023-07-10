@@ -1,20 +1,22 @@
-import { Link, useLoaderData, useRouteError } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
 import { getUserByPhone } from "~/queries.server/user.query.server"
+import { getCart } from "~/queries.server/cart.query.server"
 
 import { Orders } from "~/components/order-summary"
+import type { CartCompProps } from "~/components/cart"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
+
+import { validateUser } from "~/utils/validate.server"
 
 import { DEAFULT_DIRECTION } from "./../constants"
-import type { CartCompProps } from "~/components/cart"
-
-import { getCart } from "~/queries.server/cart.query.server"
 
 import orderCss from "~/components/styles/order-summary.css"
 import ordersPageCss from "./styles/orders-page.css"
-import { validateUser } from "~/utils/validate.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },
@@ -47,7 +49,7 @@ export default function Ordersx() {
       <p>سفارش‌ های پیشین</p>
 
       {cart && cart.orders ? (
-        <Orders  orders={cart.orders} dir={DEAFULT_DIRECTION}></Orders>
+        <Orders orders={cart.orders} dir={DEAFULT_DIRECTION}></Orders>
       ) : (
         <p>سفارشی وجود ندارد ! </p>
       )}
@@ -55,22 +57,4 @@ export default function Ordersx() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-
-      <Link to="/orders-summary">دوباره امتحان کنید</Link>
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary
