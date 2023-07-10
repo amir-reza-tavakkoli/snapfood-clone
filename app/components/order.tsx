@@ -46,17 +46,17 @@ export const OrderComp = ({
           </span>
         </li>
 
-          <div className="_comment" aria-label="Comment">
-            {!comment ? (
-              <p>
-                <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
+        <div className="_comment" aria-label="Comment">
+          {!comment ? (
+            <p>
+              <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
 
-                <Link to={`/comment/${order.id}`}>ثبت نظر</Link>
-              </p>
-            ) : (
-              <span>نظر شما با موفقیت ثبت شد</span>
-            )}
-          </div>
+              <Link to={`/comment/${order.id}`}>ثبت نظر</Link>
+            </p>
+          ) : (
+            <span>نظر شما با موفقیت ثبت شد</span>
+          )}
+        </div>
 
         <li>
           <ul>

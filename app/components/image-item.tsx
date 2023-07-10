@@ -14,7 +14,7 @@ export const ImageItem = ({
   dir,
 }: ImageItemProps) => {
   return (
-    <article className="image-item" aria-label={type ?? undefined} dir={dir}>
+    <div className="image-item" aria-label={type ?? undefined} dir={dir}>
       <img src={image} alt="" role="presentation" />
       <p>
         {title}
@@ -22,6 +22,6 @@ export const ImageItem = ({
           <Icon name="flash" color="accent" role="presentation" />
         </span>
       </p>
-    </article>
+    </div>
   )
 }

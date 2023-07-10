@@ -1,4 +1,4 @@
-import type { Item } from "@prisma/client"
+import type { Item, ItemCategory } from "@prisma/client"
 
 import { db } from "../utils/db.server"
 
@@ -104,6 +104,19 @@ export async function deleteItemById({
     })
 
     return item
+  } catch (error) {
+    throw error
+  }
+}
+
+
+export async function getItemCategories(): Promise<ItemCategory[]> {
+  try {
+    const takeThisMany = 12
+
+    const categories = await db.itemCategory.findMany({ take: takeThisMany })
+
+    return categories
   } catch (error) {
     throw error
   }

@@ -34,8 +34,8 @@ export type FullOrderStore = {
   cityName?: string
   minOrderPrice?: number
   shipmentPrice?: number
-  estimatedShipmentTime : number
-  estimatedReadyTime : number
+  estimatedShipmentTime: number
+  estimatedReadyTime: number
 }
 
 export type FullOrderItem = {
@@ -138,9 +138,9 @@ export async function createOrder({
   isVerifiedByAdmin?: boolean
   isVerifiedByStore?: boolean
   packagingPrice: number
-    shipmentPrice: number
-    estimatedShipmentTime : number
-  estimatedReadyTime : number
+  shipmentPrice: number
+  estimatedShipmentTime: number
+  estimatedReadyTime: number
   taxPercent: number
   totalPrice: number
 }): Promise<Order> {
@@ -246,9 +246,9 @@ export async function updateOrder({
   isVerifiedByAdmin?: boolean
   isVerifiedByStore?: boolean
   packagingPrice?: number
-    shipmentPrice?: number
-    estimatedShipmentTime? : number
-  estimatedReadyTime? : number
+  shipmentPrice?: number
+  estimatedShipmentTime?: number
+  estimatedReadyTime?: number
   taxPercent?: number
   totalPrice?: number
 }): Promise<Order> {
@@ -692,7 +692,7 @@ export async function getFullOrderItems({
   orderId,
 }: {
   orderId: number
-}): Promise<(FullOrderItem | undefined)[]> {
+}): Promise<FullOrderItem[]> {
   try {
     const order = await getOrder({ orderId })
 
@@ -721,7 +721,7 @@ export async function getFullOrderItems({
       return fullMergedItems
     })
 
-    return fullOrderItems
+    return fullOrderItems as FullOrderItem[]
   } catch (error) {
     throw error
   }
@@ -851,10 +851,7 @@ export async function getFullOrdersStore({
     }
 
     const fullOrder = await Promise.all(
-      orders.map(
-        order => getFullOrderStore({ orderId: order.id }),
-
-      ),
+      orders.map(order => getFullOrderStore({ orderId: order.id })),
     )
 
     return fullOrder

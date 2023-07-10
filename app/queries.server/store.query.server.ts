@@ -137,8 +137,10 @@ export async function getFullStoreItems({
 
 export async function getStoreCategories({
   storeId,
+  take = 4,
 }: {
   storeId: number
+  take?: number
 }): Promise<string[]> {
   try {
     const store = await getStore({ storeId })
@@ -149,13 +151,14 @@ export async function getStoreCategories({
 
     const storeCategories: string[] = []
 
-    items.forEach(item =>
+    items.forEach(item => {
+      if (take <= 0) return
       item &&
       item.itemCategoryName &&
       !storeCategories.includes(item.itemCategoryName)
-        ? storeCategories.push(item.itemCategoryName)
-        : undefined,
-    )
+        ? storeCategories.push(item.itemCategoryName) && take--
+        : undefined
+    })
 
     return storeCategories
   } catch (error) {
@@ -226,18 +229,6 @@ export async function getStoresKinds(): Promise<StoreKind[]> {
   }
 }
 
-export async function getItemCategories(): Promise<ItemCategory[]> {
-  try {
-    const takeThisMany = 12
-
-    const categories = await db.itemCategory.findMany({ take: takeThisMany })
-
-    return categories
-  } catch (error) {
-    throw error
-  }
-}
-
 export async function getStoresByKind({
   kind,
 }: {
@@ -265,6 +256,74 @@ export async function getStoreSchedule({ store }: { store: Store }) {
     })
 
     return schedule
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getStoresWithDiscount({
+  stores,
+  takes = undefined,
+}: {
+  stores: Store[] | null
+  takes?: number
+}) {
+  try {
+    if (!stores) {
+      throw new Error("فروشگاهی وجود ندارد")
+    }
+
+    const withDiscount = await Promise.all(
+      stores.filter(async store => {
+        if (takes) {
+          takes--
+        }
+
+        if (takes && takes <= 0) {
+          return false
+        }
+
+        const items = await getStoreItems({ storeId: store.id })
+
+        const isWithDiscount = items.itemsInStore.find(
+          item => item.discountPercent && item.discountPercent > 0,
+        )
+
+        if (isWithDiscount) return store
+      }),
+    )
+
+    return withDiscount
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getStoresWithFreeShipment({
+  stores,
+  takes,
+}: {
+  stores: Store[] | null
+  takes?: number
+}) {
+  try {
+    if (!stores) {
+      throw new Error("فروشگاهی وجود ندارد")
+    }
+
+    const withFreeShipment = stores.filter(store => {
+      if (takes) {
+        takes--
+      }
+
+      if (takes && takes <= 0) {
+        return false
+      }
+
+      return store.baseShipmentPrice === 0
+    })
+
+    return withFreeShipment
   } catch (error) {
     throw error
   }
