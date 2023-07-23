@@ -1,4 +1,6 @@
-import type { Comment, Item, Order, OrderHasItems } from "@prisma/client"
+import type { Comment, Item, Order, OrderHasItems, Store } from "@prisma/client"
+import { READY_TIME_OFFSET } from "~/constants"
+import { validateStore } from "~/utils/validate.server"
 import { db } from "../utils/db.server"
 
 import { getAddressById } from "./address.query.server"
@@ -12,7 +14,7 @@ export type FullOrderStore = {
   createdAt: Date
   updatedAt: Date
   totalPrice: number
-  taxPercent: number
+
   packagingPrice: number
   addressId: number
 
@@ -118,11 +120,10 @@ export async function createOrder({
   isShipped,
   isVerifiedByAdmin,
   isVerifiedByStore,
-  packagingPrice,
   shipmentPrice,
   estimatedShipmentTime,
   estimatedReadyTime,
-  taxPercent,
+
   totalPrice,
 }: {
   userPhoneNumber: string
@@ -137,11 +138,10 @@ export async function createOrder({
   isShipped?: boolean
   isVerifiedByAdmin?: boolean
   isVerifiedByStore?: boolean
-  packagingPrice: number
   shipmentPrice: number
   estimatedShipmentTime: number
   estimatedReadyTime: number
-  taxPercent: number
+
   totalPrice: number
 }): Promise<Order> {
   try {
@@ -197,9 +197,9 @@ export async function createOrder({
         isShipped,
         isVerifiedByAdmin,
         isVerifiedByStore,
-        packagingPrice,
+
         shipmentPrice,
-        taxPercent,
+
         totalPrice,
       },
     })
@@ -226,9 +226,9 @@ export async function updateOrder({
   isVerifiedByStore,
   estimatedShipmentTime,
   estimatedReadyTime,
-  packagingPrice,
+
   shipmentPrice,
-  taxPercent,
+
   totalPrice,
 }: {
   id: number
@@ -245,11 +245,10 @@ export async function updateOrder({
   isShipped?: boolean
   isVerifiedByAdmin?: boolean
   isVerifiedByStore?: boolean
-  packagingPrice?: number
   shipmentPrice?: number
   estimatedShipmentTime?: number
   estimatedReadyTime?: number
-  taxPercent?: number
+
   totalPrice?: number
 }): Promise<Order> {
   try {
@@ -307,9 +306,9 @@ export async function updateOrder({
         isShipped,
         isVerifiedByAdmin,
         isVerifiedByStore,
-        packagingPrice,
+
         shipmentPrice,
-        taxPercent,
+
         totalPrice,
         description,
       },
@@ -350,11 +349,7 @@ export async function changeOrderItems({
       throw new Error("Order Alreafy Delivered")
     }
 
-    if (
-      order.isCanceled ||
-      !order.isVerifiedByAdmin ||
-      !order.isVerifiedByStore
-    ) {
+    if (order.isCanceled) {
       throw new Error("مشکلی در ثبت سفارش بوجود آمد")
     }
 
@@ -639,7 +634,7 @@ export async function calculateOrder({
 }): Promise<number> {
   try {
     const order = await getOrder({ orderId })
-
+    console.log(1)
     if (!order) {
       throw new Error("چنین سفارشی وجود ندارد")
     }
@@ -665,10 +660,15 @@ export async function calculateOrder({
       totalPrice += tempPrice * orderItem.count
     })
 
+    let store = await getStore({ storeId: order.storeId })
+
+    store = validateStore({ store })
+    console.log(2)
+
     totalPrice +=
       order.shipmentPrice +=
-      order.packagingPrice +=
-        totalPrice * order.taxPercent
+      store.packagingPrice +=
+        totalPrice * store.taxPercent
 
     if (totalPrice < 0) {
       throw new Error("قیمت اشتباه است")
@@ -855,6 +855,35 @@ export async function getFullOrdersStore({
     )
 
     return fullOrder
+  } catch (error) {
+    throw error
+  }
+}
+
+export function calculateItemsReadyTime({
+  store,
+  items,
+}: {
+  items: FullOrderItem[]
+  store: Store
+}) {
+  try {
+    // let total = 0
+    let max = 0
+
+    items.forEach(item => {
+      if (!item.estimatedReadyTime) {
+        return
+      }
+
+      // total += item.estimatedReadyTime
+      max < item.estimatedReadyTime
+        ? (max = item.estimatedReadyTime)
+        : undefined
+    })
+
+    // total /= items.length
+return max + READY_TIME_OFFSET
   } catch (error) {
     throw error
   }
