@@ -1,4 +1,4 @@
-import { getOrder, getOrderItems } from "./order.query.server"
+import { getFullOrderItems, getOrder, getOrderItems } from "./order.query.server"
 import type { Comment, Order, User } from "@prisma/client"
 import { getUserByPhone } from "./user.query.server"
 import { db } from "../utils/db.server"
@@ -120,7 +120,7 @@ export async function getComment({ orderId }: { orderId: number }) {
   }
 }
 
-export async function getItemComments({
+export async function getStoreItemComments({
   itemId,
   storeId,
 }: {
@@ -128,8 +128,19 @@ export async function getItemComments({
   storeId: number
 }) {
   try {
-    const item = await db.item.findUnique({ where: { id: itemId } })
+  } catch (error) {
+    throw error
+  }
+}
 
+export async function getVerifiedItemComments({
+  itemId,
+  storeId,
+}: {
+  itemId: number
+  storeId: number
+}) {
+  try {
     const itemsInOrder = await db.orderHasItems.findMany({
       where: {
         itemId,
@@ -137,7 +148,7 @@ export async function getItemComments({
       take: 12,
     })
 
-    let orders = await Promise.all(
+    let orders = (await Promise.all(
       itemsInOrder.map(item =>
         db.order.findUnique({
           where: {
@@ -145,21 +156,40 @@ export async function getItemComments({
           },
         }),
       ),
-    )
+    )) as unknown as Order[]
 
     orders = orders.filter(order => order && order.storeId == storeId)
 
     let comments = await Promise.all(
-      orders.map(order =>
-        db.comment.findUnique({
+      orders.map(async order => {
+        const comment = await db.comment.findUnique({
           where: {
-            orderId: order?.id,
+            orderId: order.id,
           },
-        }),
-      ),
+        })
+
+        if (
+          !order.userPhoneNumber ||
+          !comment
+          // filter unverified
+        ) {
+          return
+        }
+
+        const user = await getUserByPhone({
+          phoneNumber: order.userPhoneNumber,
+        })
+
+        if (!user) {
+          throw new Error("خطا")
+        }
+
+        return {
+          user,order,comment
+        }
+      }),
     )
 
-    comments = comments.filter(comment => comment ?? undefined)
 
     return comments
   } catch (error) {
