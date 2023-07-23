@@ -5,6 +5,7 @@ import type { Comment, Order, Store } from "@prisma/client"
 import type { FullOrderItem } from "~/queries.server/order.query.server"
 
 import { DEFAULT_CURRENCY } from "./../constants"
+import { useEffect, useState } from "react"
 
 export type CartCompProps = {
   items: FullOrderItem[]
@@ -13,6 +14,7 @@ export type CartCompProps = {
   totalPrice?: number
   dir?: "rtl" | "lrt"
   comment?: Comment | null
+  s?: boolean
 }
 
 export const OrderComp = ({
@@ -22,11 +24,36 @@ export const OrderComp = ({
   dir,
   totalPrice,
   comment = null,
+  s = false,
 }: CartCompProps) => {
   const total = items.reduce(
     (prev, item) => (item.price ?? 0) * (item.count ?? 0) + prev,
     0,
   )
+
+  const totalDiscount = items.reduce(
+    (prev, item) =>
+      (item.price ?? 0) *
+        (item.count ?? 0) *
+        ((item.discountPercent ?? 0) / 100) +
+      prev,
+    0,
+  )
+  console.log(total, totalPrice)
+  const [totalToPay, setTotalToPay] = useState(totalPrice ?? 0)
+  useEffect(() => {
+    setTotalToPay(
+      ((total -
+        totalDiscount +
+        store.baseShipmentPrice +
+        store.packagingPrice) *
+        (100 + store.taxPercent)) /
+        100,
+    )
+  })
+
+  console.log("tot dis", totalDiscount)
+
   return (
     <Link to={`/store/${store.id}`} className="order">
       <ul dir={dir}>
@@ -45,18 +72,19 @@ export const OrderComp = ({
             </p>
           </span>
         </li>
+        {s ? (
+          <div className="_comment" aria-label="Comment">
+            {!comment ? (
+              <p>
+                <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
 
-        <div className="_comment" aria-label="Comment">
-          {!comment ? (
-            <p>
-              <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
-
-              <Link to={`/comment/${order.id}`}>ثبت نظر</Link>
-            </p>
-          ) : (
-            <span>نظر شما با موفقیت ثبت شد</span>
-          )}
-        </div>
+                <Link to={`/comment/${order.id}`}>ثبت نظر</Link>
+              </p>
+            ) : (
+              <span>نظر شما با موفقیت ثبت شد</span>
+            )}
+          </div>
+        ) : null}
 
         <li>
           <ul>
@@ -106,7 +134,7 @@ export const OrderComp = ({
 
           <span className="_price">
             {" "}
-            {order.packagingPrice.toLocaleString("fa-IR") +
+            {store.packagingPrice.toLocaleString("fa-IR") +
               " " +
               DEFAULT_CURRENCY}
           </span>
@@ -116,11 +144,7 @@ export const OrderComp = ({
           <span>تخفیف</span>
 
           <span className="_price">
-            {(total - (totalPrice ?? order.totalPrice)).toLocaleString(
-              "fa-IR",
-            ) +
-              " " +
-              DEFAULT_CURRENCY}
+            {totalDiscount.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
 
@@ -128,10 +152,7 @@ export const OrderComp = ({
           <span>مجموع</span>
 
           <span className="_price">
-            {(totalPrice?.toLocaleString("fa-IR") ??
-              order.totalPrice.toLocaleString("fa-IR")) +
-              " " +
-              DEFAULT_CURRENCY}
+            {totalToPay.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
       </ul>

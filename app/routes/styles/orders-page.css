@@ -8,13 +8,20 @@
 
 :where(._orders-page > p) {
   text-align: center;
-  font-size: var(--length-16);
-  margin-block: var(--length-8);
+  font-size: var(--length-18);
+  margin-block: var(--length-12);
   font-weight: 600;
 }
 
 :where(._orders-page > ol) {
   margin-block: var(--length-6);
+}
+
+:where(._orders-page ._no-order) {
+  text-align: center;
+  font-size: var(--length-12);
+  color: var(--color-text-2);
+  margin-block: var(--length-16);
 }
 
 @media (max-width: 68.75rem) {
