@@ -29,3 +29,6 @@ export type AllowedStoresFeatures = "kind" | "discount" | "freeShipment" | "all"
 export type StoreWithTags = Store & {
   tags?: string[]
 }
+
+export const SCORE_ROUNDING = 2
+export const READY_TIME_OFFSET = 15
