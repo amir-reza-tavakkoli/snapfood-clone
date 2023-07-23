@@ -8,12 +8,16 @@ import {
   DEFAULT_MIN_ADDRESS_LENGTH,
   VERIFICATION_CODE_EXPIRY_MINS,
   VERIFICATION_CODE_FIGURES,
-} from "~/constants"
+} from "../constants"
 import {
   generateVerificationCode,
   generateVerificationExpiry,
 } from "./utils.server"
-import { updateVerificationCode } from "~/queries.server/user.query.server"
+import {
+  getUserByPhone,
+  updateVerificationCode,
+} from "../queries.server/user.query.server"
+import { requirePhoneNumber } from "./session.server"
 
 export function checkPhoneNumber(phoneNumber: string) {
   if (
@@ -81,11 +85,7 @@ export function validateUser({ user }: { user: User | null }) {
   return user
 }
 
-export function validateItems({
-  items,
-}: {
-  items: (FullOrderItem)[] | null
-}) {
+export function validateItems({ items }: { items: FullOrderItem[] | null }) {
   if (!items || items.length == 0) {
     throw new Response("آیتمی وجود ندارد", { status: 404 })
   }
@@ -157,6 +157,15 @@ export async function sendVerification({
   }
 
   // sending ver code by SMS goes here
+
+  return user
+}
+
+export async function requireValidatedUser(request: Request) {
+  const phoneNumber = await requirePhoneNumber(request)
+  let user = await getUserByPhone({ phoneNumber })
+
+  user = validateUser({ user })
 
   return user
 }

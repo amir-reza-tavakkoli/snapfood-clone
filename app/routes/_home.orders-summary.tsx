@@ -11,7 +11,7 @@ import { Orders } from "~/components/order-summary"
 import type { CartCompProps } from "~/components/cart"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 
 import { DEAFULT_DIRECTION } from "./../constants"
 
@@ -27,13 +27,9 @@ export const loader = async ({
   request,
 }: LoaderArgs): Promise<CartCompProps | undefined> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const user = await requireValidatedUser(request)
 
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
-
-    const cart = await getCart({ phoneNumber, all: true })
+    const cart = await getCart({ phoneNumber : user.phoneNumber, all: true })
 
     return cart
   } catch (error) {
@@ -41,7 +37,7 @@ export const loader = async ({
   }
 }
 
-export default function Ordersx() {
+export default function OrdersSummaryPage() {
   const cart = useLoaderData<typeof loader>() as CartCompProps | undefined
 
   return (

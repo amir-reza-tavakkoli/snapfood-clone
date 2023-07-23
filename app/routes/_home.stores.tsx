@@ -17,7 +17,7 @@ import { useForceAddress } from "~/hooks/forceAddress"
 
 import { requirePhoneNumber } from "~/utils/session.server"
 
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 
 import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
 
@@ -36,15 +36,11 @@ type LoaderType = {
 
 export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    let user = await getUserByPhone({ phoneNumber })
-
-    user = validateUser({ user })
+    const user = await requireValidatedUser(request)
 
     const categories = await getItemCategories()
 
-    const addresses = await getUserAddresses({ phoneNumber })
+    const addresses = await getUserAddresses({ phoneNumber: user.phoneNumber })
 
     return { categories, addresses }
   } catch (error) {

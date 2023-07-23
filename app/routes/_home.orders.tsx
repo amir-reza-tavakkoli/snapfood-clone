@@ -1,36 +1,31 @@
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
-import { isRouteErrorResponse, Link, useLoaderData, useRouteError } from "@remix-run/react"
 
-import { requirePhoneNumber } from "~/utils/session.server"
+import {  useLoaderData } from "@remix-run/react"
 
 import { getCart } from "~/queries.server/cart.query.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
 
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser} from "~/utils/validate.server"
 
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 import { CartComp } from "~/components/cart"
+
 import type { CartCompProps } from "~/components/cart"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: pageCss },
   { rel: "stylesheet", href: cartCss },
+  { rel: "stylesheet", href: pageCss },
 ]
 
 export const loader = async ({
   request,
 }: LoaderArgs): Promise<CartCompProps | undefined> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const user = await requireValidatedUser(request)
 
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
-
-    const cart = await getCart({ phoneNumber, all: true })
+    const cart = await getCart({ phoneNumber : user.phoneNumber, all: true })
 
     return cart
   } catch (error) {
@@ -39,7 +34,7 @@ export const loader = async ({
 }
 
 export default function OrdersPage() {
-  const cart = useLoaderData<typeof loader>() as CartCompProps | undefined
+  const cart = useLoaderData<typeof loader>() as unknown as CartCompProps | undefined
 
   return (
     <main className="_orders-page">
@@ -48,7 +43,7 @@ export default function OrdersPage() {
       {cart && cart.orders ? (
         <CartComp orders={cart.orders}></CartComp>
       ) : (
-        <p>سفارشی وجود ندارد ! </p>
+        <p className="_no-order">سفارشی وجود ندارد ! </p>
       )}
     </main>
   )

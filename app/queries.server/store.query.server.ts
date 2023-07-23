@@ -1,4 +1,5 @@
 import type {
+  Comment,
   Item,
   ItemCategory,
   Store,
@@ -324,6 +325,31 @@ export async function getStoresWithFreeShipment({
     })
 
     return withFreeShipment
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateStoreScore({
+  store,
+  comment,
+}: {
+  store: Store
+  comment: Comment
+}) {
+  try {
+    const newScore =
+      (store.score * store.scoreCount + comment.score) / (store.scoreCount + 1)
+
+    const updatedStore = await db.store.update({
+      where: { id: store.id },
+      data: {
+        score: newScore,
+        scoreCount: store.scoreCount + 1,
+      },
+    })
+
+    return updatedStore
   } catch (error) {
     throw error
   }

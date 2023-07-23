@@ -12,7 +12,7 @@ import { requirePhoneNumber } from "~/utils/session.server"
 
 import { getUserByPhone } from "~/queries.server/user.query.server"
 
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 
 import type { User } from "@prisma/client"
 
@@ -46,11 +46,7 @@ export const action = async ({ request }: ActionArgs) : Promise<User>=> {
 
 export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    let user = await getUserByPhone({ phoneNumber })
-
-    user = validateUser({ user })
+    const user = await requireValidatedUser(request)
 
     return user
   } catch (error) {

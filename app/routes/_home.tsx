@@ -19,7 +19,7 @@ import { getStoresKinds } from "~/queries.server/store.query.server"
 import { getSupportedCities } from "~/queries.server/address.query.server"
 import { getUserByPhone } from "~/queries.server/user.query.server"
 
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 
 import { DEAFULT_DIRECTION } from "~/constants"
 
@@ -60,13 +60,9 @@ type LoaderType = {
 
 export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const user = await requireValidatedUser(request)
 
-    let user = await getUserByPhone({ phoneNumber })
-
-    user = validateUser({ user })
-
-    const addresses = await getUserAddresses({ phoneNumber })
+    const addresses = await getUserAddresses({ phoneNumber : user.phoneNumber })
 
     const storesKind = await getStoresKinds()
 

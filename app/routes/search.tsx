@@ -6,6 +6,7 @@ import { searchItem, searchStore } from "~/queries.server/search.server"
 
 export const loader = async ({ request }: LoaderArgs) => {
   const search = new URL(request.url).searchParams.get("search")
+console.log("in");
 
   if (!search || typeof search !== "string" || search === "") {
     return null

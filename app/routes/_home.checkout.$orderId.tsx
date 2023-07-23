@@ -9,6 +9,7 @@ import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/checkout-page.css"
 
 import {
+  requireValidatedUser,
   validateNumberParam,
   validateOrder,
   validateStore,
@@ -72,11 +73,7 @@ export const loader = async ({
   store: Store
 }> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
+    const user = await requireValidatedUser(request)
 
     const orderId = Number(params.orderId)
 
@@ -84,7 +81,7 @@ export const loader = async ({
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber })
+    order = validateOrder({ order, phoneNumber : user.phoneNumber })
 
     if (order.isBilled || order.isCanceled || !order.isInCart) {
       throw new Error("سفارش قبلا تایید شده است")
@@ -106,7 +103,7 @@ export const loader = async ({
   }
 }
 
-export default function OrdersPage() {
+export default function CheckoutPage() {
   const { items, order, store } = useLoaderData<typeof loader>() as unknown as {
     items: FullOrderItem[]
     order: Order

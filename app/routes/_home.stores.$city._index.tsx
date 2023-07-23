@@ -95,7 +95,7 @@ export const loader = async ({
   }
 }
 
-export default function Index() {
+export default function CityStores() {
   const { stores, cityName, withDiscount, withFreeShipment } =
     useLoaderData() as unknown as LoaderType
 

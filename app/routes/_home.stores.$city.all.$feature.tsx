@@ -10,7 +10,7 @@ import { StoreContainer } from "~/components/store-container"
 
 import { getStoreCategories, getStoresByCity } from "~/queries.server/store.query.server"
 
-import { validateCity } from "~/utils/validate.server"
+import { requireValidatedUser, validateCity } from "~/utils/validate.server"
 import { features } from "~/utils/utils.server"
 
 import { AllowedStoresFeatures, StoreWithTags } from "~/constants"
@@ -30,9 +30,11 @@ type LoaderType = {
 }
 
 export const loader = async ({
-  params,
+  params,request
 }: LoaderArgs): Promise<LoaderType | TypedResponse<never>> => {
   try {
+    const user = await requireValidatedUser(request)
+
     let city = params.city
 
     if (!city || city == "") {
@@ -67,7 +69,7 @@ export const loader = async ({
       const tags = await getStoreCategories({ storeId: store.id })
       return {... store, tags}
     }))
-    
+
     return {
       name: featureObject.name,
       title: featureObject.title,
@@ -78,7 +80,7 @@ export const loader = async ({
   }
 }
 
-export default function Index() {
+export default function featureStores() {
   const { name, title, stores } = useLoaderData() as unknown as LoaderType
 
   return (

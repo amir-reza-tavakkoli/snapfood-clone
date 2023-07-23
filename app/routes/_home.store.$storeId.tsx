@@ -43,6 +43,8 @@ import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/store-page.css"
 import { categorizeItems } from "~/queries.server/db.utils.query"
 import { OrderComp } from "~/components/order"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { requireValidatedUser } from "~/utils/validate.server"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeInfoCss },
@@ -98,9 +100,7 @@ export const action = async ({
         userPhoneNumber: phoneNumber,
         estimatedDeliveryTime: 0,
         totalPrice: 0,
-        taxPercent: 0,
-        packagingPrice: 0,
-        shipmentPrice: 0,
+        shipmentPrice: 0
       })
     }
 
@@ -158,9 +158,7 @@ export const loader: LoaderFunction = async ({
   orderItems: (FullOrderItem | undefined)[] | undefined
 }> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    const user = await getUserByPhone({ phoneNumber })
+    const user = await requireValidatedUser(request)
 
     const storeId = Number(params.storeId)
 
@@ -170,15 +168,15 @@ export const loader: LoaderFunction = async ({
       !store ||
       !storeId ||
       isNaN(storeId) ||
-      !phoneNumber ||
+      !user.phoneNumber ||
       !user ||
       user.isSuspended
-    ) {
-      throw new Error("خطا")
+      ) {
+        throw new Error("خطا")
     }
 
     let order = await getStoreOrderInCart({
-      phoneNumber: phoneNumber,
+      phoneNumber: user.phoneNumber,
       storeId,
     })
 
@@ -190,6 +188,7 @@ export const loader: LoaderFunction = async ({
     if (!totalPrice && order) {
       totalPrice = await calculateOrder({ orderId: order.id })
     }
+
 
     if (order && !order.isBilled) {
       items = await getFullStoreOrdersItems({
@@ -221,7 +220,7 @@ export const loader: LoaderFunction = async ({
   }
 }
 
-export default function StoreId() {
+export default function StorePage() {
   const { user, store, order, totalPrice, categorizedItems, orderItems } =
     useLoaderData<typeof loader>() as {
       user: User
@@ -332,6 +331,7 @@ export default function StoreId() {
                           available: !!item.remainingCount ?? false,
                           vaule: item.price ?? item.basePrice ?? 0,
                           currency: DEFAULT_CURRENCY,
+                          discountPercent : item.discountPercent
                         },
                       ]}
                     ></FoodCard>
@@ -394,7 +394,8 @@ export default function StoreId() {
             ) : undefined}
           </article> */}
           {orderItems && orderItemsState && order && orderState ? (
-            <OrderComp
+              <OrderComp
+
               items={orderItemsState}
               order={orderState}
               store={store}
@@ -407,20 +408,4 @@ export default function StoreId() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary

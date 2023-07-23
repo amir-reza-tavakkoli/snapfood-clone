@@ -15,6 +15,7 @@ type FoodCardProps = {
     vaule: number
     currency: string
     available: boolean
+    discountPercent?: number | null
   }[]
   count: number
   remainingCount: number
@@ -83,8 +84,23 @@ export const FoodCard = ({
                   <dt className="nonvisual">Variation</dt>
                   <dd className="_variation">{item.variation}</dd>
                   <div>
-                    <dt className="nonvisual">Value</dt>
-                    <dd>{item.vaule}</dd>
+                    {item.discountPercent ? (
+                      <>
+                        <dt className="nonvisual">Value</dt>
+                        <dd aria-label="Before discount">
+                          <del>{item.vaule}</del>{" "}
+                        </dd>
+                        <dt className="nonvisual" aria-label="After discount">
+                          Value
+                        </dt>
+                        <dd>{(item.vaule * (100 - item.discountPercent)) / 100}</dd>{" "}
+                      </>
+                    ) : (
+                      <>
+                        <dt className="nonvisual">Value</dt>
+                        <dd>{item.vaule}</dd>
+                      </>
+                    )}
                     <dt className="nonvisual">Currency</dt>
                     <dd>{item.currency}</dd>
                   </div>
@@ -106,7 +122,6 @@ export const FoodCard = ({
                     disabled={remainingCount == 0 || !address}
                     onClick={() => {
                       reRender({})
-                      console.log()
                     }}
                   >
                     +

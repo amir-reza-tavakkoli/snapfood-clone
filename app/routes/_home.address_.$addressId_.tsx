@@ -28,7 +28,7 @@ import { MapComponent } from "../components/map.client"
 
 import { Button } from "~/components/button"
 import addressPageCss from "./styles/address-page.css"
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 
 import type { LatLngTuple, Map } from "leaflet"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
@@ -61,7 +61,6 @@ export const action = async ({
     const xAxis: number | undefined = Number(form.get("xAxis"))
     const yAxis: number | undefined = Number(form.get("yAxis"))
     const details: string | undefined = form.get("details")
-    console.log("ooo", xAxis)
 
     if (
       !address ||
@@ -125,11 +124,7 @@ export const loader = async ({
   address: Address
 }> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    let user = await getUserByPhone({ phoneNumber })
-
-    user = validateUser({ user })
+    const user = await requireValidatedUser(request)
 
     let isNew = false
     if (params.addressId === "new") {
@@ -176,7 +171,7 @@ export const loader = async ({
       throw new Error("چنین آدرسی وجود ندارد")
     }
 
-    if (address.userPhoneNumber != phoneNumber) {
+    if (address.userPhoneNumber != user.phoneNumber) {
       throw new Error("دسترسی ندارید")
     }
 
@@ -188,7 +183,7 @@ export const loader = async ({
   }
 }
 
-export default function Affresses() {
+export default function AddressPage() {
   const { address, cities } = useLoaderData<typeof loader>()
 
   const result = useActionData()

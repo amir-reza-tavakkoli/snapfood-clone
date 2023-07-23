@@ -1,5 +1,5 @@
-import { Form, useRouteLoaderData, useSearchParams } from "@remix-run/react"
 import { useState } from "react"
+import { Form, useRouteLoaderData, useSearchParams } from "@remix-run/react"
 
 export default function SomeComponent() {
 
@@ -8,8 +8,8 @@ export default function SomeComponent() {
   const [state, setstate] = useState("")
 
 
-  const x = useRouteLoaderData(`routes/search?search=${state}`)
-  console.log(`routes/search?search=${state}`)
+  const x = useRouteLoaderData(`routes/x`)
+  // console.log(`routes/search?search=${state}`)
   console.log(x)
 
 
@@ -24,12 +24,19 @@ export default function SomeComponent() {
         id="ddd"
         type="text"
         name="search"
-        onChange={e => {
-          setSearchParams({search: e.target.value})
+        onChange={ e => {
+          // setSearchParams({search: e.target.value})
+          f()
           setstate(e.target.value)
 
         }}
       />
     </Form>
   )
+}
+
+async function f() {
+  const data = await fetch("/x")
+  console.log( await data.text());
+
 }

@@ -11,8 +11,9 @@ import type { CartCompProps } from "~/components/cart"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { Icon } from "~/components/icon"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -23,13 +24,9 @@ export const loader = async ({
   request,
 }: LoaderArgs): Promise<CartCompProps | undefined> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const user = await requireValidatedUser(request)
 
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
-
-    const cart = await getCart({ phoneNumber })
+    const cart = await getCart({ phoneNumber : user.phoneNumber })
 
     return cart
   } catch (error) {
@@ -47,7 +44,10 @@ export default function CartPage() {
       {cart && cart.orders ? (
         <CartComp orders={cart.orders}></CartComp>
       ) : (
-        <p>سفارشی وجود ندارد ! </p>
+        <>
+          <Icon name="gift" color="faded"></Icon>
+          <p> سبد خرید شما خالی است! </p>
+        </>
       )}
     </main>
   )

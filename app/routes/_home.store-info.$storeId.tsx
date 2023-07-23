@@ -7,7 +7,7 @@ import { getUserByPhone } from "~/queries.server/user.query.server"
 
 import orderCss from "~/components/styles/order-summary.css"
 import ordersPageCss from "./styles/orders-page.css"
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 import { getStore, getStoreSchedule } from "~/queries.server/store.query.server"
 import { Store, storeSchedule } from "@prisma/client"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
@@ -22,11 +22,7 @@ export const loader = async ({
   params,
 }: LoaderArgs): Promise<{ schedule: storeSchedule[], store : Store }> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
+    const user = await requireValidatedUser(request)
 
     const storeId = Number(params.storeId)
 

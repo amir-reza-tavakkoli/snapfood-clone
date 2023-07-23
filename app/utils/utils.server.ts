@@ -7,11 +7,11 @@ import {
   getStoresKinds,
   getStoresWithDiscount,
   getStoresWithFreeShipment,
-} from "~/queries.server/store.query.server"
+} from "../queries.server/store.query.server"
 
-import { LoginFieldErrors } from "~/routes/login"
+import { LoginFieldErrors } from "../routes/login"
 
-import { AllowedStoresFeatures } from "~/constants"
+import { AllowedStoresFeatures } from "../constants"
 
 
 export const badRequest = <T>(data: T) => json<T>(data, { status: 400 })

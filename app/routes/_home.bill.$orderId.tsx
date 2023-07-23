@@ -32,7 +32,7 @@ import { DEFAULT_CURRENCY } from "~/constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-order.css"
-import { validateNumberParam, validateOrder, validateStore, validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateNumberParam, validateOrder, validateStore, validateUser } from "~/utils/validate.server"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
@@ -104,7 +104,7 @@ export const loader = async ({
   items: (FullOrderItem | undefined)[]
 }> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+     const user = await requireValidatedUser(request)
 
     const orderId = Number(params.orderId)
 
@@ -112,11 +112,8 @@ export const loader = async ({
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber })
+    order = validateOrder({ order, phoneNumber : user.phoneNumber })
 
-    let user = await getUserByPhone({ phoneNumber })
-
-    user = validateUser({ user })
 
     let price: number = order.totalPrice
     if (!price || price == 0) {

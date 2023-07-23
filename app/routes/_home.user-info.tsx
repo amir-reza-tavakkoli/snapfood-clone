@@ -23,7 +23,7 @@ import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 import { DEAFULT_DIRECTION } from "~/constants"
 
-import { checkPhoneNumber, validateUser } from "~/utils/validate.server"
+import { checkPhoneNumber, requireValidatedUser, validateUser } from "~/utils/validate.server"
 
 import pageCss from "./styles/user-page.css"
 
@@ -33,6 +33,7 @@ export const action = async ({
   request,
 }: ActionArgs): Promise<{ successful?: boolean; unsuccessful?: boolean }> => {
   try {
+
     const form = await request.formData()
 
     const phoneNumber = form.get("phoneNumber")
@@ -93,11 +94,7 @@ export const action = async ({
 
 export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    let user = await getUserByPhone({ phoneNumber })
-
-    user = validateUser({ user })
+    const user = await requireValidatedUser(request)
 
     return user
   } catch (error) {
@@ -105,7 +102,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<User> => {
   }
 }
 
-export default function UserInfo() {
+export default function UserInfoPage() {
   const user = useLoaderData<typeof loader>()
 
   const actionData = useActionData()

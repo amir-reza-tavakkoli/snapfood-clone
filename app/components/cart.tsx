@@ -8,7 +8,8 @@ import { Icon } from "./icon"
 
 import { DEFAULT_CURRENCY } from "./../constants"
 
-import { toPersianDay } from "~/utils/utils.client"
+import { toPersianDay } from "../utils/utils.client"
+import { routes } from "~/routes"
 
 export type CartCompProps = {
   orders:
@@ -28,7 +29,7 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
     <ol className="cart" dir={dir}>
       {orders
         ? orders.map((order, index) => (
-            <Link to={`/store/${order.store.id}`} key={index}>
+            <Link to={routes.store(order.store.id)} key={index}>
               <li className="_order">
                 <div>
                   <img
@@ -54,18 +55,18 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
                       ).toLocaleString("fa-IR")}
                       {"      "}
 
-                      {toPersianDay(
+                      {/* {toPersianDay(
                         new Date(
                           order.order.billDate ?? order.order.createdAt,
                         ).getDay(),
-                      )}
+                      )} */}
                     </time>
                   </span>
 
                   <p>
                     <span className="nonvisual">Price</span>
 
-                    {order.order.totalPrice.toLocaleString("fa-IR") +
+                    {order.order.totalPrice.toLocaleString("fa-IR") + " " +
                       DEFAULT_CURRENCY}
                   </p>
                 </div>

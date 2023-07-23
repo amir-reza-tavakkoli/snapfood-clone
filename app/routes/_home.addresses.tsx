@@ -17,7 +17,7 @@ import { getUserAddresses } from "~/queries.server/address.query.server"
 import { Addresses } from "~/components/addresses"
 
 import addressesCss from "./../components/styles/addresses.css"
-import { validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "~/utils/validate.server"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
@@ -28,13 +28,9 @@ export const loader = async ({
   request,
 }: LoaderArgs): Promise<Address[] | null> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const user = await requireValidatedUser(request)
 
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
-
-    const addresses = await getUserAddresses({ phoneNumber })
+    const addresses = await getUserAddresses({ phoneNumber : user.phoneNumber })
 
     return addresses
   } catch (error) {
@@ -42,7 +38,7 @@ export const loader = async ({
   }
 }
 
-export default function UserInfo() {
+export default function AddressesPage() {
   const [HomeAddressState, setHomeAddressState] = useOutletContext<any>()
 
   const addresses = useLoaderData<typeof loader>() as Address[] | null

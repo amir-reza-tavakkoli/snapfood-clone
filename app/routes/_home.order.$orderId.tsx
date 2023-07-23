@@ -13,6 +13,7 @@ import { requirePhoneNumber } from "~/utils/session.server"
 import { getStore } from "~/queries.server/store.query.server"
 import { getUserByPhone } from "~/queries.server/user.query.server"
 import {
+  requireValidatedUser,
   validateItems,
   validateNumberParam,
   validateOrder,
@@ -42,19 +43,15 @@ export const loader = async ({
   params,
 }: LoaderArgs): Promise<LoaderType> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const user = await requireValidatedUser(request)
 
     const orderId = Number(params.orderId)
 
     validateNumberParam(orderId)
 
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
-
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber })
+    order = validateOrder({ order, phoneNumber : user.phoneNumber })
 
     let store = await getStore({ storeId: order.storeId })
 
@@ -72,7 +69,7 @@ export const loader = async ({
   }
 }
 
-export default function Order() {
+export default function OrderPage() {
   const { items, order, store, comment } =
     useLoaderData() as unknown as LoaderType
 
