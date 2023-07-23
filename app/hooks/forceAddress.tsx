@@ -55,3 +55,37 @@ export function useForceAddress({
 
   return { addressState, setAddressState, citystate, setCityState }
 }
+
+export function useCheckAddress() {
+  const delay = 2000 // ms
+
+  const [addressState, setAddressState] = useState<number>()
+  const [citystate, setCityState] = useState(DEFAULT_CITY)
+
+  let location = useLocation()
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const choosedCity = localStorage.getItem("city")
+    if (choosedCity && citystate !== choosedCity) setCityState(choosedCity)
+  })
+
+  useEffect(() => {
+    if (location.pathname === "/addresses") {
+      return
+    }
+
+    const choosedAddressId = Number(localStorage.getItem("addressId"))
+    console.log("ca", choosedAddressId)
+
+    if (!choosedAddressId) {
+      setTimeout(() => navigate("/addresses"), delay)
+      return
+    }
+
+    if (choosedAddressId !== addressState) setAddressState(choosedAddressId)
+  })
+
+  return { addressState, setAddressState }
+}
