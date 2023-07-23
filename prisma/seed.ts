@@ -467,11 +467,9 @@ async function seedFirstDataChunk() {
 
   const order = await prisma.order.create({
     data: {
-      packagingPrice: 0,
       storeId: store.id,
       userPhoneNumber: user.phoneNumber,
       addressId: userAddress.id,
-      taxPercent: 0,
       estimatedReadyTime: 90,
       shipmentPrice: 0,
       totalPrice: 0,
@@ -655,11 +653,9 @@ async function seedSecondDataChunk() {
   const order = await prisma.order.create({
     data: {
       estimatedShipmentTime: DEFAULT_SHIPMENT_TIME,
-      packagingPrice: 10000,
       storeId: store.id,
       userPhoneNumber: user.phoneNumber,
       addressId: userAddress.id,
-      taxPercent: 0,
       estimatedReadyTime: 50,
       shipmentPrice: 3000,
       totalPrice: 0,
@@ -866,11 +862,9 @@ async function seedThirdDataChunk() {
   const order = await prisma.order.create({
     data: {
       estimatedShipmentTime: DEFAULT_SHIPMENT_TIME,
-      packagingPrice: 10000,
       storeId: store.id,
       userPhoneNumber: user.phoneNumber,
       addressId: userAddress.id,
-      taxPercent: 10,
       estimatedReadyTime: 55,
       shipmentPrice: 0,
       totalPrice: 0,

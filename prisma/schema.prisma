@@ -61,8 +61,14 @@ model Store {
   avatarUrl         String?
   cityName          String // DENORMALIZATION
   minOrderPrice     Float
+  packagingPrice    Float   @default(0)
+  taxPercent        Int     @default(0)
+
+  ships Boolean @default(true)
   baseShipmentPrice Float   @default(0)
-  desliveryRadius   Float? // KM
+  perKMShipmentPrice Float @default(0)
+  baseShipmentRadius Float   @default(0)
+  shipmentRadius   Float? @default(0)// KM
 
   isAvailible Boolean @default(true)
   isVerified  Boolean @default(true)
@@ -70,8 +76,8 @@ model Store {
   addressId Int
   address   Address @relation(fields: [addressId], references: [id])
 
-  takesOfflineOrder Boolean
-  takesOnlineOrder  Boolean
+  takesOfflineOrder Boolean @default(false)
+  takesOnlineOrder  Boolean @default(true)
 
   score      Float @default(0) // denormalization
   scoreCount Int   @default(0) // denormalization
@@ -82,10 +88,10 @@ model Store {
   userPhoneNumber String
   userPhone       User   @relation(fields: [userPhoneNumber], references: [phoneNumber])
 
-  storeHasItems          StoreHasItems[]
+  storeHasItems StoreHasItems[]
 
-  Schedules              storeSchedule[]
-  orders                 Order[]
+  Schedules storeSchedule[]
+  orders    Order[]
 }
 
 model StoreKind {
@@ -131,8 +137,7 @@ model ItemCategory {
   avatarUrl String?
   isMain    Boolean @default(false)
 
-  items                  Item[]
-
+  items Item[]
 }
 
 model StoreHasItems {
@@ -149,6 +154,8 @@ model StoreHasItems {
   remainingCount     Int
   estimatedReadyTime Int     @default(15)
   infiniteSupply     Boolean @default(false)
+  score              Float   @default(0) // denormalization
+  scoreCount         Float   @default(0) // denormalization
 
   isAvailible Boolean @default(true)
   isVerified  Boolean @default(true)
@@ -197,10 +204,9 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  totalPrice            Float
-  shipmentPrice         Float
-  taxPercent            Int
-  packagingPrice        Float
+  totalPrice    Float
+  shipmentPrice Float
+
   estimatedReadyTime    Int
   estimatedShipmentTime Int
   description           String?
