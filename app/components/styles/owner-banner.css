@@ -1,0 +1,56 @@
+:where(.owner-banner) {
+    display: flex;
+    inline-size: 100%;
+    margin-block: 10rem;
+    padding-inline: 48px;
+    /* margin-inline: 32px; */
+    padding-block: var(--length-24);
+    background-color: rgb(249, 250, 251);
+    border-radius: 32px;
+    justify-content: space-between;
+}
+
+:where(.owner-banner > div) {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+}
+
+:where(.owner-banner a) {
+    background-color: var(--color-accent);
+    color: var(--color-primary);
+    /* font-size: var(--length-18); */
+    border-radius: 6px;
+    padding-inline: 12px;
+    margin-inline: 8px;
+    margin-block: var(--length-8);
+    /* margin-block-end: auto; */
+    font-weight: 700;
+    padding-block: var(--length-16);
+    inline-size: max-content;
+    text-align: center;
+}
+
+:where(.owner-banner a > svg) {
+    fill: white;
+    margin-inline: 10px;
+    inline-size: 16px;
+    aspect-ratio: 1/1;
+    transform: scale(1.4);
+}
+
+:where(.owner-banner a > svg *) {
+    fill: white;
+    /* margin-inline: 6px; */
+}
+
+:where(.owner-banner > img) {
+    position: relative;
+    top: -100px;
+}
+
+:where(.owner-banner h1) {
+    margin-block-start: -16px;
+}
+
+:where(.owner-banner) {}
