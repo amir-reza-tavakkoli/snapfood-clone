@@ -1,0 +1,14 @@
+:where(.intro-banner){
+    inline-size: 100%;
+    block-size: 36rem;
+    background-color: rgb(249, 250, 251);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    flex-grow: 0;
+    justify-content: space-around;
+}
+:where(.intro-banner){}
+:where(.intro-banner){}
+:where(.intro-banner){}
