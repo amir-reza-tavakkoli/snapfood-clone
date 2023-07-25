@@ -1,7 +1,7 @@
 :where(.user-menu) {
   position: fixed;
   z-index: 2;
-  inset-block-start: 70px;
+  inset-block-start: var(--length-64);
   inset-inline-start: 30px;
   inline-size: 350px;
 
@@ -24,7 +24,7 @@
   padding-inline: 12px;
 
   color: var(--color-text-2);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 :where(.user-menu > ul > li:hover, .user-menu > ul > li:active) {
@@ -95,7 +95,6 @@
 
 @media (max-width: 34.375rem) {
   :where(.user-menu) {
-    inset-block-start: 70px;
     inset-inline-start: 5%;
     inline-size: 90%;
   }
