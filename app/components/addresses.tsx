@@ -5,7 +5,7 @@ import { Link, useOutletContext } from "@remix-run/react"
 import type { Address } from "@prisma/client"
 
 import { setChosenAddress } from "~/utils/utils.client"
-import { toPersianDigits } from "~/utils/utils"
+import { getFullAddress, toPersianDigits } from "~/utils/utils"
 
 import { routes } from "~/routes"
 
@@ -68,15 +68,7 @@ export function Addresses({ addresses, dir }: AddressesProps) {
               />
 
               <p aria-label="address" id={"__" + address.id}>
-                {"شهر" +
-                  " " +
-                  address.cityName +
-                  ", " +
-                  toPersianDigits(address.address) +
-                  ", " +
-                  "واحد" +
-                  " " +
-                  address.unit.toLocaleString("fa")}
+                {getFullAddress(address)}
               </p>
 
               <Link
