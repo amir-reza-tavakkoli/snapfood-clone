@@ -8,8 +8,6 @@ import type {
   LoaderArgs,
 } from "@remix-run/server-runtime"
 
-import { requirePhoneNumber } from "~/utils/session.server"
-
 import {
   createOrUpdateUser,
   getUserByEmail,
@@ -23,7 +21,11 @@ import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 import { DEAFULT_DIRECTION } from "~/constants"
 
-import { checkPhoneNumber, requireValidatedUser, validateUser } from "~/utils/validate.server"
+import {
+  checkPhoneNumber,
+  requireValidatedUser,
+  validateUser,
+} from "~/utils/validate.server"
 
 import pageCss from "./styles/user-page.css"
 
@@ -33,15 +35,15 @@ export const action = async ({
   request,
 }: ActionArgs): Promise<{ successful?: boolean; unsuccessful?: boolean }> => {
   try {
-
     const form = await request.formData()
 
     const phoneNumber = form.get("phoneNumber")
     const firstName = form.get("firstName")
     const lastName = form.get("lastName")
-    const gender = !!form.get("gender")
+    const gender = form.get("gender")
     const birthday = form.get("birthday")
     const email = form.get("email")
+    console.log(birthday)
 
     if (
       !phoneNumber ||
@@ -52,11 +54,11 @@ export const action = async ({
     }
 
     if (
-      typeof firstName !== "string" ||
-      typeof lastName !== "string" ||
-      typeof birthday !== "string" ||
-      typeof email !== "string" ||
-      gender === null
+      (firstName && typeof firstName !== "string") ||
+      (lastName && typeof lastName !== "string") ||
+      (birthday && typeof birthday !== "string") ||
+      (email && typeof email !== "string") ||
+      (gender && typeof gender !== "string")
     ) {
       throw new Response("فرمت ورودی اشتباه است.", { status: 400 })
     }
@@ -75,11 +77,11 @@ export const action = async ({
 
     const user = await createOrUpdateUser({
       phoneNumber,
-      firstName,
-      lastName,
-      gender,
-      birthday,
-      email,
+      firstName: firstName ?? undefined,
+      lastName: lastName ?? undefined,
+      gender: Boolean(Number(gender)) ?? undefined,
+      birthday: birthday ?  new Date(birthday) :  undefined,
+      email: email ?? undefined,
     })
 
     if (user) return { successful: true }
@@ -110,7 +112,7 @@ export default function UserInfoPage() {
   const [firstName, setFirstName] = useState(user.firstName)
   const [lastName, setLastName] = useState(user.lastName)
   const [gender, setGender] = useState(user.gender)
-  const [birthday, setBirthday] = useState(user.birthday)
+  const [birthday, setBirthday] = useState(user.birthday?.split("T")[0])
   const [email, setEmail] = useState(user.email)
 
   return (
@@ -124,11 +126,18 @@ export default function UserInfoPage() {
           <input
             readOnly
             type="text"
-            name="phoneNumber"
             id="phoneNumber"
             value={Number(user.phoneNumber)
               .toLocaleString("fa")
               .replace(/٬/g, "")}
+          />
+
+          <input
+            readOnly
+            type="hidden"
+            name="phoneNumber"
+            id="phoneNumber"
+            value={user.phoneNumber}
           />
         </div>
 
@@ -172,7 +181,7 @@ export default function UserInfoPage() {
           <label htmlFor="gender">جنسیت</label>
 
           <select
-            autoComplete="sex"
+            autoComplete="sex gender"
             name="gender"
             id="gender"
             onChange={e => {
@@ -211,14 +220,14 @@ export default function UserInfoPage() {
         </div>
 
         <div>
-          <label htmlFor="birthdate">تاریخ تولد</label>
+          <label htmlFor="birthday">تاریخ تولد</label>
 
           <input
             autoComplete="bday"
             type="date"
-            name="birthdate"
-            id="birthdate"
-            value={String(birthday ?? new Date(Date.now()))}
+            name="birthday"
+            id="birthday"
+            value={birthday ?? undefined}
             onChange={e => {
               if (e.target.value) {
                 setBirthday(e.target.value)
@@ -227,8 +236,8 @@ export default function UserInfoPage() {
           />
         </div>
 
-        <Button type="submit" variant="accent">
-          ثبت
+        <Button type="submit" variant="accent" className="_register">
+          ثبت تغییرات
         </Button>
 
         <output role="alert" aria-aria-live="assertive">
