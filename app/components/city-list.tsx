@@ -16,7 +16,9 @@ export const CityList = ({
 }: CityListProps) => {
   return (
     <article className="city-list" dir={dir}>
-      <p>{title}</p>
+
+      <h1>{title}</h1>
+
       <ul aria-label={type ?? undefined}>
         {items.map((item, index) => (
           <li key={index}>

@@ -1,12 +1,13 @@
 :where(.city-list) {
   inline-size: 100%;
-  padding-inline: min(var(--length-32), 36px);
-  padding-block: min(var(--length-32), 48px);
+  padding-inline: 36px;
+  padding-block: var(--length-32);
+
   border-block-start: var(--border-normal) solid var(--color-faded-2);
   background-color: var(--color-primary);
 }
 
-:where(.city-list p) {
+:where(.city-list h1) {
   margin-block-end: var(--length-32);
   font-size: var(--length-16);
   font-weight: 700;
@@ -23,10 +24,11 @@
 }
 
 :where(.city-list li) {
-  padding-inline: min(var(--length-6), 10px);
+  padding-inline: 10px;
   padding-block: var(--length-6);
   margin-inline: 0px;
   margin-block: 0px;
+
   text-align: start;
   font-weight: 400;
   font-size: var(--length-10);
@@ -38,6 +40,21 @@
 :where(.city-list a) {
   text-decoration: none;
   color: inherit;
+}
+
+@media (max-width: 34.5rem) {
+  :where(.city-list) {
+    inline-size: 66%;
+    max-block-size: 400px;
+    margin-inline: auto;
+    text-align: center;
+    align-items: center;
+    overflow: auto;
+  }
+
+  :where(.city-list li) {
+    text-align: center;
+  }
 }
 
 @media (pointer: coarse) {
