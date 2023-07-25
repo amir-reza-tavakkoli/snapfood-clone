@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react"
 
-import { Link, useOutletContext, useSearchParams } from "@remix-run/react"
+import { Link, useOutletContext } from "@remix-run/react"
 
 import type { Address } from "@prisma/client"
 
+import { setChosenAddress } from "~/utils/utils.client"
+import { toPersianDigits } from "~/utils/utils"
+
+import { routes } from "~/routes"
+
 import { Icon } from "./icon"
+
+import { COOKIE_ADDRESS } from "~/constants"
 
 type AddressesProps = {
   addresses: Address[] | null
@@ -12,25 +19,13 @@ type AddressesProps = {
 }
 
 export function Addresses({ addresses, dir }: AddressesProps) {
-  const [searchParams] = useSearchParams()
   const [HomeAddressState, setHomeAddressState] = useOutletContext<any>()
 
   const [addressId, setAddressId] = useState(-1)
 
-  function setChosenAddress(addressId: number, cityName: string) {
-    try {
-      localStorage.setItem("addressId", addressId.toString())
-      localStorage.setItem("city", cityName.toString())
-      setHomeAddressState()
-      setAddressId(addressId)
-    } catch (error) {
-      throw error
-    }
-  }
-
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setAddressId(Number(localStorage.getItem("addressId")))
+      setAddressId(Number(localStorage.getItem(COOKIE_ADDRESS)))
     }
   }, [addressId])
 
@@ -38,57 +33,80 @@ export function Addresses({ addresses, dir }: AddressesProps) {
     <ul aria-label="address" className="addresses" dir={dir}>
       <div>
         <Link
-          to="\"
-          aria-label="Back To Previous"
+          to={routes.index}
           onClick={() => {
             history.back()
           }}
         >
+          <span className="nonvisual">Back To Previous</span>
           <Icon name="flash" color="action"></Icon>
         </Link>
 
-        <p>انتخاب آدرس</p>
+        <p>انتخاب آدرس </p>
       </div>
+
       <div>
         <p className="nonvisual">Availible Addresses</p>
+
         {addresses ? (
-          addresses?.map((address, index) => (
+          addresses.map((address, index) => (
             <li key={index}>
               <input
+                aria-describedby={"__" + address.id}
                 className="_choosed"
                 type="radio"
-                aria-label="Choosed"
+                aria-label="Choose"
                 checked={addressId == address.id}
-                onChange={() => setChosenAddress(address.id, address.cityName)}
+                onChange={() =>
+                  setChosenAddress({
+                    addressId: address.id,
+                    setHomeAddressState: setHomeAddressState,
+                    cityName: address.cityName,
+                    setAddressId,
+                  })
+                }
               />
 
-              <p aria-label="address">
+              <p aria-label="address" id={"__" + address.id}>
                 {"شهر" +
                   " " +
                   address.cityName +
-                  " " +
-                  address.address +
-                  " " +
+                  ", " +
+                  toPersianDigits(address.address) +
+                  ", " +
                   "واحد" +
                   " " +
-                  address.unit}
+                  address.unit.toLocaleString("fa")}
               </p>
 
-              <button className="_delete" aria-label="Remove Address">
+              <Link
+                to={routes.address(address.id.toString())}
+                className="_delete"
+                aria-label="Remove"
+              >
                 <Icon name="bin" color="error"></Icon>
-              </button>
+              </Link>
 
-              <Link to={address.id.toString()} aria-label="Edit Address">
+              <Link
+                to={routes.address(address.id.toString())}
+                aria-label="Edit"
+              >
                 <Icon name="edit" color="action"></Icon>
               </Link>
             </li>
           ))
         ) : (
-          <p>آدرسی وجود ندارد</p>
+          <p className="_empty">
+            <span>!</span>
+            آدرسی وجود ندارد
+          </p>
         )}
       </div>
 
-      <Link to={"/addresses/new"}>ایجاد آدرس جدید </Link>
+      <Link to={routes.newAddress}>
+        ایجاد آدرس جدید
+        <Icon name="plus" color="action"></Icon>
+      </Link>
     </ul>
   )
 }

@@ -17,6 +17,7 @@
 :where(.addresses > div:first-of-type > p) {
   margin-inline-end: auto;
   margin-block: var(--length-6);
+
   font-weight: 700;
   font-size: var(--length-14);
 }
@@ -33,6 +34,8 @@
   display: flex;
   flex-direction: column;
   inline-size: 100%;
+  padding-inline: 10px;
+
   overflow-y: auto;
 }
 
@@ -45,6 +48,7 @@
   padding-block: var(--length-28);
   margin-block-start: var(--length-4);
   margin-block-end: var(--length-12);
+
   border: var(--border-normal) solid var(--color-faded-4);
   border-radius: 6px;
   color: var(--color-text-2);
@@ -53,31 +57,61 @@
 
 :where(.addresses > div:last-of-type > li > p) {
   margin-inline-start: 24px;
+
   font-size: var(--length-12);
 }
 
-:where(.addresses > div:last-of-type > li button._delete) {
+:where(.addresses > div:last-of-type > li ._delete) {
   margin-inline-start: auto;
+
   background-color: transparent;
   border: none;
 }
 
 :where(.addresses > a) {
-  text-decoration: none;
-  color: var(--color-action);
+  padding-inline-start: 10px;
+  padding-block: var(--length-16);
+  margin-block-end: var(--length-8);
+
+  color: var(--color-action-2);
   font-size: var(--length-16);
   font-weight: 700;
 }
 
+:where(.addresses > a:hover, .addresses > a:active) {
+  padding-inline-start: 8px;
+
+  color: var(--color-action);
+  background-color: var(--color-action-4);
+  opacity: 0.75;
+  border-radius: 8px;
+}
+
+:where(.addresses > a > svg) {
+  display: inline-block;
+  inline-size: 12px;
+  block-size: 12px;
+  margin-inline: 8px;
+  margin-block-start: 3px;
+  /* opticall alignment */
+}
+
+:where(.addresses ._empty) {
+  margin-block: var(--length-24);
+
+  font-weight: 700;
+  color: var(--color-error);
+}
+
 @media (max-width: 68.75rem) {
   :where(.addresses) {
-    inline-size: 90%;
+    inline-size: 80%;
   }
 }
 
 @media (max-width: 34.375rem) {
   :where(.addresses) {
-    inline-size: 100%;
+    inline-size: 95%;
   }
 
   :where(.addresses > div:last-of-type > li) {
@@ -87,8 +121,9 @@
   }
 
   :where(.addresses > div:last-of-type > li > *) {
-    text-align: center;
     margin-block: var(--length-4);
     margin-inline: initial;
+
+    text-align: center;
   }
 }
