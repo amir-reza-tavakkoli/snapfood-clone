@@ -32,3 +32,5 @@ export type StoreWithTags = Store & {
 
 export const SCORE_ROUNDING = 2
 export const READY_TIME_OFFSET = 15
+
+export const COOKIE_ADDRESS = "addressId"
