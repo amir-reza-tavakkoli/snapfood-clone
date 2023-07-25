@@ -1,6 +1,10 @@
 import type { ComponentProps } from "react"
 
+import { routes } from "~/routes"
+
 import { Icon } from "./icon"
+
+import { VENDOR_NAME, VENDOR_NAME_ENG } from "~/constants"
 
 type Reference = {
   name?: string
@@ -22,54 +26,58 @@ type FooterProps = {
 }
 
 export const Footer = ({
-  logo = { name: "snappfood" },
-  name = "اسنپ فود",
-  homepage = "/",
+  logo = { name: VENDOR_NAME_ENG },
+  name = VENDOR_NAME,
+  homepage = routes.index,
   description = "تجربه سفارش غذا، از زودفود تا اسنپ‌ فود",
   links = [
-    { name: "درباره اسنپ فود", href: "#" },
-    { name: "وبلاگ", href: "#" },
-    { name: "قوانین سایت", href: "#" },
-    { name: "حریم شخصی", href: "#" },
-    { name: "ثبت نام فروشندگان", href: "#" },
-    { name: "ثبت نام فروشندگان", href: "#" },
-    { name: "تماس با اسنپ فود", href: "#" },
-    { name: "ٍثبت شکایات", href: "#" },
-    { name: "پرسش های متداول", href: "#" },
+    { name: "درباره اسنپ فود", href: routes.notImplemented },
+    { name: "وبلاگ", href: routes.notImplemented },
+    { name: "قوانین سایت", href: routes.notImplemented },
+    { name: "حریم شخصی", href: routes.notImplemented },
+    { name: "ثبت نام فروشندگان", href: routes.notImplemented },
+    { name: "ثبت نام فروشندگان", href: routes.notImplemented },
+    { name: "تماس با اسنپ فود", href: routes.notImplemented },
+    { name: "ٍثبت شکایات", href: routes.notImplemented },
+    { name: "پرسش های متداول", href: routes.notImplemented },
   ],
   credentials = [
     {
       name: "E-Trust",
-      href: "",
+      href: routes.notImplemented,
       logo: "https://snappfood.ir/static/images/senf.png",
     },
     {
-      name: "E-Trust",
-      href: "",
+      name: "E-Namad",
+      href: routes.notImplemented,
       logo: "https://snappfood.ir/static/images/senf.png",
     },
   ],
   contacts = [
-    { href: "#", logo: { name: "twitter" } },
-    { href: "#", logo: { name: "telegram" } },
-    { href: "#", logo: { name: "linkedin" } },
-    { href: "#", logo: { name: "instagram" } },
-    { href: "#", logo: { name: "aparat" } },
+    { href: routes.notImplemented, logo: { name: "twitter" } },
+    { href: routes.notImplemented, logo: { name: "telegram" } },
+    { href: routes.notImplemented, logo: { name: "linkedin" } },
+    { href: routes.notImplemented, logo: { name: "instagram" } },
+    { href: routes.notImplemented, logo: { name: "aparat" } },
   ],
   dir,
 }: FooterProps) => {
   return (
     <footer className="footer" dir={dir}>
+      <h1 className="nonvisual">{name}</h1>
+
       <div>
-        <p className="_vendor">
+        <address className="_vendor">
           <a href={homepage} aria-label="Homepage" rel="canonical">
             <Icon name={logo.name} role="presentation" />
           </a>
+
           <span>
             <span>{name}</span>
+
             <span>{description}</span>
           </span>
-        </p>
+        </address>
 
         <address aria-label="Contacts">
           <ul className="_contacts">
