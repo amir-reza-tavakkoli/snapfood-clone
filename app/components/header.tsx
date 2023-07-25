@@ -70,17 +70,15 @@ export const Header = ({
         <div role="presentation"></div>
       </form>
       <span className="_buttons">
-        <Link to={"/user-info"}>
-          <Button
-            variant="primary"
-            icon={{ name: "user", color: "text" }}
-            type="button"
-            aria-label="Account"
-            onClick={() => (toggleMenu ? toggleMenu(prev => !prev) : null)}
-          >
-            <span className="nonvisual">User</span>
-          </Button>
-        </Link>
+        <Button
+          variant="primary"
+          icon={{ name: "user", color: "text" }}
+          type="button"
+          aria-label="Account"
+          onClick={() => (toggleMenu ? toggleMenu(prev => !prev) : null)}
+        >
+          <span className="nonvisual">User</span>
+        </Button>
         <Button
           variant="primary"
           // icon={{ name: "order", color: "text" }}
