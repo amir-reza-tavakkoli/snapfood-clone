@@ -1,6 +1,7 @@
 import { Store } from "@prisma/client"
 
 export const VENDOR_NAME = "اسنپ فود"
+export const VENDOR_NAME_ENG = "snappfood"
 export const DEFAULT_CURRENCY = "تومان"
 export const DEFAULT_DELIVERY_METHOD = "ارسال اکسپرس"
 export const DEFAULT_CITY = "تهران"
