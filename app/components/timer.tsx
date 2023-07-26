@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react"
 
+type TimerProps = {
+  initialMinute: number
+  initialSeconds: number
+  setTimerFinished?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 export function Timer({
   initialMinute = 0,
   initialSeconds = 0,
   setTimerFinished,
-}: {
-  initialMinute: number
-  initialSeconds: number
-  setTimerFinished: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+}: TimerProps) {
   const [minutes, setMinutes] = useState(initialMinute)
   const [seconds, setSeconds] = useState(initialSeconds)
 
@@ -35,7 +37,7 @@ export function Timer({
   })
 
   useEffect(() => {
-    if (minutes == 0 && seconds) {
+    if (minutes === 0 && seconds && setTimerFinished) {
       setTimerFinished(true)
     }
   })
@@ -48,7 +50,11 @@ export function Timer({
     >
       {minutes === 0 && seconds === 0 ? null : (
         <span>
-          {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+          <span> شکیبا باشید </span>
+          {minutes.toLocaleString("fa")}:
+          {seconds < 10
+            ? "  " + `۰${seconds.toLocaleString("fa")}`
+            : seconds.toLocaleString("fa")}
         </span>
       )}
     </time>
