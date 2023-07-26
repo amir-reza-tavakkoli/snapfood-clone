@@ -1,6 +1,6 @@
-import { memo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 
-import { Outlet, useLoaderData } from "@remix-run/react"
+import { Outlet, useLoaderData, useNavigate } from "@remix-run/react"
 
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
@@ -10,18 +10,24 @@ import { Header } from "~/components/header"
 import { CategoryNav } from "~/components/nav"
 import { CityList } from "~/components/city-list"
 import { Footer } from "~/components/footer"
+import { FanBanner } from "~/components/fan-banner"
+import { OwnerBanner } from "~/components/owner-banner"
+import { IntroBanner } from "~/components/intro-banner"
+import { GlobalErrorBoundary } from "~/components/error-boundary"
 import { UserMenu } from "~/components/user-menu"
 
-import { requirePhoneNumber } from "~/utils/session.server"
+import { getPhoneNumber } from "~/utils/session.server"
+import { requireValidatedUser } from "~/utils/validate.server"
 
 import { getUserAddresses } from "~/queries.server/address.query.server"
 import { getStoresKinds } from "~/queries.server/store.query.server"
 import { getSupportedCities } from "~/queries.server/address.query.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
 
-import { requireValidatedUser, validateUser } from "~/utils/validate.server"
+import { useForceAddress } from "~/hooks/forceAddress"
 
-import { DEAFULT_DIRECTION } from "~/constants"
+import { routes } from "~/routes"
+
+import { DEAFULT_DIRECTION, DEFAULT_CITY } from "~/constants"
 
 import addressesCss from "./../components/styles/addresses.css"
 import ratingsCss from "@smastrom/react-rating/style.css"
@@ -34,8 +40,8 @@ import storeContainerCss from "./../components/styles/store-container.css"
 import cityListCss from "./../components/styles/city-list.css"
 import footerCss from "./../components/styles/footer.css"
 import userMenuCss from "./../components/styles/user-menu.css"
-import { useForceAddress } from "~/hooks/forceAddress"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import ownerBannerCss from "./../components/styles/owner-banner.css"
+import fanBannerCss from "./../components/styles/fan-banner.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: ratingsCss },
@@ -43,6 +49,8 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: iconCss },
   { rel: "stylesheet", href: headerCss },
   { rel: "stylesheet", href: categoryNavCss },
+  { rel: "stylesheet", href: ownerBannerCss },
+  { rel: "stylesheet", href: fanBannerCss },
   { rel: "stylesheet", href: cityListCss },
   { rel: "stylesheet", href: storeContainerCss },
   { rel: "stylesheet", href: footerCss },
@@ -52,23 +60,30 @@ export const links: LinksFunction = () => [
 ]
 
 type LoaderType = {
-  addresses: Address[]
+  addresses: Address[] | null
   storesKind: StoreKind[]
-  cities: City[] | null
-  user: User
+  cities: City[]
+  user: User | null
 }
 
 export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
-    const user = await requireValidatedUser(request)
-
-    const addresses = await getUserAddresses({ phoneNumber : user.phoneNumber })
+    const phoneNumber = await getPhoneNumber(request)
 
     const storesKind = await getStoresKinds()
 
     const cities = await getSupportedCities()
 
-    return { addresses, storesKind, cities, user }
+    if (phoneNumber) {
+      const user = await requireValidatedUser(request)
+
+      const addresses = await getUserAddresses({
+        phoneNumber: user.phoneNumber,
+      })
+      return { addresses, storesKind, cities, user }
+    }
+
+    return { storesKind, cities, user: null, addresses: null }
   } catch (error) {
     throw error
   }
@@ -78,61 +93,86 @@ export default function HomePage() {
   const { addresses, storesKind, cities, user } =
     useLoaderData() as unknown as LoaderType
 
-  const FooterMemo = memo(Footer, arePropsEqual)
-  const CategoryNavMemo = memo(CategoryNav, arePropsEqual)
-  const CityListMemo = memo(CityList, arePropsEqual)
+  const navigate = useNavigate()
+
+  const FooterMemo = memo(Footer, () => true)
+  const CityListMemo = memo(CityList, () => true)
+  const CategoryNavMemo = memo(CategoryNav, () => true)
 
   const [userMenuShowing, setUserMenuShowing] = useState(false)
 
-  const { addressState, setAddressState, citystate, setCityState } =
+  const { addressState, setAddressState, cityState, setCityState } =
     useForceAddress({ addresses })
+
+  useEffect(() => {
+    if (user && cityState && location.pathname === routes.index) {
+      navigate(routes.stores)
+    }
+  }, [user])
 
   return (
     <>
-      <div className="_headers-container">
-        <Header
-          dir={DEAFULT_DIRECTION}
-          address={addressState?.address ?? "آدرس را آنتخاب کنید"}
-          toggleMenu={setUserMenuShowing}
-        ></Header>
+      {user ? (
+        <>
+          <div className="_headers-container">
+            <Header
+              dir={DEAFULT_DIRECTION}
+              address={addressState}
+              toggleMenu={setUserMenuShowing}
+            ></Header>
+          </div>
 
-        <CategoryNavMemo
-          dir={DEAFULT_DIRECTION}
-          type="Categories"
-          items={storesKind.map(kind => {
-            return {
-              name: kind.name,
-              avatarUrl: kind.avatarUrl,
-              href: `/stores/${citystate}/kind/${kind.name}`,
-            }
-          })}
-        ></CategoryNavMemo>
-      </div>
+          <CategoryNavMemo
+            dir={DEAFULT_DIRECTION}
+            type="Categories"
+            items={storesKind.map(kind => {
+              return {
+                name: kind.name,
+                avatarUrl: kind.avatarUrl,
+                href: routes.storesKind(cityState, kind.name),
+              }
+            })}
+          ></CategoryNavMemo>
 
-      <UserMenu user={user} isShowing={userMenuShowing}></UserMenu>
+          <UserMenu user={user} isShowing={userMenuShowing}></UserMenu>
 
-      <Outlet context={[addresses, setAddressState]}></Outlet>
+          <Outlet context={[addresses, setAddressState]}></Outlet>
+        </>
+      ) : (
+        <>
+          <main>
+            {storesKind ? (
+              <IntroBanner
+                storesKind={storesKind}
+                city={DEFAULT_CITY}
+              ></IntroBanner>
+            ) : null}
+          </main>
+
+          <FanBanner></FanBanner>
+
+          <OwnerBanner></OwnerBanner>
+        </>
+      )}
 
       {cities ? (
         <CityListMemo
           dir={DEAFULT_DIRECTION}
           title="اسنپ‌فود در شهرهای ایران"
-          items={cities?.map(city => {
+          items={cities.map(city => {
             return {
               name: city.name,
-              href: city.latinName ? `/stores/${city.latinName}` : undefined,
+              href: city.latinName
+                ? routes.storesCity(city.latinName)
+                : undefined,
             }
           })}
         ></CityListMemo>
-      ) : undefined}
+      ) : null}
 
       <FooterMemo dir={DEAFULT_DIRECTION}></FooterMemo>
     </>
   )
-}
-
-function arePropsEqual() {
-  return true
 }
 
 export const ErrorBoundary = GlobalErrorBoundary
