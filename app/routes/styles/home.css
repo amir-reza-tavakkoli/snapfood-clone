@@ -1,6 +1,6 @@
 :where(div._headers-container) {
   position: sticky;
-  top: 0px;
+  inset-block-start: 0px;
   background: var(--color-primary);
   z-index: 1;
   color: var(--color-text-2);

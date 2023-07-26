@@ -1,6 +1,6 @@
 import { StoreKind } from "@prisma/client"
 import { Link } from "@remix-run/react"
-import { DEAFULT_DIRECTION } from "~/constants"
+import { DEAFULT_DIRECTION, VENDOR_NAME_ENG } from "~/constants"
 import { routes } from "~/routes"
 import { Icon } from "./icon"
 import { CategoryNav } from "./nav"
@@ -14,7 +14,7 @@ export function IntroBanner({storesKind, city = ""} : IntroBannerProps ) {
   return (
     <header className="intro-banner">
       <div>
-        <Icon name="snappfood"></Icon>
+        <Icon name={VENDOR_NAME_ENG}></Icon>
         <Link to={routes.notImplemented}>ثبت نام فروشندگان</Link>
         <Link to={routes.login}> ورود یا عضویت</Link>
       </div>

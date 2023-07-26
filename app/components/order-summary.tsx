@@ -1,9 +1,5 @@
 import { Link } from "@remix-run/react"
 
-import type { Order, Store } from "@prisma/client"
-
-import { FullOrderItem } from "~/queries.server/order.query.server"
-
 import { Button } from "./button"
 
 import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"

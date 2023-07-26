@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { Form, Link } from "@remix-run/react"
 
 import { Button } from "./button"
+import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
 
 type FoodCardProps = {
   name: string
@@ -68,7 +69,7 @@ export const FoodCard = ({
             ) : null}
           </dl>
           <img
-            src={image ?? "https://snappfood.ir/static/images/placeholder.png"}
+            src={image ?? DEFAULT_IMG_PLACEHOLDER}
             alt=""
             role="presentation"
           />

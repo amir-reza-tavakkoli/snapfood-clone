@@ -46,7 +46,7 @@
 
 :where(.owner-banner > img) {
     position: relative;
-    top: -100px;
+    inset-block-start: -100px;
 }
 
 :where(.owner-banner h1) {

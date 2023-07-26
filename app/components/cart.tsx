@@ -6,9 +6,8 @@ import type { FullOrderItem } from "~/queries.server/order.query.server"
 
 import { Icon } from "./icon"
 
-import { DEFAULT_CURRENCY } from "./../constants"
+import { DEFAULT_CURRENCY, DEFAULT_IMG_PLACEHOLDER } from "./../constants"
 
-import { toPersianDay } from "../utils/utils.client"
 import { routes } from "~/routes"
 
 export type CartCompProps = {
@@ -33,7 +32,7 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
               <li className="_order">
                 <div>
                   <img
-                    src={order.store.avatarUrl ?? undefined}
+                    src={order.store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
                     role="presentation"
                   />
@@ -53,13 +52,8 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
                       {new Date(
                         order.order.billDate ?? order.order.createdAt,
                       ).toLocaleString("fa-IR")}
-                      {"      "}
 
-                      {/* {toPersianDay(
-                        new Date(
-                          order.order.billDate ?? order.order.createdAt,
-                        ).getDay(),
-                      )} */}
+
                     </time>
                   </span>
 
@@ -74,7 +68,7 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
                 <ul>
                   {order.items.map((item, index) => (
                     <li key={index} className="_item">
-                      <img src={item.avatarUrl ?? undefined} alt=""></img>
+                      <img src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER} alt=""></img>
 
                       <span className="nonvisual">{item.name}</span>
 

@@ -93,7 +93,7 @@
   color: var(--color-action);
   font-weight: 600;
   font-size: var(--length-12);
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 :where(.order-summary ._buttons) {

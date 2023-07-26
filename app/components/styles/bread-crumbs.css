@@ -5,10 +5,11 @@
 }
 
 :where(.bread-crumbs a) {
+  margin-inline-start: min(var(--length-8), 16px);
+
   text-align: center;
   text-decoration: none;
   color: inherit;
-  margin-inline-start: min(var(--length-8), 16px);
 }
 
 :where(.bread-crumbs li) {
@@ -29,6 +30,7 @@
   margin-block-end: calc(var(--length-2) * -1);
   inline-size: var(--length-6);
   block-size: var(--length-12);
+
   aspect-ratio: 1/2;
   fill: var(--color-faded);
   transform: rotate(180deg);
