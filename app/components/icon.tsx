@@ -30,6 +30,7 @@ type IconName =
   | "bin"
   | "edit"
   | "gift"
+  | "plus"
 
 type IconColor =
   | "accent"
@@ -86,12 +87,29 @@ const Snappfood = ({ name, color, ...props }: IconProps) => (
   </svg>
 )
 
+const Plus = ({ name, color, ...props }: IconProps) => (
+  <svg
+    width="0.75rem"
+    height="0.75rem"
+    viewBox="0 0 12 12"
+    fill="#00D170"
+    className={name}
+    data-color={color}
+    {...props}
+  >
+    <path d="M7 5H11C11.5523 5 12 5.44772 12 6C12 6.55228 11.5523 7 11 7H7V11C7 11.5523 6.55228 12 6 12C5.44772 12 5 11.5523 5 11V7H1C0.447715 7 0 6.55228 0 6C0 5.44772 0.447715 5 1 5H5V1C5 0.447715 5.44772 0 6 0C6.55228 0 7 0.447715 7 1V5Z"></path>
+  </svg>
+)
+
 const Gift = ({ name, color, ...props }: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="18"
     height="17"
     viewBox="0 0 18 17"
+    className={name}
+    data-color={color}
+    {...props}
     fill="none"
   >
     <script
@@ -600,6 +618,7 @@ const Exit = ({ name, color, ...props }: IconProps) => (
     <path d="M7 16C7.55228 16 8 16.4477 8 17C8 17.5523 7.55228 18 7 18H3C1.34315 18 0 16.6569 0 15L0 3C0 1.34315 1.34315 0 3 0L7 0C7.55228 0 8 0.447715 8 1C8 1.55228 7.55228 2 7 2L3 2C2.44772 2 2 2.44772 2 3L2 15C2 15.5523 2.44772 16 3 16L7 16ZM14.5858 8L11.2929 4.70711C10.9024 4.31658 10.9024 3.68342 11.2929 3.29289C11.6834 2.90237 12.3166 2.90237 12.7071 3.29289L17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071C10.9024 14.3166 10.9024 13.6834 11.2929 13.2929L14.5858 10H6C5.44772 10 5 9.55228 5 9C5 8.44772 5.44772 8 6 8L14.5858 8Z"></path>
   </svg>
 )
+
 const Message = ({ name, color, ...props }: IconProps) => (
   <svg height={30} width={35} className={name} data-color={color} {...props}>
     <defs>
@@ -1099,6 +1118,7 @@ const icons: Record<IconName, typeof Icon> = {
   edit: Edit,
   exit: Exit,
   gift: Gift,
+  plus : Plus
 }
 
 export const Icon = ({ name, color, ...props }: IconProps) => {
