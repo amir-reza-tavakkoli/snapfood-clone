@@ -39,9 +39,11 @@ import categoryNavCss from "./../components/styles/nav.css"
 import storeContainerCss from "./../components/styles/store-container.css"
 import cityListCss from "./../components/styles/city-list.css"
 import footerCss from "./../components/styles/footer.css"
+import pageNavCss from "./../components/styles/page-nav.css"
 import userMenuCss from "./../components/styles/user-menu.css"
 import ownerBannerCss from "./../components/styles/owner-banner.css"
 import fanBannerCss from "./../components/styles/fan-banner.css"
+import { PageNav } from "~/components/page-nav"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: ratingsCss },
@@ -54,6 +56,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: cityListCss },
   { rel: "stylesheet", href: storeContainerCss },
   { rel: "stylesheet", href: footerCss },
+  { rel: "stylesheet", href: pageNavCss },
   { rel: "stylesheet", href: userMenuCss },
   { rel: "stylesheet", href: addressesCss },
   { rel: "stylesheet", href: pageCss },
@@ -154,6 +157,8 @@ export default function HomePage() {
           <OwnerBanner></OwnerBanner>
         </>
       )}
+
+      <PageNav></PageNav>
 
       {cities ? (
         <CityListMemo
