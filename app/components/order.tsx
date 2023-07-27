@@ -1,11 +1,14 @@
+import { useEffect, useState } from "react"
+
 import { Link } from "@remix-run/react"
 
 import type { Comment, Order, Store } from "@prisma/client"
 
 import type { FullOrderItem } from "~/queries.server/order.query.server"
 
-import { DEFAULT_CURRENCY } from "./../constants"
-import { useEffect, useState } from "react"
+import { routes } from "~/routes"
+
+import { DEFAULT_CURRENCY, DEFAULT_IMG_PLACEHOLDER } from "./../constants"
 
 export type CartCompProps = {
   items: FullOrderItem[]
@@ -14,7 +17,7 @@ export type CartCompProps = {
   totalPrice?: number
   dir?: "rtl" | "lrt"
   comment?: Comment | null
-  s?: boolean
+  commentSection?: boolean
 }
 
 export const OrderComp = ({
@@ -24,42 +27,49 @@ export const OrderComp = ({
   dir,
   totalPrice,
   comment = null,
-  s = false,
+  commentSection = false,
 }: CartCompProps) => {
-  const total = items.reduce(
-    (prev, item) => (item.price ?? 0) * (item.count ?? 0) + prev,
-    0,
-  )
+  const [newTotalPrice, setNewTotalPrice] = useState(0)
+  const [totalDiscount, setTotalDiscount] = useState(0)
+  const [finalPrice, setFinalPrice] = useState(totalPrice ?? 0)
 
-  const totalDiscount = items.reduce(
-    (prev, item) =>
-      (item.price ?? 0) *
-        (item.count ?? 0) *
-        ((item.discountPercent ?? 0) / 100) +
-      prev,
-    0,
-  )
-  console.log(total, totalPrice)
-  const [totalToPay, setTotalToPay] = useState(totalPrice ?? 0)
   useEffect(() => {
-    setTotalToPay(
-      ((total -
+
+    let tempPrice = items.reduce(
+      (prev, item) => (item.price ?? 0) * (item.count ?? 0) + prev,
+      0,
+    )
+
+    if (newTotalPrice !== tempPrice) setNewTotalPrice(tempPrice)
+
+    tempPrice =
+      ((newTotalPrice -
         totalDiscount +
         store.baseShipmentPrice +
         store.packagingPrice) *
         (100 + store.taxPercent)) /
-        100,
+      100
+
+    if (finalPrice !== tempPrice) setFinalPrice(tempPrice)
+
+    tempPrice = items.reduce(
+      (prev, item) =>
+        (item.price ?? 0) *
+          (item.count ?? 0) *
+          ((item.discountPercent ?? 0) / 100) +
+        prev,
+      0,
     )
+
+    if (totalDiscount !== tempPrice) setTotalDiscount(tempPrice)
   })
 
-  console.log("tot dis", totalDiscount)
-
   return (
-    <Link to={`/store/${store.id}`} className="order">
+    <Link to={routes.store(store.id)} className="order">
       <ul dir={dir}>
         <li className="_store">
           <img
-            src={store.avatarUrl ?? undefined}
+            src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
             alt=""
             role="presentation"
             className="_store-img"
@@ -72,13 +82,14 @@ export const OrderComp = ({
             </p>
           </span>
         </li>
-        {s ? (
+
+        {commentSection ? (
           <div className="_comment" aria-label="Comment">
             {!comment ? (
               <p>
                 <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
 
-                <Link to={`/comment/${order.id}`}>ثبت نظر</Link>
+                <Link to={routes.comment(order.id)}>ثبت نظر</Link>
               </p>
             ) : (
               <span>نظر شما با موفقیت ثبت شد</span>
@@ -88,24 +99,29 @@ export const OrderComp = ({
 
         <li>
           <ul>
-            {items.map((item, index) => (
-              <li key={index} className="_item">
-                <img src={item.avatarUrl ?? undefined} alt=""></img>
+            {items.map((item, index) =>
+              item && item.count && item.count > 0 ? (
+                <li key={index} className="_item">
+                  <img
+                    src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
+                    alt=""
+                  ></img>
 
-                <span className="_item-name">{item.name}</span>
+                  <span className="_item-name">{item.name}</span>
 
-                <span aria-label="Count" className="_count">
-                  {(item.count ?? 0).toLocaleString("fa-IR") + "×"}
-                </span>
+                  <span aria-label="Count" className="_count">
+                    {(item.count ?? 0).toLocaleString("fa-IR") + "×"}
+                  </span>
 
-                <span className="_price">
-                  {" " +
-                    item.price?.toLocaleString("fa-IR") +
-                    " " +
-                    DEFAULT_CURRENCY}
-                </span>
-              </li>
-            ))}
+                  <span className="_price">
+                    {" " +
+                      item.price?.toLocaleString("fa-IR") +
+                      " " +
+                      DEFAULT_CURRENCY}
+                  </span>
+                </li>
+              ) : null,
+            )}
           </ul>
         </li>
 
@@ -113,8 +129,7 @@ export const OrderComp = ({
           <span> جمع کل</span>
 
           <span className="_price">
-            {" "}
-            {total.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
+            {newTotalPrice.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
 
@@ -122,7 +137,6 @@ export const OrderComp = ({
           <span>هزینه ارسال</span>
 
           <span className="_price">
-            {" "}
             {store.baseShipmentPrice.toLocaleString("fa-IR") +
               " " +
               DEFAULT_CURRENCY}
@@ -133,7 +147,6 @@ export const OrderComp = ({
           <span>هزینه بسته بندی</span>
 
           <span className="_price">
-            {" "}
             {store.packagingPrice.toLocaleString("fa-IR") +
               " " +
               DEFAULT_CURRENCY}
@@ -149,10 +162,10 @@ export const OrderComp = ({
         </li>
 
         <li className="_total">
-          <span>مجموع</span>
+          <span>نهایی</span>
 
           <span className="_price">
-            {totalToPay.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
+            {finalPrice.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
       </ul>

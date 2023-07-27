@@ -23,6 +23,7 @@ import {
   FullOrderItem,
   getFullOrderItems,
   getOrder,
+  updateOrder,
 } from "~/queries.server/order.query.server"
 import { getUserByPhone } from "~/queries.server/user.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
@@ -32,7 +33,13 @@ import { DEFAULT_CURRENCY } from "~/constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-order.css"
-import { requireValidatedUser, validateNumberParam, validateOrder, validateStore, validateUser } from "~/utils/validate.server"
+import {
+  requireValidatedUser,
+  validateNumberParam,
+  validateOrder,
+  validateStore,
+  validateUser,
+} from "~/utils/validate.server"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
@@ -74,7 +81,13 @@ export const action = async ({
       throw new Error("چنین کاربری وجود ندارد")
     }
 
-    const isSuccessful = !!(await billOrder({ orderId }))
+    const form = await request.formData()
+
+    const offline = String(form.get("offline")).toString() === "offline"
+
+    const isSuccessful = !offline
+      ? !!(await billOrder({ orderId }))
+      : updateOrder({ id: order.id, isBilled: true })
 
     if (isSuccessful) {
       return redirect(`home/order/${orderId}`)
@@ -104,7 +117,7 @@ export const loader = async ({
   items: (FullOrderItem | undefined)[]
 }> => {
   try {
-     const user = await requireValidatedUser(request)
+    const user = await requireValidatedUser(request)
 
     const orderId = Number(params.orderId)
 
@@ -112,11 +125,10 @@ export const loader = async ({
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber : user.phoneNumber })
-
+    order = validateOrder({ order, phoneNumber: user.phoneNumber })
 
     let price: number = order.totalPrice
-    if (!price || price == 0) {
+    if (!price || price === 0) {
       price = await calculateOrder({ orderId })
     }
 
@@ -134,7 +146,7 @@ export const loader = async ({
 
     const items = await getFullOrderItems({ orderId })
 
-    if (!items || items.length == 0) {
+    if (!items || items.length === 0) {
       throw new Error("مشکلی پیش آمد")
     }
 
@@ -171,20 +183,34 @@ export default function BillPage() {
         </div>
       ) : null}
 
-      <div>
-        <CartComp orders={[{ items, order, store }]}></CartComp>
+      {store.takesOnlineOrder ? (
+        <div>
+          <CartComp orders={[{ items, order, store }]}></CartComp>
 
-        <Form method="post">
-          <Button
-            variant="accent"
-            type="submit"
-            disabled={user.credit < price || order.isBilled}
-          >
-            پرداخت سفارش از اعتبار
-          </Button>
-        </Form>
-      </div>
+          <Form method="post">
+            <Button
+              variant="accent"
+              type="submit"
+              disabled={user.credit < price || order.isBilled}
+            >
+              پرداخت سفارش از اعتبار
+            </Button>
+          </Form>
+        </div>
+      ) : null}
 
+      {store.takesOfflineOrder ? (
+        <div>
+          <CartComp orders={[{ items, order, store }]}></CartComp>
+
+          <Form method="post">
+            <input type="hidden" name="offline" value="yes" />
+            <Button variant="accent" type="submit">
+              خرید آفلاین
+            </Button>
+          </Form>
+        </div>
+      ) : null}
       <output role="alert" aria-aria-live="assertive">
         {(actionData && actionData.isSuccessful) || order.isBilled ? (
           <p className="_success" aria-label="success">
