@@ -14,7 +14,7 @@ export function useForceAddress({
   const delay = 2000 // ms
 
   const [addressState, setAddressState] = useState<Address | null>()
-  const [citystate, setCityState] = useState(DEFAULT_CITY)
+  const [cityState, setCityState] = useState(DEFAULT_CITY)
 
   let location = useLocation()
 
@@ -22,23 +22,27 @@ export function useForceAddress({
 
   useEffect(() => {
     const choosedCity = localStorage.getItem("city")
-    if (choosedCity && citystate !== choosedCity) setCityState(choosedCity)
+    if (choosedCity && cityState !== choosedCity) setCityState(choosedCity)
   })
 
   useEffect(() => {
-    if (location.pathname === "/addresses") {
+    if (
+      location.pathname === "/addresses" ||
+      location.pathname === "/" ||
+      location.pathname === "/login"
+    ) {
       return
     }
 
     const choosedAddressId = Number(localStorage.getItem("addressId"))
 
-    if (!choosedAddressId || !addresses || addresses.length == 0) {
+    if (!choosedAddressId || !addresses || addresses.length === 0) {
       setTimeout(() => navigate("/addresses"), delay)
       return
     }
 
     const choosedAddress = addresses.find(
-      address => address.id == choosedAddressId,
+      address => address.id === choosedAddressId,
     )
 
     if (!choosedAddress) {
@@ -53,7 +57,7 @@ export function useForceAddress({
     }
   })
 
-  return { addressState, setAddressState, citystate, setCityState }
+  return { addressState, setAddressState, cityState, setCityState }
 }
 
 export function useCheckAddress() {
