@@ -1,10 +1,12 @@
 import {
-  isRouteErrorResponse,
   Link,
   useNavigate,
   useRouteError,
 } from "@remix-run/react"
-import { Button } from "./button"
+
+import { routes } from "~/routes"
+
+import { Icon } from "./icon"
 
 export function GlobalErrorBoundary() {
   const error = useRouteError()
@@ -12,21 +14,10 @@ export function GlobalErrorBoundary() {
   const navigate = useNavigate()
 
   const errorMessage = error instanceof Error ? error.message : undefined
-
-  if (isRouteErrorResponse(error)) {
-    return (
-      <div className="boundary-error" aria-label="error">
-        <h1>مشکلی پیش آمد!</h1>
-
-        <Button type="button" onClick={() => navigate(".", { replace: true })}>
-          دوباره امتحان کنید
-        </Button>
-      </div>
-    )
-  }
+  const errorStack = error instanceof Error ? error.stack : undefined
 
   return (
-    <div
+    <output
       aria-label="error"
       role="alert"
       aria-live="assertive"
@@ -35,12 +26,16 @@ export function GlobalErrorBoundary() {
       <h1>مشکلی پیش آمد!</h1>
 
       {errorMessage ? <p>{errorMessage}</p> : null}
+      <br />
+      {errorStack ? <p>{errorStack}</p> : null}
 
-      <Link to="/">بازگشت به خانه</Link>
+      <Link to={routes.index}>
+        <Icon name="flash" color="text"></Icon> بازگشت به خانه{" "}
+      </Link>
 
-      <Button variant="primary" type="button" onClick={() => navigate(".", { replace: true })}>
+      <button type="button" onClick={() => navigate(".", { replace: true })}>
         دوباره امتحان کنید
-      </Button>
-    </div>
+      </button>
+    </output>
   )
 }
