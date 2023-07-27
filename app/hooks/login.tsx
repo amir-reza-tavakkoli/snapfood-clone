@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import type { LoginActionData, LoginPageState } from "~/routes/login"
+import type { LoginActionData, LoginPageState } from "~/routes/_home.login"
 
 const phoneCookieName = "phoneNumber"
 
