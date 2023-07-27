@@ -211,6 +211,7 @@ model Order {
   estimatedShipmentTime Int
   description           String?
   billDate              DateTime?
+  paymentNumber         String?
 
   isBilled          Boolean @default(true)
   isInCart          Boolean @default(false)
@@ -220,6 +221,7 @@ model Order {
   isDelivered       Boolean @default(false)
   isCanceled        Boolean @default(false)
   isDelayedByStore  Boolean @default(false)
+  isOrderOffline  Boolean @default(false)
 
   storeId Int
   store   Store @relation(fields: [storeId], references: [id])

@@ -444,7 +444,7 @@ async function seedFirstDataChunk() {
       takesOnlineOrder: true,
       takesOfflineOrder: true,
       baseShipmentPrice: 5000,
-      desliveryRadius: DEFAULT_DELIVERY_RADIUS,
+      shipmentRadius: DEFAULT_DELIVERY_RADIUS,
       cityName: storeAddress.cityName,
       addressId: storeAddress.id,
       userPhoneNumber: storeOwner.phoneNumber,
