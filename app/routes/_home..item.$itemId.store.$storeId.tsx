@@ -1,39 +1,44 @@
-import { Item, Order, Store } from "@prisma/client"
-import {
-  Form,
-  useActionData,
-  useLoaderData,
-  useNavigate,
-} from "@remix-run/react"
-import { json, LoaderArgs, LoaderFunction } from "@remix-run/server-runtime"
+import { Order, Store, User, Comment } from "@prisma/client"
+import { useActionData, useLoaderData } from "@remix-run/react"
+import { LoaderArgs, LoaderFunction } from "@remix-run/server-runtime"
 import { useEffect, useState } from "react"
-import { Button } from "~/components/button"
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+
 import { getStoreOrderInCart } from "~/queries.server/cart.query.server"
 import { getItemById } from "~/queries.server/item.query.server"
-import { FullOrderItem, getOrder } from "~/queries.server/order.query.server"
+import { FullOrderItem } from "~/queries.server/order.query.server"
 import { requirePhoneNumber } from "~/utils/session.server"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
-  getStoreItems,
 } from "~/queries.server/store.query.server"
 import { getUserByPhone } from "~/queries.server/user.query.server"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { getVerifiedItemComments } from "~/queries.server/comment.query"
+import { useCheckAddress } from "~/hooks/forceAddress"
+import { ItemComp } from "~/components/item"
+import { requireValidatedUser } from "~/utils/validate.server"
+
+type LoaderType = {
+  foundItem: FullOrderItem
+  store: Store
+  order: Order | undefined
+  comments: (
+    | {
+        user: User
+        order: Order
+        comment: Comment
+      }
+    | undefined
+  )[]
+}
 
 export const loader: LoaderFunction = async ({
   params,
   request,
-}: LoaderArgs): Promise<{
-  foundItem: FullOrderItem
-  store: Store
-  order: Order | undefined
-}> => {
+}: LoaderArgs): Promise<LoaderType> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-    const user = await getUserByPhone({ phoneNumber })
-
+    const user = await requireValidatedUser(request)
     const itemId = Number(params.itemId)
     const storeId = Number(params.storeId)
 
@@ -55,7 +60,10 @@ export const loader: LoaderFunction = async ({
 
     let items: FullOrderItem[] = []
 
-    let order = await getStoreOrderInCart({ storeId: store.id, phoneNumber })
+    let order = await getStoreOrderInCart({
+      storeId: store.id,
+      phoneNumber: user.phoneNumber,
+    })
 
     if (order && !order.isBilled) {
       items = await getFullStoreOrdersItems({
@@ -71,25 +79,28 @@ export const loader: LoaderFunction = async ({
       throw new Error("No Items There")
     }
 
-    const foundItem = items.find(item => item.id == itemId)
+    const foundItem = items.find(item => item.id === itemId)
 
-    if (!foundItem) {
+    if (!foundItem || !foundItem.id) {
       throw new Error("No Items There")
     }
 
-    return { foundItem, store, order }
+    const comments = await getVerifiedItemComments({
+      itemId: foundItem.id,
+      storeId,
+    })
+    return { foundItem, store, order, comments }
   } catch (error) {
     throw error
   }
 }
 
-export default function ItemInStore() {
-  const [render, reRender] = useState({})
-
-  const { foundItem, store }: { foundItem: FullOrderItem; store: Store } =
-    useLoaderData<typeof loader>()
+export default function ItemPage() {
+  const { foundItem, store, order, comments } = useLoaderData<typeof loader>()
   const actionData = useActionData()
   const [item, setItem] = useState(foundItem)
+
+
 
   useEffect(() => {
     if (actionData && actionData.newItems) {
@@ -101,60 +112,13 @@ export default function ItemInStore() {
     }
   }, [actionData])
 
-  const navigate = useNavigate()
-
-  const [address, setAddress] = useState<number>(0)
-  useEffect(() => {
-    const choosedAddress = localStorage.getItem("addressId")
-    if (
-      !choosedAddress ||
-      isNaN(Number(choosedAddress)) ||
-      !Number(choosedAddress)
-    ) {
-      setTimeout(() => navigate(`/addresses?storeId=${store.id}`), 2000)
-      setAddress(-1)
-    }
-
-    if (Number(choosedAddress) != address) setAddress(Number(choosedAddress))
-  }, [render])
+  const { addressState: address } = useCheckAddress()
+  console.log("add", address)
 
   return (
-    <dl className="item-card">
-      <dt className="nonvisual">Name</dt>
-      <dd>{item.name}</dd>
-      <dt className="nonvisual">Description</dt>
-      <dd className="_description">{item.description}</dd>
-      <dt className="nonvisual">Image</dt>
-      <dd>
-        <img src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER} alt="" />
-      </dd>
-      <dt className="nonvisual">Price</dt>
-      <dd className="_price">{item.price}</dd>
-      {item.isAvailible ? (
-        <>
-          <Form method="post" action={`/store/${store.id}`}>
-            {item.count ? item.count : null}
-            <input type="hidden" name="id" value={item.id} />
-            <input type="hidden" name="job" value="add" />
-            <input type="hidden" name="address" value={address} />
-            <Button
-              type="submit"
-              disabled={item.remainingCount == 0 || !address}
-            >
-              +
-            </Button>
-          </Form>
-
-          <Form method="post">
-            <input type="hidden" name="id" value={item.id} />
-            <input type="hidden" name="job" value="remove" />
-            <input type="hidden" name="address" value={address} />
-
-            {!foundItem.count ? undefined : <Button type="submit"> - </Button>}
-          </Form>
-        </>
-      ) : null}
-    </dl>
+    <main>
+      <ItemComp address={address} item={item} store={store}></ItemComp>
+    </main>
   )
 }
 
