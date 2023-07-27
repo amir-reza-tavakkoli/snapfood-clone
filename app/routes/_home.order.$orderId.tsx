@@ -9,21 +9,21 @@ import {
 } from "~/queries.server/order.query.server"
 
 import { OrderComp } from "~/components/order"
-import { requirePhoneNumber } from "~/utils/session.server"
+
 import { getStore } from "~/queries.server/store.query.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
+
 import {
   requireValidatedUser,
   validateItems,
   validateNumberParam,
   validateOrder,
   validateStore,
-  validateUser,
 } from "~/utils/validate.server"
+
 import { getComment } from "~/queries.server/comment.query"
 
 import orderCss from "~/components/styles/order.css"
-import ordersPageCss from "./styles/orders-page.css"
+import ordersPageCss from "./styles/order-page.css"
 import { GlobalErrorBoundary } from "~/components/error-boundary"
 
 export const links: LinksFunction = () => [
@@ -75,7 +75,7 @@ export default function OrderPage() {
 
   return (
     <main className="_order-page">
-      <h1>بررسی وضعیت سفارش</h1>
+      <h1>بررسی سفارش</h1>
       {items ? (
         <OrderComp
           comment={comment}
@@ -84,7 +84,7 @@ export default function OrderPage() {
           store={store}
         ></OrderComp>
       ) : (
-        <p>چنین سفارشی وجود ندارد.</p>
+        <p className="_error">چنین سفارشی وجود ندارد.</p>
       )}
     </main>
   )

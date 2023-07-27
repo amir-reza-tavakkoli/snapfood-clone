@@ -4,7 +4,7 @@ import { Link, useOutletContext } from "@remix-run/react"
 
 import type { Address } from "@prisma/client"
 
-import { setChosenAddress } from "~/utils/utils.client"
+import { setChosenAddress } from "~/utils/utils"
 import { getFullAddress, toPersianDigits } from "~/utils/utils"
 
 import { routes } from "~/routes"
@@ -56,7 +56,7 @@ export function Addresses({ addresses, dir }: AddressesProps) {
                 className="_choosed"
                 type="radio"
                 aria-label="Choose"
-                checked={addressId == address.id}
+                checked={addressId === address.id}
                 onChange={() =>
                   setChosenAddress({
                     addressId: address.id,

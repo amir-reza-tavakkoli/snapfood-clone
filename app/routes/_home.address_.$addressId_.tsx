@@ -85,7 +85,7 @@ export const action = async ({
       }
     }
 
-    if (Number(addressId) == -1) {
+    if (Number(addressId) === -1) {
       await createAddress({
         address,
         cityName,

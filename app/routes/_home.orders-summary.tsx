@@ -2,9 +2,6 @@ import { useLoaderData } from "@remix-run/react"
 
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
-import { requirePhoneNumber } from "~/utils/session.server"
-
-import { getUserByPhone } from "~/queries.server/user.query.server"
 import { getCart } from "~/queries.server/cart.query.server"
 
 import { Orders } from "~/components/order-summary"
@@ -29,7 +26,7 @@ export const loader = async ({
   try {
     const user = await requireValidatedUser(request)
 
-    const cart = await getCart({ phoneNumber : user.phoneNumber, all: true })
+    const cart = await getCart({ phoneNumber: user.phoneNumber, all: true })
 
     return cart
   } catch (error) {

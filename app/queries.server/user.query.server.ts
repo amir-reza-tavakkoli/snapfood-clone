@@ -33,7 +33,7 @@ export async function createOrUpdateUser({
   firstName?: string
   lastName?: string
   gender?: boolean
-  birthday?: string
+  birthday?: string | Date
   email?: string
   isSuspended?: boolean
   isVerified?: boolean

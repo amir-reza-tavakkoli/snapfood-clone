@@ -38,7 +38,7 @@ export const loader = async ({
 
     let city = params.city
 
-    if (!city || city == "") {
+    if (!city || city === "") {
       return redirect("/addresses")
     }
 

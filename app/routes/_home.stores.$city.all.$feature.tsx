@@ -17,6 +17,7 @@ import { AllowedStoresFeatures, StoreWithTags } from "~/constants"
 
 import storeCardCss from "./../components/styles/store-card.css"
 import pageCss from "./styles/stores-all.css"
+import { routes } from "~/routes"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeCardCss },
@@ -33,12 +34,10 @@ export const loader = async ({
   params,request
 }: LoaderArgs): Promise<LoaderType | TypedResponse<never>> => {
   try {
-    const user = await requireValidatedUser(request)
-
     let city = params.city
 
-    if (!city || city == "") {
-      return redirect("/addresses")
+    if (!city || city === "") {
+      return redirect(routes.addresses)
     }
 
     city = await validateCity({ cityName: city })

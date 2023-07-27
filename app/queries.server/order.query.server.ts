@@ -1,6 +1,6 @@
 import type { Comment, Item, Order, OrderHasItems, Store } from "@prisma/client"
-import { READY_TIME_OFFSET } from "~/constants"
-import { validateStore } from "~/utils/validate.server"
+import { READY_TIME_OFFSET } from "../constants"
+import { validateStore } from "../utils/validate.server"
 import { db } from "../utils/db.server"
 
 import { getAddressById } from "./address.query.server"
@@ -176,7 +176,7 @@ export async function createOrder({
     if (
       ordersInCart &&
       ordersInCart.find(
-        orderInCart => orderInCart.storeId == storeId && !orderInCart.isBilled,
+        orderInCart => orderInCart.storeId === storeId && !orderInCart.isBilled,
       )
     ) {
       throw new Error("سفارش در جریان است")
@@ -389,7 +389,7 @@ export async function changeOrderItems({
     if (!itemInOrder) {
       if (
         itemInStore.remainingCount < count ||
-        count == 0 ||
+        count === 0 ||
         itemInStore.remainingCount < 0
       ) {
         throw new Error("تعداد ناکافی")
@@ -454,7 +454,7 @@ export async function changeOrderItems({
           throw new Error("تعداد ناکافی")
         }
 
-        if (newCount == 0) {
+        if (newCount === 0) {
           const deleted = await db.orderHasItems.delete({
             where: {
               itemId_orderId: {
@@ -485,7 +485,7 @@ export async function changeOrderItems({
         return newItemInOrder
       }
       case "set": {
-        if (count == 0) {
+        if (count === 0) {
           const deleted = await db.orderHasItems.delete({
             where: {
               itemId_orderId: {
@@ -500,7 +500,7 @@ export async function changeOrderItems({
 
         if (
           (count && itemInStore.remainingCount < itemInOrder.count + count) ||
-          count == 0
+          count === 0
         ) {
           throw new Error("تعداد ناکافی")
         }
@@ -641,7 +641,7 @@ export async function calculateOrder({
 
     const orderItems = await getFullOrderItems({ orderId })
 
-    if (!orderItems || orderItems.length == 0) {
+    if (!orderItems || orderItems.length === 0) {
       throw new Error("سفارش خالی است")
     }
 
@@ -674,7 +674,7 @@ export async function calculateOrder({
       throw new Error("قیمت اشتباه است")
     }
 
-    if (order.totalPrice == totalPrice || order.isBilled) {
+    if (order.totalPrice === totalPrice || order.isBilled) {
       return totalPrice
     }
     const newOrder = await db.order.update({
@@ -706,12 +706,12 @@ export async function getFullOrderItems({
 
     const fullOrderItems = orderHasItems.map(itemInOrder => {
       let itemInStore = storeHasItems.items.find(
-        item => item?.id == itemInOrder.itemId,
+        item => item?.id === itemInOrder.itemId,
       )
 
       let mergedItems =
         storeHasItems.itemsInStore.find(
-          itemInStore => itemInStore.itemId == itemInOrder.itemId,
+          itemInStore => itemInStore.itemId === itemInOrder.itemId,
         ) ?? undefined
 
       const fullMergedItems: FullOrderItem | undefined = mergedItems
@@ -883,7 +883,7 @@ export function calculateItemsReadyTime({
     })
 
     // total /= items.length
-return max + READY_TIME_OFFSET
+    return max + READY_TIME_OFFSET
   } catch (error) {
     throw error
   }

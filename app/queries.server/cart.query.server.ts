@@ -17,7 +17,7 @@ export async function getCart({
       ? await getOrders({ phoneNumber, isBilled: true })
       : await getOrdersInCart({ phoneNumber })
 
-    if (!orders || orders.length == 0) {
+    if (!orders || orders.length === 0) {
       return undefined
     }
 
@@ -64,7 +64,7 @@ export async function getOrdersInCart({
   try {
     let orders = await getOrders({ phoneNumber })
 
-    if (!orders || orders.length == 0) {
+    if (!orders || orders.length === 0) {
       return undefined
     }
 
@@ -86,7 +86,7 @@ export async function getStoreOrderInCart({
   try {
     let orders = await getOrders({ phoneNumber, storeId })
 
-    if (!orders || orders.length == 0) {
+    if (!orders || orders.length === 0) {
       return undefined
     }
 

@@ -1,17 +1,22 @@
 import { db } from "~/utils/db.server"
 import { getStore } from "./store.query.server"
 
-export async function searchStore({ param }: { param: string }) {
+type SearchParams = { param: string; takeThisMuch?: number }
+
+export async function searchStore({ param, takeThisMuch = 4 }: SearchParams) {
   const nears = await db.store.findMany({
     where: { name: { contains: param } },
     orderBy: { score: "desc" },
-    take: 4,
+    take: takeThisMuch,
   })
   return nears
 }
 
-export async function searchItem({ param }: { param: string }) {
-  const nears = await db.item.findMany({ where: { name: { contains: param } } })
+export async function searchItem({ param, takeThisMuch = 4 }: SearchParams) {
+  const nears = await db.item.findMany({
+    where: { name: { contains: param } },
+    take: takeThisMuch,
+  })
 
   const itemsAndStores = await Promise.all(
     nears.map(async item => {

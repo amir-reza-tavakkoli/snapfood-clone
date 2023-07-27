@@ -123,7 +123,7 @@
   display: flex;
   inline-size: 100%;
   block-size: var(--length-48);
-  padding-inline: 20px;
+  padding-inline: 32px;
   padding-block: var(--length-16);
 
   background-color: var(--color-faded-2);
@@ -245,4 +245,30 @@
   :where(.header ._identity svg) {
     display: none;
   }
+}
+
+:where(.search-bar) {
+  position: fixed;
+  z-index: 3;
+  background-color: var(--color-primary);
+  inset-block-start: 100px;
+  inset-inline-start: 5%;
+  inline-size: 90%;
+  padding-inline: 24px;
+  padding-block: var(--length-16);
+  border: var(--border-thin) solid var(--color-faded-3);
+  box-shadow: var(--box-shadow-extra-thick);
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+:where(.search-bar li img) {
+  inline-size: 24px;
+  aspect-ratio: 1/1;
+  block-size: 24px;
+  border-radius: 6px;
+  margin-inline: 8px;
 }

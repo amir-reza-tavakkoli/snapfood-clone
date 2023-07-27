@@ -120,7 +120,7 @@ export const FoodCard = ({
                   <input type="hidden" name="address" value={address} />
                   <Button
                     type="submit"
-                    disabled={remainingCount == 0 || !address}
+                    disabled={remainingCount === 0 || !address}
                     onClick={() => {
                       reRender({})
                     }}

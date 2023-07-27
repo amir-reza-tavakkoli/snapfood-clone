@@ -86,7 +86,7 @@ export function validateUser({ user }: { user: User | null }) {
 }
 
 export function validateItems({ items }: { items: FullOrderItem[] | null }) {
-  if (!items || items.length == 0) {
+  if (!items || items.length === 0) {
     throw new Response("آیتمی وجود ندارد", { status: 404 })
   }
 

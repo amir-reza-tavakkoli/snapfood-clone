@@ -121,7 +121,7 @@ export async function getFullStoreItems({
     )
 
     const mergedWithItems = itemsInStore.map(itemInStore => {
-      const found = items.find(item => item && item.id == itemInStore.itemId)
+      const found = items.find(item => item && item.id === itemInStore.itemId)
 
       if (!found) {
         throw new Error("آیتم یافت نشد")
@@ -201,14 +201,14 @@ export async function getFullStoreOrdersItems({
     )
 
     const mergedWithItems = itemsInStore.map(itemInStore => {
-      const found = items.find(item => item && item.id == itemInStore.itemId)
+      const found = items.find(item => item && item.id === itemInStore.itemId)
 
       if (!found) {
         throw new Error("آیتم یافت نشد")
       }
 
       const itemInOrder = itemsInOrder.find(
-        item => item && item.itemId == itemInStore.itemId,
+        item => item && item.itemId === itemInStore.itemId,
       )
 
       return { ...found, ...itemInStore, ...itemInOrder }
@@ -253,7 +253,7 @@ export async function getStoreSchedule({ store }: { store: Store }) {
   try {
     const schedule = await db.storeSchedule.findMany({
       where: { storeId: store.id },
-      orderBy: { dayNumber: "asc", startTime: "asc" },
+      orderBy: { dayNumber: "asc" },
     })
 
     return schedule
