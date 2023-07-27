@@ -90,11 +90,23 @@ export function getOrderStatus({ order }: { order: Order }): {
   }
 }
 
+export function f(order: Order) {
+  if (!order.billDate) {
+    return
+  }
+  const now = new Date(Date.now());
+  const neww = order.billDate.setMinutes(
+    order.billDate.getMinutes() + order.estimatedReadyTime,
+  );
+
+  (order.billDate > now)
+}
+
 export async function deleteUnbilledOrder({ order }: { order: Order }) {
   try {
     if (order.isBilled || order.addressId || !order.isInCart) {
       return
-      }
+    }
 
     const threshold = 5 // mins
     const lastUpdate = new Date(order.updatedAt)
