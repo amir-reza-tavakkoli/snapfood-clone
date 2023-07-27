@@ -1,5 +1,9 @@
-import { getFullOrderItems, getOrder, getOrderItems } from "./order.query.server"
-import type { Comment, Order, User } from "@prisma/client"
+import {
+  getFullOrderItems,
+  getOrder,
+  getOrderItems,
+} from "./order.query.server"
+import type { Comment, Item, Order, User } from "@prisma/client"
 import { getUserByPhone } from "./user.query.server"
 import { db } from "../utils/db.server"
 
@@ -158,7 +162,7 @@ export async function getVerifiedItemComments({
       ),
     )) as unknown as Order[]
 
-    orders = orders.filter(order => order && order.storeId == storeId)
+    orders = orders.filter(order => order && order.storeId === storeId)
 
     let comments = await Promise.all(
       orders.map(async order => {
@@ -185,11 +189,12 @@ export async function getVerifiedItemComments({
         }
 
         return {
-          user,order,comment
+          user,
+          order,
+          comment,
         }
       }),
     )
-
 
     return comments
   } catch (error) {
@@ -197,7 +202,15 @@ export async function getVerifiedItemComments({
   }
 }
 
-// type StoreComment =
+export type StoreComment = (
+  | {
+      user: User
+      order: Order
+      comment: Comment
+      items: (Item | null)[]
+    }
+  | undefined
+)
 
 export async function getStoreComments({
   storeId,
@@ -205,7 +218,7 @@ export async function getStoreComments({
 }: {
   storeId: number
   isVisible?: boolean
-}) {
+}): Promise<StoreComment[]> {
   try {
     const takeThisMany = 12
     let orders = await db.order.findMany({
@@ -234,24 +247,25 @@ export async function getStoreComments({
         }),
       ),
     )
+// console.log(comments, "p");
 
     if (isVisible)
       comments = comments.filter(comment => comment && comment.isVisible)
 
-    let xxx = await Promise.all(
+    let storecomments = await Promise.all(
       comments.map(async comment => {
         if (!comment) {
           return
         }
 
-        const order = orders.find(order => order.id == comment?.orderId)
+        const order = orders.find(order => order.id === comment?.orderId)
 
         if (!order) {
           return
         }
 
         const user = users.find(
-          user => user?.phoneNumber == order.userPhoneNumber,
+          user => user?.phoneNumber === order.userPhoneNumber,
         )
 
         const items = (await getOrderItems({ orderId: order.id })).items
@@ -264,11 +278,11 @@ export async function getStoreComments({
       }),
     )
 
-    xxx = xxx.filter(item => item != undefined)
+    storecomments = storecomments.filter(item => item != undefined)
 
-    console.log(xxx)
+    // console.log(storecomments,"ppp")
 
-    return xxx
+    return storecomments
   } catch (error) {
     throw error
   }
