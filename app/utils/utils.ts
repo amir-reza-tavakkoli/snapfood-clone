@@ -1,3 +1,33 @@
+import { Address } from "@prisma/client"
+// import { toPersianMonth } from "./utils"
+
+export function toPersianDigits(s: string) {
+  return s.replace(/\d/g, (d: any) => "۰۱۲۳۴۵۶۷۸۹"[d])
+}
+
+export function getFullAddress(address: Address) {
+  return (
+    "شهر" +
+    " " +
+    address.cityName +
+    ", " +
+    toPersianDigits(address.address) +
+    ", " +
+    "واحد" +
+    " " +
+    address.unit.toLocaleString("fa")
+  )
+}
+
+export function getFormattedDate(date: Date) {
+  const x = date.toLocaleDateString("fa").split("/")
+
+  const p2e = (s: any) =>
+    s.replace(/[۰-۹]/g, (d: any) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+
+  return x[0] + toPersianMonth(Number(p2e(x[1]))) + x[2]
+}
+
 export function toPersianDay(day: number) {
   switch (day) {
     case 0:
@@ -64,7 +94,6 @@ export function toPersianMonth(month: number) {
   }
 }
 
-
 // function linksHierarchy() {
 //   const location = useLocation().pathname
 //   const splits = location.split("/")
@@ -92,15 +121,6 @@ export function replaceAll(string: string, rip: string) {
   const regex = new RegExp(`/${rip}/g`)
 
   return string.replace(regex, "")
-}
-
-export function getFormattedDate(date: Date) {
-  const x = date.toLocaleDateString("fa").split("/")
-
-  const p2e = (s: any) =>
-    s.replace(/[۰-۹]/g, (d: any) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
-
-  return x[0] + toPersianMonth(Number(p2e(x[1]))) + x[2]
 }
 
 export function setChosenAddress({
