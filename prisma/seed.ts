@@ -2,11 +2,11 @@ import { PrismaClient } from "@prisma/client"
 
 import type { Item } from "@prisma/client"
 
-import { getStoreCategories } from "../app/queries.server/store.query.server"
 import { calculateOrder } from "../app/queries.server/order.query.server"
 
 import {
-  DEFAULT_DELIVERY_RADIUS,
+  DEFAULT_COORDINATIONS,
+  DEFAULT_SHIPMENT_RADIUS,
   DEFAULT_SHIPMENT_TIME,
   RESPONDED_BY,
 } from "../app/constants"
@@ -321,6 +321,8 @@ async function seedFirstDataChunk() {
         "خیابان فرهنگ شهر، ایستگاه ۱۵، جنب کتلت آناهیتا، نبش کوچه ایمانی، کترینگ پرس",
       unit: 2,
       cityName: "شیراز",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
       userPhoneNumber: storeOwner.phoneNumber,
     },
   })
@@ -330,8 +332,8 @@ async function seedFirstDataChunk() {
       address: "شیراز فرهنگ شهر کوچه 35",
       unit: 4,
       cityName: "شیراز",
-      xAxis: 35,
-      yAxis: 42,
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
       userPhoneNumber: user.phoneNumber,
     },
   })
@@ -441,10 +443,10 @@ async function seedFirstDataChunk() {
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
       minOrderPrice: 20000,
       storeKindName: "رستوران",
-      takesOnlineOrder: true,
+
       takesOfflineOrder: true,
       baseShipmentPrice: 5000,
-      shipmentRadius: DEFAULT_DELIVERY_RADIUS,
+      shipmentRadius: DEFAULT_SHIPMENT_RADIUS,
       cityName: storeAddress.cityName,
       addressId: storeAddress.id,
       userPhoneNumber: storeOwner.phoneNumber,
@@ -538,6 +540,8 @@ async function seedSecondDataChunk() {
       address: "بلوار کسایی، انتهای دوستان، ایران برگر",
       unit: 1,
       cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
       userPhoneNumber: storeOwner.phoneNumber,
     },
   })
@@ -547,6 +551,8 @@ async function seedSecondDataChunk() {
       address: "سعادت آباد بولواراصلی",
       unit: 16,
       cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
       userPhoneNumber: user.phoneNumber,
     },
   })
@@ -611,7 +617,6 @@ async function seedSecondDataChunk() {
   const store = await prisma.store.create({
     data: {
       takesOfflineOrder: true,
-      takesOnlineOrder: false,
       name: "ایران برگر",
       avatarUrl:
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5eb257c8f0766.jpg",
@@ -717,6 +722,8 @@ async function seedThirdDataChunk() {
     data: {
       address: "شهرک اسلام خیابان بندر جنب بانک ملی",
       unit: 5,
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
       cityName: "شیراز",
       userPhoneNumber: storeOwner.phoneNumber,
     },
@@ -727,6 +734,8 @@ async function seedThirdDataChunk() {
       address: "شهرک اسلام کوچه 9",
       unit: 4,
       cityName: "شیراز",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
       userPhoneNumber: user.phoneNumber,
     },
   })
@@ -836,7 +845,6 @@ async function seedThirdDataChunk() {
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
       minOrderPrice: 20000,
       takesOfflineOrder: false,
-      takesOnlineOrder: true,
       storeKindName: "رستوران",
       cityName: storeAddress.cityName,
       addressId: storeAddress.id,
