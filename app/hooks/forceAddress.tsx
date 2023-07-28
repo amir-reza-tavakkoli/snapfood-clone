@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from "@remix-run/react"
 
 import type { Address } from "@prisma/client"
 
-import { DEFAULT_CITY } from "~/constants"
+import { COOKIE_City, DEFAULT_CITY } from "~/constants"
+import { routes } from "~/routes"
 
 export function useForceAddress({
   addresses,
@@ -21,23 +22,37 @@ export function useForceAddress({
   const navigate = useNavigate()
 
   useEffect(() => {
-    const choosedCity = localStorage.getItem("city")
+    const choosedCity = localStorage.getItem(COOKIE_City)
+    console.log("xx", choosedCity, cityState)
     if (choosedCity && cityState !== choosedCity) setCityState(choosedCity)
+    console.log("yy", choosedCity, cityState)
+
   })
 
+
+  const allowedRoutes = [
+    routes.index,
+    routes.addresses,
+    routes.login,
+    routes.userInfo,
+    routes.wallet,
+    routes.about,
+    routes.search,
+    routes.notImplemented,
+    routes.cart,
+    routes.orders,
+    routes.ordersSummary,
+    routes.newAddress,
+  ]
   useEffect(() => {
-    if (
-      location.pathname === "/addresses" ||
-      location.pathname === "/" ||
-      location.pathname === "/login"
-    ) {
+    if (allowedRoutes.includes(location.pathname)) {
       return
     }
 
-    const choosedAddressId = Number(localStorage.getItem("addressId"))
+    const choosedAddressId = Number(localStorage.getItem(COOKIE_City))
 
     if (!choosedAddressId || !addresses || addresses.length === 0) {
-      setTimeout(() => navigate("/addresses"), delay)
+      setTimeout(() => navigate(routes.addresses), delay)
       return
     }
 
@@ -46,7 +61,7 @@ export function useForceAddress({
     )
 
     if (!choosedAddress) {
-      setTimeout(() => navigate("/addresses"), delay)
+      setTimeout(() => navigate(routes.addresses), delay)
       return
     }
 
@@ -71,20 +86,20 @@ export function useCheckAddress() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const choosedCity = localStorage.getItem("city")
+    const choosedCity = localStorage.getItem(COOKIE_City)
     if (choosedCity && citystate !== choosedCity) setCityState(choosedCity)
   })
 
   useEffect(() => {
-    if (location.pathname === "/addresses") {
+    if (location.pathname === routes.addresses) {
       return
     }
 
-    const choosedAddressId = Number(localStorage.getItem("addressId"))
+    const choosedAddressId = Number(localStorage.getItem(COOKIE_City))
     console.log("ca", choosedAddressId)
 
     if (!choosedAddressId) {
-      setTimeout(() => navigate("/addresses"), delay)
+      setTimeout(() => navigate(routes.addresses), delay)
       return
     }
 
