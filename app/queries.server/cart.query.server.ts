@@ -1,5 +1,5 @@
 import type { Order } from "@prisma/client"
-import { CartCompProps } from "../components/cart"
+import { CartProps } from "../components/cart"
 import { getComment } from "./comment.query"
 
 import { getFullOrderItems, getOrders } from "./order.query.server"
@@ -11,7 +11,7 @@ export async function getCart({
 }: {
   phoneNumber: string
   all?: boolean
-}): Promise<CartCompProps | undefined> {
+}): Promise<CartProps | undefined> {
   try {
     const orders = all
       ? await getOrders({ phoneNumber, isBilled: true })
@@ -50,7 +50,7 @@ export async function getCart({
       }
     })
 
-    return { orders: cartOrders } as CartCompProps
+    return { orders: cartOrders } as CartProps
   } catch (error) {
     throw error
   }

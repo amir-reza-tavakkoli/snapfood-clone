@@ -5,7 +5,7 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 import { getCart } from "../queries.server/cart.query.server"
 
 import { Orders } from "../components/order-summary"
-import type { CartCompProps } from "../components/cart"
+import type { CartProps } from "../components/cart"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import { requireValidatedUser, validateUser } from "../utils/validate.server"
@@ -33,7 +33,7 @@ export const meta: V2_MetaFunction = () => {
   ]
 }
 
-type LoaderType = CartCompProps | undefined
+type LoaderType = CartProps | undefined
 
 export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
@@ -51,7 +51,7 @@ export default function OrdersSummaryPage() {
   const cart = useLoaderData<typeof loader>() as unknown as LoaderType
 
   return (
-    <main className="_orders-page">
+    <main className="orders-page">
       <p>سفارش‌ های پیشین</p>
 
       {cart && cart.orders ? (

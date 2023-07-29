@@ -7,12 +7,13 @@ import {
   useActionData,
   useLoaderData,
   useNavigate,
-  useRouteError,
+
 } from "@remix-run/react"
 
 import { LinksFunction } from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "../utils/session.server"
+
 import {
   calculateOrder,
   changeOrderItems,
@@ -28,26 +29,26 @@ import {
   getStore,
   getStoreSchedule,
 } from "../queries.server/store.query.server"
-import { getUserByPhone } from "../queries.server/user.query.server"
-import { getAddressById, isAddressInRange } from "../queries.server/address.query.server"
+import { categorizeItems } from "../queries.server/db.utils.query"
+import { getAddressById } from "../queries.server/address.query.server"
 
 import type { Order, Store, storeSchedule, User } from "@prisma/client"
 
 import { StoreInfo } from "../components/store-info"
 import { FoodCard } from "../components/food-card"
+import { OrderComp } from "../components/order"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { COOKIE_ADDRESS, COOKIE_City, DEFAULT_CURRENCY } from "../constants"
+import { COOKIE_ADDRESS,  DEFAULT_CURRENCY } from "../constants"
+
+import { routes } from "../routes"
+import { getStoreCurrentSchedule } from "../utils/utils"
+import { requireValidatedUser } from "../utils/validate.server"
 
 import foodCardCss from "./../components/styles/food-card.css"
 import storeInfoCss from "./../components/styles/store-info.css"
 import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/store-page.css"
-import { categorizeItems } from "../queries.server/db.utils.query"
-import { OrderComp } from "../components/order"
-import { GlobalErrorBoundary } from "../components/error-boundary"
-import { requireValidatedUser } from "../utils/validate.server"
-import { routes } from "../routes"
-import { getStoreCurrentSchedule } from "../utils/utils"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeInfoCss },
@@ -171,6 +172,7 @@ type LoaderType = {
   orderItems: FullOrderItem[] | undefined
   schedule: storeSchedule[]
 }
+
 export const loader: LoaderFunction = async ({
   request,
   params,
@@ -267,12 +269,9 @@ export default function StorePage() {
 
   const [render, reRender] = useState({})
   const actionData = useActionData() as unknown as ActionType
-  console.log(address)
-  console.log("store", address)
 
   useEffect(() => {
     const choosedAddress = localStorage.getItem(COOKIE_ADDRESS)
-    console.log(choosedAddress, "uu", address)
 
     if (!choosedAddress || isNaN(Number(choosedAddress))) {
       setTimeout(() => navigate(`/addresses?storeId=${store.id}`), 2000)
@@ -356,58 +355,6 @@ export default function StorePage() {
             ))}
           </div>
 
-          {/* <article className="_order_datails_container">
-            <p>دریافت در سریعترین زمان</p>
-            <p>
-              {store.shipmentPrice.toLocaleString("fa-IR") + DEFAULT_CURRENCY}
-              پیک فروشنده
-            </p>
-
-            {order ? (
-              <p>
-                مجموع اقلام :
-                {totalPrice.toLocaleString("fa-IR") + DEFAULT_CURRENCY}
-              </p>
-            ) : undefined}
-
-            {order ? (
-              <p>
-                حداقل سبد خرید :
-                {store.minOrderPrice.toLocaleString("fa-IR") + DEFAULT_CURRENCY}
-              </p>
-            ) : undefined}
-
-            <p>آیتم های انتخاب شده</p>
-            {orderItems ? (
-              <ul className="_order-items">
-                {orderItems.map((item, index) => (
-                  <li key={index} className="_item">
-                    <span>{item?.name}</span>
-
-                    <span>{item?.price}</span>
-
-                    <span aria-label="Count">{item?.count}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-
-            {order && store.minOrderPrice - totalPrice > 0 ? (
-              <p>
-                باقی مانده :
-                {store.minOrderPrice - totalPrice + DEFAULT_CURRENCY}
-              </p>
-            ) : undefined}
-
-            {order &&
-            user.isVerified &&
-            !user.isSuspended &&
-            store.isVerified &&
-            store.isAvailible &&
-            totalPriceState > store.minOrderPrice ? (
-              <Link to={`/bill/${order.id}`}>ثبت سفارش</Link>
-            ) : undefined}
-          </article> */}
           {orderItems && orderItemsState && order && orderState ? (
             <OrderComp
               items={orderItemsState}

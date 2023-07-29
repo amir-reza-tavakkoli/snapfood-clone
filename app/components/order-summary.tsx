@@ -3,9 +3,9 @@ import { Link } from "@remix-run/react"
 import { Button } from "./button"
 
 import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
-import { CartCompProps } from "./cart"
+import { CartProps } from "./cart"
 
-type OrderProps = CartCompProps
+type OrderProps = CartProps
 
 export const Orders = ({ orders, dir }: OrderProps) => {
   console.log(orders)
