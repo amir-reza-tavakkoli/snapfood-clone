@@ -3,7 +3,7 @@
 }
 
 @media (max-width: 34.5rem) {
-    :where(.page-nav ul) {
+    :where(.page-nav > ul) {
         position: fixed;
         inset-block-end: 0px;
         inset-inline-start: 0px;
@@ -20,7 +20,7 @@
         box-shadow: var(--box-shadow-thick);
     }
 
-    :where(.page-nav ul li a) {
+    :where(.page-nav > ul li a) {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -30,7 +30,7 @@
         color: var(--color-text-2);
     }
 
-    :where(.page-nav ul li svg) {
+    :where(.page-nav > ul li svg) {
         margin-block: var(--length-6);
         inline-size: 16px;
         block-size: 16px;
@@ -49,10 +49,11 @@
         fill: var(--color-accent);
     }
 
-    :where(.page-nav li:nth-child(2) svg) {
+    :where(.page-nav svg._svg_order) {
         inline-size: 16px;
         block-size: 16px;
         transform: none;
+        opacity: 0.75;
     }
 
     :where(.page-nav ._choosed span) {
