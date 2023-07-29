@@ -1,6 +1,11 @@
 import { useState } from "react"
 
-import { Form, useLoaderData, V2_MetaFunction } from "@remix-run/react"
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  V2_MetaFunction,
+} from "@remix-run/react"
 
 import type {
   ActionArgs,
@@ -8,11 +13,14 @@ import type {
   LoaderArgs,
 } from "@remix-run/server-runtime"
 
-import { requirePhoneNumber } from "../utils/session.server"
+import {
+  createOrUpdateUser,
 
-import { getUserByPhone } from "../queries.server/user.query.server"
+} from "../queries.server/user.query.server"
 
-import { requireValidatedUser, validateUser } from "../utils/validate.server"
+import { requireValidatedUser } from "../utils/validate.server"
+
+import { numberToWords } from "@persian-tools/persian-tools"
 
 import type { User } from "@prisma/client"
 
@@ -21,12 +29,9 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import { DEFAULT_CURRENCY } from "../constants"
 
-
 import pageCss from "./styles/wallet-page.css"
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: pageCss },
-]
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   const { description, title } = data
@@ -43,18 +48,30 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   ]
 }
 
-type ActionType = User
+type ActionType = { successful?: boolean; unsuccessful?: boolean }
 
-// Prepare to redirect user to bank page
 export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    console.log(1)
 
-    let user = await getUserByPhone({ phoneNumber })
+    const user = await requireValidatedUser(request)
 
-    user = validateUser({ user })
+    const form = await request.formData()
 
-    return user
+    const price = form.get("price")
+
+    if ((!price && typeof price !== "string") || isNaN(Number(price))) {
+      throw new Response("فرمت مبلغ ورودی اشتباه است.", { status: 400 })
+    }
+
+    const updatedUser = await createOrUpdateUser({
+      phoneNumber: user.phoneNumber,
+      credit: user.credit + Number(price),
+    })
+
+    if (updatedUser) return { successful: true }
+
+    return { unsuccessful: true }
   } catch (error) {
     throw error
   }
@@ -72,11 +89,15 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   }
 }
 
-const basePrice = 1000
-const multipliers = [10, 20, 50]
 
 export default function WalletPage() {
+  const basePrice = 1000
+  const maxPrice = 1000 * basePrice
+  const multipliers = [10, 20, 50]
+
   const user = useLoaderData<typeof loader>() as unknown as LoaderType
+
+  const actionData = useActionData() as unknown as ActionType | undefined
 
   const [priceToPay, setPriceToPay] = useState(basePrice)
 
@@ -86,70 +107,84 @@ export default function WalletPage() {
       <dl>
         <dt>موجودی فعلی</dt>
 
-        <dd>{user.credit.toLocaleString("fa-IR")}</dd>
+        <dd className="_credit">{user.credit.toLocaleString("fa-IR")}</dd>
 
         <dt className="nonvisual">Currency</dt>
 
-        <dd>{DEFAULT_CURRENCY}</dd>
+        <dd className="_credit">{DEFAULT_CURRENCY}</dd>
 
         <dt className="nonvisual">Pay</dt>
 
         <dd>
-          <Form>
-            {multipliers
-              ? multipliers.map(multiply => (
-                  <Button
-                    type="button"
-                    onClick={() => setPriceToPay(multiply * basePrice)}
-                    aria-label={`Set price to ${multiply * basePrice}`}
-                  >
-                    {(multiply * basePrice).toLocaleString("fa-IR") +
-                      " " +
-                      DEFAULT_CURRENCY}
-                  </Button>
-                ))
-              : null}
+          <Form method="post">
+            <div>
+              {multipliers
+                ? multipliers.map(multiply => (
+                    <Button
+                      type="button"
+                      onClick={() => setPriceToPay(multiply * basePrice)}
+                      aria-label={`Set price to ${multiply * basePrice}`}
+                    >
+                      {(multiply * basePrice).toLocaleString("fa-IR") +
+                        " " +
+                        DEFAULT_CURRENCY}
+                    </Button>
+                  ))
+                : null}
+            </div>
 
             <div>
               <Button
                 aria-label="add"
                 type="button"
-                onClick={() => setPriceToPay(prev => prev + basePrice)}
+                onClick={() => {
+                  if (priceToPay < basePrice || priceToPay >= maxPrice) {
+                    return
+                  }
+
+                  setPriceToPay(prev => prev + basePrice)
+                }}
               >
                 +
               </Button>
 
-              <label htmlFor="price" className="nonvisual">
-                Set price to pay
+              <label htmlFor="price">
+                <input
+                  id="price"
+                  type="text"
+                  name="price"
+                  required={true}
+                  autoComplete="on"
+                  min={basePrice}
+                  max={maxPrice}
+                  value={priceToPay}
+                  onChange={e => {
+                    if (!isNaN(Number(e.target.value))) {
+                      setPriceToPay(Number(e.target.value))
+                    }
+                  }}
+                />
+
+                <span className="nonvisual"> Set price </span>
+
+                <span>{numberToWords(priceToPay) + DEFAULT_CURRENCY}</span>
               </label>
 
-              <input
-                id="price"
-                type="text"
-                required={true}
-                autoComplete="on"
-                value={priceToPay}
-                onChange={e => {
-                  if (!isNaN(Number(e.target.value))) {
-                    setPriceToPay(Number(e.target.value))
-                  }
-                }}
-              />
-
               <Button
-                aria-label="minus"
+                aria-label="reduce by"
                 type="button"
                 onClick={() => {
-                  if (priceToPay <= basePrice) {
+                  if (priceToPay <= basePrice || priceToPay >= maxPrice) {
                     return
                   }
+
                   setPriceToPay(prev => prev - basePrice)
                 }}
               >
                 -
               </Button>
             </div>
-            
+
             <Button
               aria-label="pay"
               disabled={priceToPay < basePrice}
@@ -160,6 +195,18 @@ export default function WalletPage() {
           </Form>
         </dd>
       </dl>
+
+      <output role="alert" aria-aria-live="assertive">
+        {actionData?.successful ? (
+          <p className="_success">افزایش اعتبار باموفقیت انجام شد</p>
+        ) : null}
+
+        {actionData?.unsuccessful ? (
+          <p aria-label="error" className="_error">
+            مشکلی پیش آمد
+          </p>
+        ) : null}
+      </output>
     </main>
   )
 }
