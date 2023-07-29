@@ -10,7 +10,7 @@ import { DEFAULT_CURRENCY, DEFAULT_IMG_PLACEHOLDER } from "./../constants"
 
 import { routes } from "../routes"
 
-export type CartCompProps = {
+export type CartProps = {
   orders:
     | {
         items: FullOrderItem[]
@@ -23,7 +23,7 @@ export type CartCompProps = {
   dir?: "rtl" | "lrt"
 }
 
-export const CartComp = ({ orders, dir }: CartCompProps) => {
+export const CartComp = ({ orders, dir }: CartProps) => {
   return (
     <ol className="cart" dir={dir}>
       {orders

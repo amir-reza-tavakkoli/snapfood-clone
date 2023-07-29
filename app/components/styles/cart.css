@@ -12,8 +12,8 @@
 }
 
 :where(.cart ._order) {
-  margin-inline: 12px;
   display: flex;
+  margin-inline: 12px;
   border: solid var(--color-faded-4) var(--border-extra-thin);
   flex-direction: column;
 }
@@ -93,5 +93,35 @@
   font-size: var(--length-10);
   color: var(--color-primary);
   background-color: var(--color-accent);
-  border-radius: 10000000px;
+  border-radius: 100000px;
+}
+
+@media (max-width: 34.5rem) {
+  :where(.cart ._order > div) {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    /* inline-size: 95%; */
+  }
+
+  :where(.cart ._order > div > *) {
+    margin-block: var(--length-10);
+  }
+
+  :where(.cart ._order > a) {
+    margin-block: var(--length-10);
+    align-items: center;
+    align-self: center;
+  }
+
+  :where(.cart ._order ul) {
+    margin-inline: auto;
+    margin-block: var(--length-10);
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-block-size: 300px;
+    align-items: center;
+    align-self: center;
+  }
 }

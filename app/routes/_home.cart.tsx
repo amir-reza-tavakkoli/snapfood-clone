@@ -9,7 +9,7 @@ import {
 import { getCart } from "../queries.server/cart.query.server"
 
 import { CartComp } from "../components/cart"
-import type { CartCompProps } from "../components/cart"
+import type { CartProps } from "../components/cart"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
@@ -35,7 +35,7 @@ export const meta: V2_MetaFunction = () => {
   ]
 }
 
-type LoaderType = CartCompProps | undefined
+type LoaderType = CartProps | undefined
 
 export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
@@ -53,7 +53,7 @@ export default function CartPage() {
   const cart = useLoaderData<typeof loader>() as LoaderType
 
   return (
-    <main className="_orders-page">
+    <main className="orders-page">
       <p>سفارش‌های من</p>
 
       {cart && cart.orders ? (

@@ -1,24 +1,24 @@
-:where(._orders-page) {
+:where(.orders-page) {
   inline-size: 75%;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
-      align-items: center;
+  align-items: center;
 
 }
 
-:where(._orders-page > p) {
+:where(.orders-page > p) {
   text-align: center;
   font-size: var(--length-18);
   margin-block: var(--length-12);
   font-weight: 600;
 }
 
-:where(._orders-page > ol) {
+:where(.orders-page > ol) {
   margin-block: var(--length-6);
 }
 
-:where(._orders-page ._no-order) {
+:where(.orders-page ._no-order) {
   text-align: center;
   font-size: var(--length-12);
   color: var(--color-text-2);
@@ -26,7 +26,13 @@
 }
 
 @media (max-width: 68.75rem) {
-  :where(._orders-page) {
+  :where(.orders-page) {
     inline-size: 90%;
+  }
+}
+
+@media (max-width: 34.5rem) {
+  :where(.orders-page) {
+    inline-size: 95%;
   }
 }
