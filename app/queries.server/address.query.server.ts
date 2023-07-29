@@ -1,4 +1,5 @@
-import type { Address, City } from "@prisma/client"
+import type { Address, City, Store } from "@prisma/client"
+import { PER_UNIT_ADDED_TIME, SCORE_ROUNDING } from "~/constants"
 
 import { db } from "../utils/db.server"
 
@@ -27,6 +28,9 @@ export async function createAddress({
   userPhoneNumber,
   address,
   cityName,
+  postalCode,
+  xAxis,
+  yAxis,
   details,
   isAvailible,
   isValid,
@@ -50,6 +54,9 @@ export async function createAddress({
         cityName,
         details,
         isAvailible,
+        postalCode,
+        xAxis,
+        yAxis,
         isValid,
         title,
         unit,
@@ -85,7 +92,7 @@ export async function updateAddress({
     await validateCity({ cityName: previousAddress.cityName })
 
     if (address || unit) {
-      validateAddress({ address,unit})
+      validateAddress({ address, unit })
     }
 
     const newAddress: Address = await db.address.update({
@@ -164,4 +171,59 @@ export async function getSupportedCities(): Promise<City[]> {
   } catch (error) {
     throw error
   }
+}
+
+export function calculateShipmentPrice({
+  storeAddress,
+  store,
+  destinationAddress,
+}: {
+  storeAddress: Address
+  store: Store
+  destinationAddress: Address
+}) {
+  const res = Number(
+    Math.sqrt(
+      (storeAddress.xAxis - destinationAddress.xAxis) ** 2 +
+        (storeAddress.yAxis - destinationAddress.yAxis) ** 2,
+    ).toPrecision(1),
+  )
+  console.log(res * 10 * PER_UNIT_ADDED_TIME + store.baseShipmentTime)
+  
+  return res * 10 * PER_UNIT_ADDED_TIME + store.baseShipmentTime
+}
+
+export function calculateShipmentTime({
+  storeAddress,
+  store,
+  destinationAddress,
+}: {
+  storeAddress: Address
+  store: Store
+  destinationAddress: Address
+}) {
+  const res = Number(
+    Math.sqrt(
+      (storeAddress.xAxis - destinationAddress.xAxis) ** 2 +
+        (storeAddress.yAxis - destinationAddress.yAxis) ** 2,
+    ).toPrecision(1),
+  )
+  return res *10* store.perUnitShipmentPrice + store.baseShipmentPrice
+}
+
+export function isAddressInRange({
+  storeAddress,
+  store,
+  destinationAddress,
+}: {
+  storeAddress: Address
+  store: Store
+  destinationAddress: Address
+  }) {
+    const res = Number(
+    Math.sqrt(
+      (storeAddress.xAxis - destinationAddress.xAxis) ** 2 +
+        (storeAddress.yAxis - destinationAddress.yAxis) ** 2,
+      ).toPrecision(1))
+      return store.shipmentRadius! * 10 > res
 }
