@@ -1,3 +1,5 @@
+import { SVG_ICON_PREFIX } from "~/constants"
+
 type IconName =
   | "snappfood"
   | "info"
@@ -34,6 +36,8 @@ type IconName =
   | "cart"
   | "home"
   | "pay"
+  | "store"
+  | "multiply"
 
 type IconColor =
   | "accent"
@@ -59,7 +63,7 @@ const Snappfood = ({ name, color, ...props }: IconProps) => (
     height={34}
     viewBox="0 0 56 28"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -96,7 +100,7 @@ const Plus = ({ name, color, ...props }: IconProps) => (
     height="0.75rem"
     viewBox="0 0 12 12"
     fill="#00D170"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -110,7 +114,7 @@ const Gift = ({ name, color, ...props }: IconProps) => (
     width="18"
     height="17"
     viewBox="0 0 18 17"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
     fill="none"
@@ -133,7 +137,7 @@ const Bin = ({ name, color, ...props }: IconProps) => (
     viewBox="0 0 12 14"
     fill="var(--sf-alert-main)"
     style={{ marginRight: "0.6rem" }}
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -146,7 +150,7 @@ const Twitter = ({ name, color, ...props }: IconProps) => (
     height={1.25}
     viewBox="0 0 20 20"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -163,7 +167,7 @@ const Instagram = ({ name, color, ...props }: IconProps) => (
     height={1.25}
     viewBox="0 0 20 20"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -180,7 +184,7 @@ const Telegram = ({ name, color, ...props }: IconProps) => (
     height={1.25}
     viewBox="0 0 20 20"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -198,7 +202,7 @@ const Aparat = ({ name, color, ...props }: IconProps) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -219,7 +223,7 @@ const Linkedin = ({ name, color, ...props }: IconProps) => (
     height={1.25}
     viewBox="0 0 20 20"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -235,7 +239,7 @@ const Flash = ({ name, color, ...props }: IconProps) => (
     width={6.58}
     height={11.17}
     viewBox="0 0 9 16"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -252,7 +256,7 @@ const User = ({ name, color, ...props }: IconProps) => (
     height={18}
     viewBox="0 0 14 18"
     fill="#3A3D42"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -271,7 +275,7 @@ const Navigation = ({ name, color, ...props }: IconProps) => (
     viewBox="0 0 12 14"
     fill="#181C20"
     fillOpacity={0.2}
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -285,7 +289,7 @@ const Delivery = ({ name, color, ...props }: IconProps) => (
     height={16}
     viewBox="0 0 24 24"
     fill="#A3A3A3"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -298,7 +302,7 @@ const Cross = ({ name, color, ...props }: IconProps) => (
     height={8}
     width={8}
     xmlns="http://www.w3.org/2000/svg"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -319,7 +323,7 @@ const Googleplay = ({ name, color, ...props }: IconProps) => (
     height={41}
     viewBox="0 0 135 41"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -496,7 +500,7 @@ const Cart = ({ name, color, ...props }: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 32 32"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -519,7 +523,7 @@ const Sibapps = ({ name, color, ...props }: IconProps) => (
     height={2.5625}
     viewBox="0 0 135 41"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -582,7 +586,7 @@ const Star = ({ name, color, ...props }: IconProps) => (
     height={12}
     viewBox="0 0 12 12"
     fill="#FFCE00"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -599,7 +603,7 @@ const Search = ({ name, color, ...props }: IconProps) => (
     width={17}
     height={17}
     viewBox="0 0 17 17"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -617,7 +621,7 @@ const Percentage = ({ name, color, ...props }: IconProps) => (
     viewBox="0 0 8 10"
     fill="#fff"
     xmlns="http://www.w3.org/2000/svg"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -633,7 +637,7 @@ const Exit = ({ name, color, ...props }: IconProps) => (
     width="1.125rem"
     height="1.125rem"
     viewBox="0 0 18 18"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
     fill="#676A70"
@@ -644,7 +648,13 @@ const Exit = ({ name, color, ...props }: IconProps) => (
 )
 
 const Message = ({ name, color, ...props }: IconProps) => (
-  <svg height={30} width={35} className={name} data-color={color} {...props}>
+  <svg
+    height={30}
+    width={35}
+    className={SVG_ICON_PREFIX + name}
+    data-color={color}
+    {...props}
+  >
     <defs>
       <filter id="a" height="138.7%" width="131.4%" x="-15.7%" y="-15.1%">
         <feMorphology
@@ -686,7 +696,7 @@ const Info = ({ name, color, ...props }: IconProps) => (
     height="1.0625rem"
     viewBox="0 0 20 20"
     fill="#D2D4D6"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -705,7 +715,7 @@ const Edit = ({ name, color, ...props }: IconProps) => (
     fill="green"
     xmlns="http://www.w3.org/2000/svg"
     style={{ marginRight: "0.6rem" }}
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -719,7 +729,7 @@ const Bazzar = ({ name, color, ...props }: IconProps) => (
     height={41}
     viewBox="0 0 135 41"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -793,7 +803,7 @@ const Support = ({ name, color, ...props }: IconProps) => (
       flex: 1,
     }}
     xmlns="http://www.w3.org/2000/svg"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -807,7 +817,7 @@ const Time = ({ name, color, ...props }: IconProps) => (
     height={1.125}
     viewBox="0 0 18 18"
     fill="surface"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -826,7 +836,7 @@ const Order = ({ name, color, ...props }: IconProps) => (
     height={1.25}
     fill="none"
     viewBox="0 0 20 20"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -846,7 +856,7 @@ const Offer = ({ name, color, ...props }: IconProps) => (
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -939,7 +949,7 @@ const RemainingTime = ({ name, color, ...props }: IconProps) => (
     height={18}
     viewBox="0 0 17 18"
     fill="#9C9FA3"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -958,7 +968,7 @@ const Coupon = ({ name, color, ...props }: IconProps) => (
     viewBox="0 0 16 16"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -1001,7 +1011,7 @@ const Iapps = ({ name, color, ...props }: IconProps) => (
     height={40}
     viewBox="0 0 135 40"
     fill="none"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -1092,7 +1102,7 @@ const Iapps = ({ name, color, ...props }: IconProps) => (
 
 const Home = ({ name, color, ...props }: IconProps) => (
   <svg
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
     xmlns="http://www.w3.org/2000/svg"
@@ -1108,7 +1118,7 @@ const Home = ({ name, color, ...props }: IconProps) => (
 
 const Pay = ({ name, color, ...props }: IconProps) => (
   <svg
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
     xmlns="http://www.w3.org/2000/svg"
@@ -1131,7 +1141,7 @@ const Helmet = ({ name, color, ...props }: IconProps) => (
     viewBox="0 0 20 20"
     fill="#676A70"
     xmlns="http://www.w3.org/2000/svg"
-    className={name}
+    className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
   >
@@ -1141,6 +1151,35 @@ const Helmet = ({ name, color, ...props }: IconProps) => (
       clipRule="evenodd"
       d="M7.552 17.626c-1.967.834-4.124-.37-4.557-2.341l-.193.075a.833.833 0 01-1.135-.777V9.167c0-2.545 1.051-4.5 2.65-5.803C5.896 2.078 7.966 1.458 10 1.458s4.104.62 5.682 1.906c1.6 1.303 2.651 3.258 2.651 5.803V12.5c0 .334-.2.636-.508.767L7.552 17.626zm2.35-10.537l-6.443.758a5.386 5.386 0 011.911-3.19C6.604 3.65 8.284 3.124 10 3.124c1.716 0 3.396.526 4.63 1.531 1.213.99 2.036 2.472 2.036 4.51v2.782l-9.765 4.143a1.667 1.667 0 01-2.314-1.425l5.715-2.223a.833.833 0 00.531-.776v-3.75a.833.833 0 00-.93-.828zm-.736 4.008l-5.833 2.268V9.54l5.833-.686v2.243z"
     />
+  </svg>
+)
+
+const Multiply = ({ name, color, ...props }: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    style={{verticalAlign: "middle", fill: "currentColor", overflow: "hidden"}}
+    viewBox="0 0 1024 1024"
+    version="1.1"
+  >
+    <path d="M791.9 682.7c0 12.6-4.3 23.3-13.2 32l-64.1 64.1c-8.8 8.8-19.5 13.2-32 13.2-12.6 0-23.3-4.3-32-13.2L512 640.1 373.5 778.8c-8.8 8.8-19.5 13.2-32 13.2-12.6 0-23.3-4.3-32-13.2l-64.1-64.1c-8.8-8.8-13.2-19.5-13.2-32s4.3-23.3 13.2-32l138.5-138.5-138.6-138.7c-8.8-8.8-13.2-19.5-13.2-32 0-12.6 4.3-23.3 13.2-32l64.1-64.1c8.8-8.8 19.5-13.2 32-13.2 12.6 0 23.3 4.3 32 13.2L512 383.7l138.5-138.5c8.8-8.8 19.5-13.2 32-13.2 12.6 0 23.3 4.3 32 13.2l64.1 64.1c8.8 8.8 13.2 19.5 13.2 32 0 12.6-4.3 23.3-13.2 32L640.2 512.1l138.5 138.5c8.9 8.7 13.2 19.4 13.2 32.1z" />
+  </svg>
+)
+const Store = ({ name, color, ...props }: IconProps) => (
+  <svg
+    width="24"
+    height="26"
+    viewBox="0 0 24 26"
+    fill="#3A3D42"
+    xmlns="http://www.w3.org/2000/svg"
+    className={SVG_ICON_PREFIX + name}
+    data-color={color}
+    {...props}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M3.10557 3.22149C3.27497 2.8827 3.62123 2.6687 4 2.6687H19.9987C20.3773 2.6687 20.7235 2.88259 20.893 3.22125L22.8943 7.22124C22.9638 7.36016 23 7.51336 23 7.6687V8.6687C23 9.62235 22.6186 10.4869 22 11.1182V21.6687C22 22.221 21.5523 22.6687 21 22.6687H15C14.4477 22.6687 14 22.221 14 21.6687V17.1687C14 16.0641 13.1046 15.1687 12 15.1687C10.8954 15.1687 10 16.0641 10 17.1687V21.6687C10 22.221 9.55229 22.6687 9 22.6687H3C2.44772 22.6687 2 22.221 2 21.6687V11.1182C1.38141 10.4869 1 9.62235 1 8.6687V7.6687C1 7.51345 1.03615 7.36034 1.10557 7.22149L3.10557 3.22149ZM4 12.1333V20.6687H8V17.1687C8 14.9596 9.79086 13.1687 12 13.1687C14.2091 13.1687 16 14.9596 16 17.1687V20.6687H20V12.1333C19.8367 12.1566 19.6698 12.1687 19.5 12.1687C18.5207 12.1687 17.6353 11.7665 17 11.1182C16.3647 11.7665 15.4793 12.1687 14.5 12.1687C13.5207 12.1687 12.6353 11.7665 12 11.1182C11.3647 11.7665 10.4793 12.1687 9.5 12.1687C8.52065 12.1687 7.63526 11.7665 7 11.1182C6.36474 11.7665 5.47935 12.1687 4.5 12.1687C4.33024 12.1687 4.1633 12.1566 4 12.1333ZM21 7.90491V8.6687C21 9.49713 20.3284 10.1687 19.5 10.1687C18.6716 10.1687 18 9.49713 18 8.6687C18 8.11642 17.5523 7.6687 17 7.6687C16.4477 7.6687 16 8.11642 16 8.6687C16 9.49713 15.3284 10.1687 14.5 10.1687C13.6716 10.1687 13 9.49713 13 8.6687C13 8.11642 12.5523 7.6687 12 7.6687C11.4477 7.6687 11 8.11642 11 8.6687C11 9.49713 10.3284 10.1687 9.5 10.1687C8.67157 10.1687 8 9.49713 8 8.6687C8 8.11642 7.55228 7.6687 7 7.6687C6.44772 7.6687 6 8.11642 6 8.6687C6 9.49713 5.32843 10.1687 4.5 10.1687C3.67157 10.1687 3 9.49713 3 8.6687V7.90477L4.61803 4.6687H19.3808L21 7.90491Z"
+    ></path>
   </svg>
 )
 
@@ -1179,7 +1218,9 @@ const icons: Record<IconName, typeof Icon> = {
   plus: Plus,
   cart: Cart,
   home: Home,
-  pay : Pay
+  pay: Pay,
+  store: Store,
+  multiply: Multiply,
 }
 
 export const Icon = ({ name, color, ...props }: IconProps) => {
