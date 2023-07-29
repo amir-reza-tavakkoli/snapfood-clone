@@ -1,0 +1,71 @@
+:where(.wallet-page) {
+    inline-size: 80%;
+    background-color: var(--color-faded-7);
+    margin-block: var(--length-24);
+    padding-block: var(--length-20);
+    border: var(--border-thin) solid var(--color-faded-3);
+    border-radius: 20px;
+    margin-inline: auto;
+    padding-inline: 12px;
+}
+
+/* :where(.wallet-page dl) {
+    display: flex;
+    justify-content: center;
+    align-items: center;flex-direction: column;
+    inline-size: 100%;
+} */
+:where(.wallet-page form) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+:where(.wallet-page button) {
+    inline-size: 75%;
+    margin-block: var(--length-2);
+}
+
+:where(.wallet-page input) {
+
+    display: inline-block;
+    inline-size: 70%;
+    margin-block: var(--length-12);
+    text-align: center;
+    font-size: var(--length-16);
+    font-weight: 700;
+    background-color: var(--color-primary);
+    padding-block: var(--length-10);
+    padding-inline: 12px;
+    margin-inline: auto;
+    border: var(--border-extra-thin) solid var(--color-faded-5);
+    box-shadow: var(--box-shadow-double);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+:where(.wallet-page form div button) {
+    inline-size: max-content;
+    border: none;
+    border-radius: 100000px;
+    background-color: transparent;
+    font-size: var(--length-20);
+    font-weight: 700;
+    inline-size: 24px;
+    block-size: 24px;
+    padding-inline: 10px;
+    color: var(--color-accent);
+    padding-block: var(--length-10);
+}
+
+:where(.wallet-page form div button:hover,
+    .wallet-page form div button:active) {
+    background-color: var(--color-faded-3);
+}
+
+:where(.wallet-page form div) {
+    display: flex;
+    inline-size: 75%;
+    justify-content: center;
+    align-items: center;
+}
