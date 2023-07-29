@@ -16,6 +16,7 @@
     "prisma-reset": "npx prisma db push --force-reset"
   },
   "dependencies": {
+    "@persian-tools/persian-tools": "^3.4.1",
     "@prisma/client": "^4.3.1",
     "@remix-run/css-bundle": "^1.16.1",
     "@remix-run/node": "^1.16.1",
