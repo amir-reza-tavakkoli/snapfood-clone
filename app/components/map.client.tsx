@@ -5,7 +5,7 @@ import {
   TileLayer,
   Marker as MarkerComponent,
 } from "react-leaflet"
-import { DEFAULT_MAP_ZOOM } from "~/constants"
+import { DEFAULT_MAP_ZOOM } from "../constants"
 
 function DisplayPosition({ map, marker }: { map: Map; marker: Marker | null }) {
   const [position, setPosition] = useState(() => map.getCenter())
@@ -94,7 +94,7 @@ export function HiddenInput({
   position: { lng: number; lat: number }
 }) {
   return (
-    <div style={{width : 0}}>
+    <div style={{ width: 0 }}>
       <input type="hidden" name="xAxis" value={position.lat} />
       <input type="hidden" name="yAxis" value={position.lng} />
     </div>

@@ -1,4 +1,5 @@
 import type { User } from "@prisma/client"
+import { DEFAULT_USER_NAME } from "../constants"
 import { db } from "../utils/db.server"
 
 export async function getUserByPhone({
@@ -26,18 +27,9 @@ export async function createOrUpdateUser({
   gender,
   birthday,
   email,
-  isSuspended,
+  isSuspended,verificationCode,verificationCodeExpiry,credit,
   isVerified,
-}: {
-  phoneNumber: string
-  firstName?: string
-  lastName?: string
-  gender?: boolean
-  birthday?: string | Date
-  email?: string
-  isSuspended?: boolean
-  isVerified?: boolean
-}): Promise<User> {
+}: Partial<User> & {phoneNumber : string}): Promise<User> {
   try {
     let user = await getUserByPhone({ phoneNumber })
 
@@ -52,6 +44,9 @@ export async function createOrUpdateUser({
           gender,
           birthday,
           email,
+          verificationCode,
+          verificationCodeExpiry,
+          credit,
           isSuspended,
           isVerified,
         },
@@ -63,11 +58,14 @@ export async function createOrUpdateUser({
     const newUser = await db.user.create({
       data: {
         phoneNumber,
-        firstName,
+        firstName : firstName ?? DEFAULT_USER_NAME,
         lastName,
         gender,
         birthday,
         email,
+        verificationCode,
+        verificationCodeExpiry,
+        credit,
         isSuspended,
         isVerified,
       },

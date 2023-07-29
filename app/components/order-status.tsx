@@ -1,5 +1,5 @@
 import { Order } from "@prisma/client"
-import { getOrderStatus } from "~/queries.server/db.utils.query"
+import { getOrderStatus } from "../queries.server/db.utils.query"
 import { Timer } from "./timer"
 
 type ComponentProps = { order: Order }
@@ -17,7 +17,13 @@ export function OrderStatus({ order }: ComponentProps) {
       ) : status === "inCart" ? (
         <p className="_success">در سبد قرار داده شده</p>
       ) : status === "shipped" ? (
-        <p className="_error">ارسال شده <Timer initialMinute={order.estimatedShipmentTime} initialSeconds={0}></Timer></p>
+        <p className="_error">
+          ارسال شده{" "}
+          <Timer
+            initialMinute={order.estimatedShipmentTime}
+            initialSeconds={0}
+          ></Timer>
+        </p>
       ) : status === "taken" ? (
         <p className="_success">ثبت شده و در انتظار تایید است</p>
       ) : status === "inProgress" ? (

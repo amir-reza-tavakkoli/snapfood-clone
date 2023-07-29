@@ -1,6 +1,6 @@
 import { Outlet, useLoaderData } from "@remix-run/react"
 
-import { redirect } from "@remix-run/node"
+import { redirect, V2_MetaFunction } from "@remix-run/node"
 
 import type { LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/node"
 
@@ -11,16 +11,17 @@ import {
   getStoresByCity,
   getStoresWithDiscount,
   getStoresWithFreeShipment,
-} from "~/queries.server/store.query.server"
+} from "../queries.server/store.query.server"
 
-import { AllowedStoresFeatures, StoreWithTags } from "~/constants"
+import { AllowedStoresFeatures, StoreWithTags } from "../constants"
 
-import { validateCity } from "~/utils/validate.server"
+import { validateCity } from "../utils/validate.server"
 
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import storeCardCss from "./../components/styles/store-card.css"
-import { StoreContainer } from "~/components/store-container"
+import { StoreContainer } from "../components/store-container"
+import { routes } from "../routes"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeCardCss },
@@ -33,6 +34,21 @@ type LoaderType = {
   withFreeShipment?: StoreWithTags[]
 }
 
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Stores ${data.cityName ?? ""}`,
+        title: `SnappFood Clone Stores ${data.cityName ?? ""}`,
+      }
+    : { description: "No Store found", title: "No Store" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
 const takeThisMuch = 4
 
 export const loader = async ({
@@ -42,7 +58,7 @@ export const loader = async ({
     let city = params.city
 
     if (!city || city === "") {
-      return redirect("/addresses")
+      return redirect(routes.addresses)
     }
 
     await validateCity({ cityName: city })

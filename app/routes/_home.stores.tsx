@@ -2,24 +2,27 @@ import React from "react"
 
 import { Link, Outlet, useLoaderData } from "@remix-run/react"
 
-import type { LinksFunction, LoaderArgs } from "@remix-run/node"
+import type {
+  LinksFunction,
+  LoaderArgs,
+  V2_MetaFunction,
+} from "@remix-run/node"
 
 import type { Address, ItemCategory } from "@prisma/client"
 
-import { ImageItem } from "~/components/image-item"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { ImageItem } from "../components/image-item"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { getItemCategories } from "~/queries.server/item.query.server"
-import { getUserAddresses } from "~/queries.server/address.query.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
+import { getItemCategories } from "../queries.server/item.query.server"
+import { getUserAddresses } from "../queries.server/address.query.server"
 
-import { useForceAddress } from "~/hooks/forceAddress"
+import { useForceAddress } from "../hooks/forceAddress"
 
-import { requirePhoneNumber } from "~/utils/session.server"
+import { requireValidatedUser } from "../utils/validate.server"
 
-import { requireValidatedUser, validateUser } from "~/utils/validate.server"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+import { routes } from "~/routes"
 
 import imageItemCss from "./../components/styles/image-item.css"
 import pageCss from "./styles/stores-page.css"
@@ -28,6 +31,19 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: imageItemCss },
   { rel: "stylesheet", href: pageCss },
 ]
+
+export const meta: V2_MetaFunction = () => {
+  const { description, title } = {
+    description: `SnappFood Clone Stores`,
+    title: `SnappFood Clone Stores`,
+  }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
 
 type LoaderType = {
   categories: ItemCategory[]
@@ -51,36 +67,38 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
 export default function StoresPage() {
   const { categories, addresses } = useLoaderData() as unknown as LoaderType
 
-  const { citystate } = useForceAddress({ addresses })
+  const { cityState } = useForceAddress({
+    addresses,
+  })
 
   const MemoizedList = React.memo(
     () => (
-      <nav>
+      <ul>
         {categories
           ? categories.map((category, index) => (
-              <Link
-                to={`/stores/${citystate}/all/kind/${category.name}`}
-                key={index}
-              >
-                <ImageItem
-                  image={category.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
-                  title={category.name}
-                ></ImageItem>
-              </Link>
+              <li key={index}>
+                <Link to={routes.storesKind(cityState, category.name)}>
+                  <ImageItem
+                    image={category.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
+                    title={category.name}
+                  ></ImageItem>
+                </Link>
+              </li>
             ))
           : null}
-      </nav>
+      </ul>
     ),
     () => true,
   )
 
   return (
     <>
-      <nav className="_stores-page">
-        <p aria-label="Categories">دسته بندی ها</p>
+      <nav className="stores-page">
+        <h1 aria-label="Categories">دسته بندی ها</h1>
 
         <MemoizedList></MemoizedList>
       </nav>
+
       <Outlet></Outlet>
     </>
   )

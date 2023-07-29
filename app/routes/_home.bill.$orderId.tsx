@@ -4,6 +4,7 @@ import {
   useActionData,
   useLoaderData,
   useRouteError,
+  V2_MetaFunction,
 } from "@remix-run/react"
 import {
   LinksFunction,
@@ -14,8 +15,8 @@ import {
 
 import type { Order, Store, User } from "@prisma/client"
 
-import { CartComp } from "~/components/cart"
-import { Button } from "~/components/button"
+import { CartComp } from "../components/cart"
+import { Button } from "../components/button"
 
 import {
   billOrder,
@@ -24,39 +25,56 @@ import {
   getFullOrderItems,
   getOrder,
   updateOrder,
-} from "~/queries.server/order.query.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
-import { requirePhoneNumber } from "~/utils/session.server"
-import { getStore } from "~/queries.server/store.query.server"
+} from "../queries.server/order.query.server"
+import { getUserByPhone } from "../queries.server/user.query.server"
+import { requirePhoneNumber } from "../utils/session.server"
+import { getStore } from "../queries.server/store.query.server"
 
-import { DEFAULT_CURRENCY } from "~/constants"
+import { DEFAULT_CURRENCY } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
-import pageCss from "./styles/bill-order.css"
+import pageCss from "./styles/bill-page.css"
 import {
   requireValidatedUser,
   validateNumberParam,
   validateOrder,
   validateStore,
   validateUser,
-} from "~/utils/validate.server"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+} from "../utils/validate.server"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+import { routes } from "../routes"
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: pageCss },
   { rel: "stylesheet", href: cartCss },
+  { rel: "stylesheet", href: pageCss },
 ]
+
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Order From Store ${
+          data.store.name ?? ""
+        }`,
+        title: `SnappFood Clone Order From Store ${data.store.name ?? ""}`,
+      }
+    : { description: "No Order found", title: "No Order" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type ActionType = {
+  isUnsuccessful?: boolean
+  error?: Error
+}
 
 export const action = async ({
   request,
   params,
-}: any): Promise<
-  | {
-      isUnsuccessful?: boolean
-      error?: Error
-    }
-  | TypedResponse<never>
-> => {
+}: any): Promise<ActionType | TypedResponse<never>> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
     const orderId = Number(params.orderId)
@@ -90,7 +108,7 @@ export const action = async ({
       : updateOrder({ id: order.id, isBilled: true })
 
     if (isSuccessful) {
-      return redirect(`home/order/${orderId}`)
+      return redirect(routes.order(orderId))
     } else {
       return {
         isUnsuccessful: true,
@@ -106,16 +124,18 @@ export const action = async ({
   }
 }
 
-export const loader = async ({
-  request,
-  params,
-}: LoaderArgs): Promise<{
+type LoaderType = {
   user: User
   order: Order
   price: number
   store: Store
-  items: (FullOrderItem | undefined)[]
-}> => {
+  items: FullOrderItem[]
+}
+
+export const loader = async ({
+  request,
+  params,
+}: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -159,15 +179,9 @@ export const loader = async ({
 export default function BillPage() {
   const { user, order, price, store, items } = useLoaderData<
     typeof loader
-  >() as unknown as {
-    user: User
-    order: Order
-    price: number
-    store: Store
-    items: FullOrderItem[]
-  }
+  >() as unknown as LoaderType
 
-  const actionData = useActionData()
+  const actionData = useActionData() as unknown as ActionType | undefined
 
   return (
     <main className="_bill-page" aria-label="Bill">
@@ -179,25 +193,23 @@ export default function BillPage() {
 
           <p> هزینه سفارش {" " + price + " " + DEFAULT_CURRENCY} </p>
 
-          <Link to="/wallet">افزایش اعتبار</Link>
+          <Link to={routes.wallet}>افزایش اعتبار</Link>
         </div>
       ) : null}
 
-      {store.takesOnlineOrder ? (
-        <div>
-          <CartComp orders={[{ items, order, store }]}></CartComp>
+      <div>
+        <CartComp orders={[{ items, order, store }]}></CartComp>
 
-          <Form method="post">
-            <Button
-              variant="accent"
-              type="submit"
-              disabled={user.credit < price || order.isBilled}
-            >
-              پرداخت سفارش از اعتبار
-            </Button>
-          </Form>
-        </div>
-      ) : null}
+        <Form method="post">
+          <Button
+            variant="accent"
+            type="submit"
+            disabled={user.credit < price || order.isBilled}
+          >
+            پرداخت سفارش از اعتبار
+          </Button>
+        </Form>
+      </div>
 
       {store.takesOfflineOrder ? (
         <div>
@@ -212,13 +224,13 @@ export default function BillPage() {
         </div>
       ) : null}
       <output role="alert" aria-aria-live="assertive">
-        {(actionData && actionData.isSuccessful) || order.isBilled ? (
+        {(actionData && !actionData.isUnsuccessful) || order.isBilled ? (
           <p className="_success" aria-label="success">
             با موفقیت پرداخت شد
           </p>
         ) : undefined}
 
-        {actionData && actionData.isUnSuccessful ? (
+        {actionData && actionData.isUnsuccessful ? (
           <p className="_error" aria-label="error">
             مشکلی پیش آمد {actionData?.error?.message}
           </p>

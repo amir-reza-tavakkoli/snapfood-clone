@@ -1,6 +1,8 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node"
+import { routes } from "../routes"
 
 const sessionSecret = process.env.SESSION_SECRET
+
 if (!sessionSecret) {
   throw new Error("SESSION_SECRET must be set")
 }
@@ -8,14 +10,16 @@ if (!sessionSecret) {
 const authCookieName = "SF_SESSION"
 const phoneCookieName = "phoneNumber"
 
+const oneMonth = 60 * 60 * 24 * 30
+
 const storage = createCookieSessionStorage({
   cookie: {
     name: authCookieName,
     secure: process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
+    path: routes.index,
+    maxAge: oneMonth,
     httpOnly: true,
   },
 })
@@ -47,7 +51,7 @@ export async function requirePhoneNumber(
   if (!phoneNumber || typeof phoneNumber !== "string") {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]])
 
-    throw redirect(`/login?${searchParams}`)
+    throw redirect(routes.login + `?${searchParams}`)
   }
 
   return phoneNumber
@@ -74,7 +78,7 @@ export async function logout(request: Request) {
   session.unset(phoneCookieName)
   session.unset(authCookieName)
 
-  return redirect("/login", {
+  return redirect(routes.login, {
     headers: {
       "Set-Cookie": await storage.destroySession(session),
     },

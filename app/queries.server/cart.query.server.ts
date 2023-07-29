@@ -1,5 +1,5 @@
 import type { Order } from "@prisma/client"
-import { CartCompProps } from "~/components/cart"
+import { CartCompProps } from "../components/cart"
 import { getComment } from "./comment.query"
 
 import { getFullOrderItems, getOrders } from "./order.query.server"

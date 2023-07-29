@@ -1,28 +1,41 @@
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
-import { getCart } from "~/queries.server/cart.query.server"
+import { getCart } from "../queries.server/cart.query.server"
 
-import { Orders } from "~/components/order-summary"
-import type { CartCompProps } from "~/components/cart"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { Orders } from "../components/order-summary"
+import type { CartCompProps } from "../components/cart"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { requireValidatedUser, validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "../utils/validate.server"
 
 import { DEAFULT_DIRECTION } from "./../constants"
 
-import orderCss from "~/components/styles/order-summary.css"
-import ordersPageCss from "./styles/orders-page.css"
+import orderCss from "../components/styles/order-summary.css"
+import pageCss from "./styles/orders-page.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },
-  { rel: "stylesheet", href: ordersPageCss },
+  { rel: "stylesheet", href: pageCss },
 ]
 
-export const loader = async ({
-  request,
-}: LoaderArgs): Promise<CartCompProps | undefined> => {
+export const meta: V2_MetaFunction = () => {
+  const { description, title } = {
+    description: `SnappFood Clone Orders`,
+    title: `SnappFood Clone Orders`,
+  }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type LoaderType = CartCompProps | undefined
+
+export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -35,7 +48,7 @@ export const loader = async ({
 }
 
 export default function OrdersSummaryPage() {
-  const cart = useLoaderData<typeof loader>() as CartCompProps | undefined
+  const cart = useLoaderData<typeof loader>() as unknown as LoaderType
 
   return (
     <main className="_orders-page">

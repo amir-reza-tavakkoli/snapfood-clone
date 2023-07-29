@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { LoaderArgs, LoaderFunction } from "@remix-run/node"
+import { LoaderArgs, LoaderFunction, V2_MetaFunction } from "@remix-run/node"
 
 import {
   Link,
@@ -12,7 +12,7 @@ import {
 
 import { LinksFunction } from "@remix-run/server-runtime"
 
-import { requirePhoneNumber } from "~/utils/session.server"
+import { requirePhoneNumber } from "../utils/session.server"
 import {
   calculateOrder,
   changeOrderItems,
@@ -20,31 +20,34 @@ import {
   createOrder,
   FullOrderItem,
   getFullOrderItems,
-} from "~/queries.server/order.query.server"
-import { getStoreOrderInCart } from "~/queries.server/cart.query.server"
+} from "../queries.server/order.query.server"
+import { getStoreOrderInCart } from "../queries.server/cart.query.server"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
-} from "~/queries.server/store.query.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
-import { getAddressById } from "~/queries.server/address.query.server"
+  getStoreSchedule,
+} from "../queries.server/store.query.server"
+import { getUserByPhone } from "../queries.server/user.query.server"
+import { getAddressById, isAddressInRange } from "../queries.server/address.query.server"
 
-import type { Order, Store, User } from "@prisma/client"
+import type { Order, Store, storeSchedule, User } from "@prisma/client"
 
-import { StoreInfo } from "~/components/store-info"
-import { FoodCard } from "~/components/food-card"
+import { StoreInfo } from "../components/store-info"
+import { FoodCard } from "../components/food-card"
 
-import { DEFAULT_CURRENCY } from "~/constants"
+import { COOKIE_ADDRESS, COOKIE_City, DEFAULT_CURRENCY } from "../constants"
 
 import foodCardCss from "./../components/styles/food-card.css"
 import storeInfoCss from "./../components/styles/store-info.css"
 import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/store-page.css"
-import { categorizeItems } from "~/queries.server/db.utils.query"
-import { OrderComp } from "~/components/order"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
-import { requireValidatedUser } from "~/utils/validate.server"
+import { categorizeItems } from "../queries.server/db.utils.query"
+import { OrderComp } from "../components/order"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+import { requireValidatedUser } from "../utils/validate.server"
+import { routes } from "../routes"
+import { getStoreCurrentSchedule } from "../utils/utils"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeInfoCss },
@@ -53,19 +56,33 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
 ]
 
-export const action = async ({
-  request,
-  params,
-}: any): Promise<{
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Store ${data.store.name ?? ""}`,
+        title: `SnappFood Clone Store ${data.store.name ?? ""}`,
+      }
+    : { description: "No Store found", title: "No Store" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type ActionType = {
   categorizedItems: {
     name: string
     value: FullOrderItem[]
   }[]
   newItems: FullOrderItem[]
   newTotalPrice: number
-  orderItems: (FullOrderItem | undefined)[]
+  orderItems: FullOrderItem[]
   orderInCart: Order
-}> => {
+}
+
+export const action = async ({ request, params }: any): Promise<ActionType> => {
   try {
     const storeId = Number(params.storeId)
 
@@ -98,9 +115,8 @@ export const action = async ({
         isCanceled: false,
         isDelivered: false,
         userPhoneNumber: phoneNumber,
-        estimatedDeliveryTime: 0,
         totalPrice: 0,
-        shipmentPrice: 0
+        shipmentPrice: 0,
       })
     }
 
@@ -142,10 +158,7 @@ export const action = async ({
   }
 }
 
-export const loader: LoaderFunction = async ({
-  request,
-  params,
-}: LoaderArgs): Promise<{
+type LoaderType = {
   user: User
   store: Store
   items: FullOrderItem[]
@@ -155,8 +168,13 @@ export const loader: LoaderFunction = async ({
     name: string
     value: FullOrderItem[]
   }[]
-  orderItems: (FullOrderItem | undefined)[] | undefined
-}> => {
+  orderItems: FullOrderItem[] | undefined
+  schedule: storeSchedule[]
+}
+export const loader: LoaderFunction = async ({
+  request,
+  params,
+}: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -171,8 +189,8 @@ export const loader: LoaderFunction = async ({
       !user.phoneNumber ||
       !user ||
       user.isSuspended
-      ) {
-        throw new Error("خطا")
+    ) {
+      throw new Error("خطا")
     }
 
     let order = await getStoreOrderInCart({
@@ -188,7 +206,6 @@ export const loader: LoaderFunction = async ({
     if (!totalPrice && order) {
       totalPrice = await calculateOrder({ orderId: order.id })
     }
-
 
     if (order && !order.isBilled) {
       items = await getFullStoreOrdersItems({
@@ -206,8 +223,10 @@ export const loader: LoaderFunction = async ({
 
     const categorizedItems = categorizeItems({ items })
 
+    const schedule = await getStoreSchedule({ store })
     return {
       user,
+      schedule,
       store,
       items,
       order,
@@ -221,19 +240,15 @@ export const loader: LoaderFunction = async ({
 }
 
 export default function StorePage() {
-  const { user, store, order, totalPrice, categorizedItems, orderItems } =
-    useLoaderData<typeof loader>() as {
-      user: User
-      store: Store
-      items: FullOrderItem[]
-      order: Order | undefined
-      totalPrice: number
-      categorizedItems: {
-        name: string
-        value: FullOrderItem[]
-      }[]
-      orderItems: FullOrderItem[] | undefined
-    }
+  const {
+    user,
+    schedule,
+    store,
+    order,
+    totalPrice,
+    categorizedItems,
+    orderItems,
+  } = useLoaderData<typeof loader>() as unknown as LoaderType
 
   const navigate = useNavigate()
 
@@ -251,17 +266,15 @@ export default function StorePage() {
   const [totalPriceState, setTotalPriceState] = useState<number>(totalPrice)
 
   const [render, reRender] = useState({})
-  const actionData = useActionData()
+  const actionData = useActionData() as unknown as ActionType
   console.log(address)
+  console.log("store", address)
 
   useEffect(() => {
-    const choosedAddress = localStorage.getItem("addressId")
+    const choosedAddress = localStorage.getItem(COOKIE_ADDRESS)
+    console.log(choosedAddress, "uu", address)
 
-    if (
-      !choosedAddress ||
-      isNaN(Number(choosedAddress)) ||
-      !Number(choosedAddress)
-    ) {
+    if (!choosedAddress || isNaN(Number(choosedAddress))) {
       setTimeout(() => navigate(`/addresses?storeId=${store.id}`), 2000)
       setAddress(-1)
     }
@@ -272,7 +285,7 @@ export default function StorePage() {
   useEffect(() => {
     if (
       actionData &&
-      actionData.totalPrice &&
+      actionData.newTotalPrice &&
       totalPriceState != actionData.newTotalPrice
     )
       setTotalPriceState(actionData.newTotalPrice)
@@ -294,17 +307,19 @@ export default function StorePage() {
     }
   }, [actionData])
 
+  const s = getStoreCurrentSchedule(schedule)
   return (
     <>
-      {address <= -1 ? (
-        <Link to={"/addresses"}>یک آدرس جدید ایجاد کنید</Link>
+      {!address || address <= -1  ? (
+        <Link to={routes.addresses}>یک آدرس جدید ایجاد کنید</Link>
       ) : (
-        <main className="_store-page">
+        <main className={!!s ? "store-page" : "store-page store-colsed"}>
           <StoreInfo
             name={store.name}
             logo={store.avatarUrl ?? ""}
             type={store.storeKindName}
             categories={categorizedItems.map(category => category.name)}
+            isOpen={!!s}
           ></StoreInfo>
 
           <div className="_store-page-items">
@@ -315,7 +330,7 @@ export default function StorePage() {
                 <div>
                   {category.value.map((item: FullOrderItem, index: number) => (
                     <FoodCard
-                      storeId={store.id}
+                      store={store}
                       reRender={reRender}
                       address={address ?? -1}
                       count={item.count ?? 0}
@@ -331,7 +346,7 @@ export default function StorePage() {
                           available: !!item.remainingCount ?? false,
                           vaule: item.price ?? item.basePrice ?? 0,
                           currency: DEFAULT_CURRENCY,
-                          discountPercent : item.discountPercent
+                          discountPercent: item.discountPercent,
                         },
                       ]}
                     ></FoodCard>
@@ -344,7 +359,7 @@ export default function StorePage() {
           {/* <article className="_order_datails_container">
             <p>دریافت در سریعترین زمان</p>
             <p>
-              {store.shipmentPrice.toLocaleString("fa-IR") + DEFAULT_CURRENCY}{" "}
+              {store.shipmentPrice.toLocaleString("fa-IR") + DEFAULT_CURRENCY}
               پیک فروشنده
             </p>
 
@@ -394,12 +409,12 @@ export default function StorePage() {
             ) : undefined}
           </article> */}
           {orderItems && orderItemsState && order && orderState ? (
-              <OrderComp
-
+            <OrderComp
               items={orderItemsState}
               order={orderState}
               store={store}
               totalPrice={totalPriceState}
+              billSection={true}
             ></OrderComp>
           ) : null}
         </main>

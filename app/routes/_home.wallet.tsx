@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Form, useLoaderData } from "@remix-run/react"
+import { Form, useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
 import type {
   ActionArgs,
@@ -8,29 +8,45 @@ import type {
   LoaderArgs,
 } from "@remix-run/server-runtime"
 
-import { requirePhoneNumber } from "~/utils/session.server"
+import { requirePhoneNumber } from "../utils/session.server"
 
-import { getUserByPhone } from "~/queries.server/user.query.server"
+import { getUserByPhone } from "../queries.server/user.query.server"
 
-import { requireValidatedUser, validateUser } from "~/utils/validate.server"
+import { requireValidatedUser, validateUser } from "../utils/validate.server"
 
 import type { User } from "@prisma/client"
 
-import { Button } from "~/components/button"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { Button } from "../components/button"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { DEFAULT_CURRENCY } from "~/constants"
+import { DEFAULT_CURRENCY } from "../constants"
 
-import orderCss from "./../components/styles/order.css"
-import pageCss from "./styles/checkout-page.css"
+
+import pageCss from "./styles/wallet-page.css"
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: orderCss },
   { rel: "stylesheet", href: pageCss },
 ]
 
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Wallet`,
+        title: `SnappFood Clone Wallet`,
+      }
+    : { description: "No Wallet found", title: "No Wallet" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type ActionType = User
+
 // Prepare to redirect user to bank page
-export const action = async ({ request }: ActionArgs) : Promise<User>=> {
+export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
@@ -44,7 +60,9 @@ export const action = async ({ request }: ActionArgs) : Promise<User>=> {
   }
 }
 
-export const loader = async ({ request }: LoaderArgs): Promise<User> => {
+type LoaderType = User
+
+export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -58,12 +76,12 @@ const basePrice = 1000
 const multipliers = [10, 20, 50]
 
 export default function WalletPage() {
-  const user = useLoaderData<typeof loader>()
+  const user = useLoaderData<typeof loader>() as unknown as LoaderType
 
   const [priceToPay, setPriceToPay] = useState(basePrice)
 
   return (
-    <main className="_wallet-page">
+    <main className="wallet-page">
       <h1>افزایش اعتبار</h1>
       <dl>
         <dt>موجودی فعلی</dt>
@@ -75,6 +93,7 @@ export default function WalletPage() {
         <dd>{DEFAULT_CURRENCY}</dd>
 
         <dt className="nonvisual">Pay</dt>
+
         <dd>
           <Form>
             {multipliers
@@ -85,53 +104,56 @@ export default function WalletPage() {
                     aria-label={`Set price to ${multiply * basePrice}`}
                   >
                     {(multiply * basePrice).toLocaleString("fa-IR") +
+                      " " +
                       DEFAULT_CURRENCY}
                   </Button>
                 ))
               : null}
 
-            <Button
-              aria-label="add"
-              type="button"
-              onClick={() => setPriceToPay(prev => prev + basePrice)}
-            >
-              +
-            </Button>
+            <div>
+              <Button
+                aria-label="add"
+                type="button"
+                onClick={() => setPriceToPay(prev => prev + basePrice)}
+              >
+                +
+              </Button>
 
-            <label htmlFor="price" className="nonvisual">
-              Set price to pay
-            </label>
+              <label htmlFor="price" className="nonvisual">
+                Set price to pay
+              </label>
 
-            <input
-              id="price"
-              type="text"
-              required={true}
-              autoComplete="on"
-              value={priceToPay}
-              onChange={e => {
-                if (!isNaN(Number(e.target.value))) {
-                  setPriceToPay(Number(e.target.value))
-                }
-              }}
-            />
+              <input
+                id="price"
+                type="text"
+                required={true}
+                autoComplete="on"
+                value={priceToPay}
+                onChange={e => {
+                  if (!isNaN(Number(e.target.value))) {
+                    setPriceToPay(Number(e.target.value))
+                  }
+                }}
+              />
 
-            <Button
-              aria-label="minus"
-              type="button"
-              onClick={() => {
-                if (priceToPay <= basePrice) {
-                  return
-                }
-                setPriceToPay(prev => prev - basePrice)
-              }}
-            >
-              -
-            </Button>
-
+              <Button
+                aria-label="minus"
+                type="button"
+                onClick={() => {
+                  if (priceToPay <= basePrice) {
+                    return
+                  }
+                  setPriceToPay(prev => prev - basePrice)
+                }}
+              >
+                -
+              </Button>
+            </div>
+            
             <Button
               aria-label="pay"
-              type="button"
               disabled={priceToPay < basePrice}
+              variant="accent"
             >
               پرداخت
             </Button>

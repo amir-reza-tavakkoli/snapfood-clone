@@ -2,7 +2,12 @@ import { Link } from "@remix-run/react"
 
 import { Icon } from "./icon"
 import { VendorCard } from "./store-card"
-import { DEFAULT_CURRENCY, DEFAULT_DELIVERY_METHOD, DEFAULT_IMG_PLACEHOLDER, type StoreWithTags } from "~/constants"
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_DELIVERY_METHOD,
+  DEFAULT_IMG_PLACEHOLDER,
+  type StoreWithTags,
+} from "../constants"
 
 type StoreContainerProps = {
   stores?: StoreWithTags[] | null
@@ -23,7 +28,7 @@ export function StoreContainer({
         <p>{title}</p>
         {moreHref ? (
           <Link to={moreHref}>
-            مشاهده همه{<Icon name="flash" color="action"></Icon>}{" "}
+            مشاهده همه{<Icon name="flash" color="action"></Icon>}
           </Link>
         ) : undefined}
       </div>
@@ -36,7 +41,7 @@ export function StoreContainer({
                   image={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                   name={store.name}
                   type={store.storeKindName}
-                  ratingValue={store.score }
+                  ratingValue={store.score}
                   ratingCount={store.scoreCount ?? "جدید"}
                   dir="rtl"
                   tags={store.tags ?? ["فست فود"]}

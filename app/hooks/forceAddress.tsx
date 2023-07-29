@@ -4,8 +4,8 @@ import { useLocation, useNavigate } from "@remix-run/react"
 
 import type { Address } from "@prisma/client"
 
-import { COOKIE_City, DEFAULT_CITY } from "~/constants"
-import { routes } from "~/routes"
+import { COOKIE_ADDRESS, COOKIE_City, DEFAULT_CITY } from "../constants"
+import { routes } from "../routes"
 
 export function useForceAddress({
   addresses,
@@ -13,22 +13,6 @@ export function useForceAddress({
   addresses: Address[] | null
 }) {
   const delay = 2000 // ms
-
-  const [addressState, setAddressState] = useState<Address | null>()
-  const [cityState, setCityState] = useState(DEFAULT_CITY)
-
-  let location = useLocation()
-
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const choosedCity = localStorage.getItem(COOKIE_City)
-    console.log("xx", choosedCity, cityState)
-    if (choosedCity && cityState !== choosedCity) setCityState(choosedCity)
-    console.log("yy", choosedCity, cityState)
-
-  })
-
 
   const allowedRoutes = [
     routes.index,
@@ -44,12 +28,27 @@ export function useForceAddress({
     routes.ordersSummary,
     routes.newAddress,
   ]
+
+  const [addressState, setAddressState] = useState<Address | null>()
+  const [cityState, setCityState] = useState(DEFAULT_CITY)
+
+  let location = useLocation()
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const choosedCity = localStorage.getItem(COOKIE_City)
+    if (choosedCity && cityState !== choosedCity) setCityState(choosedCity)
+    // console.log("yy", choosedCity, cityState)
+  })
+
   useEffect(() => {
     if (allowedRoutes.includes(location.pathname)) {
       return
     }
 
-    const choosedAddressId = Number(localStorage.getItem(COOKIE_City))
+    const choosedAddressId = Number(localStorage.getItem(COOKIE_ADDRESS))
+    console.log("xx", choosedAddressId)
 
     if (!choosedAddressId || !addresses || addresses.length === 0) {
       setTimeout(() => navigate(routes.addresses), delay)

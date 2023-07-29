@@ -4,9 +4,9 @@ import { Link } from "@remix-run/react"
 
 import type { Comment, Order, Store } from "@prisma/client"
 
-import type { FullOrderItem } from "~/queries.server/order.query.server"
+import type { FullOrderItem } from "../queries.server/order.query.server"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import { DEFAULT_CURRENCY, DEFAULT_IMG_PLACEHOLDER } from "./../constants"
 
@@ -18,6 +18,7 @@ export type CartCompProps = {
   dir?: "rtl" | "lrt"
   comment?: Comment | null
   commentSection?: boolean
+  billSection?: boolean
 }
 
 export const OrderComp = ({
@@ -28,13 +29,13 @@ export const OrderComp = ({
   totalPrice,
   comment = null,
   commentSection = false,
+  billSection = false,
 }: CartCompProps) => {
   const [newTotalPrice, setNewTotalPrice] = useState(0)
   const [totalDiscount, setTotalDiscount] = useState(0)
   const [finalPrice, setFinalPrice] = useState(totalPrice ?? 0)
 
   useEffect(() => {
-
     let tempPrice = items.reduce(
       (prev, item) => (item.price ?? 0) * (item.count ?? 0) + prev,
       0,
@@ -168,6 +169,16 @@ export const OrderComp = ({
             {finalPrice.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
+
+        {order &&
+        store.isVerified &&
+        store.isAvailible &&
+        billSection &&
+        newTotalPrice > store.minOrderPrice ? (
+          <li>
+            <Link to={routes.checkout(order.id)}> ثبت سفارش</Link>
+          </li>
+        ) : null}
       </ul>
     </Link>
   )

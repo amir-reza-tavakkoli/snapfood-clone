@@ -1,32 +1,52 @@
-import { Link, useLoaderData, useRouteError } from "@remix-run/react"
+import {
+  Link,
+  useLoaderData,
+  useRouteError,
+  V2_MetaFunction,
+} from "@remix-run/react"
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
-// import orderCss from "~/components/styles/order-summary.css"
-import ordersPageCss from "./styles/store-info.css"
+// import orderCss from "../components/styles/order-summary.css"
+import pageCss from "./styles/store-info-page.css"
 import {
   requireValidatedUser,
   validateNumberParam,
   validateUser,
-} from "~/utils/validate.server"
+} from "../utils/validate.server"
 import {
   getStore,
   getStoreCategories,
   getStoreSchedule,
   getStoresKinds,
-} from "~/queries.server/store.query.server"
+} from "../queries.server/store.query.server"
 import { Address, Store, storeSchedule } from "@prisma/client"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
-import { getFullAddress } from "~/utils/utils"
-import { getAddressById } from "~/queries.server/address.query.server"
-import { Icon } from "~/components/icon"
-import { getStoreComments, StoreComment } from "~/queries.server/comment.query"
-import { getFormattedDate } from "~/utils/utils"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
+import { getFullAddress } from "../utils/utils"
+import { getAddressById } from "../queries.server/address.query.server"
+import { Icon } from "../components/icon"
+import { getStoreComments, StoreComment } from "../queries.server/comment.query"
+import { getFormattedDate } from "../utils/utils"
 
 export const links: LinksFunction = () => [
   // { rel: "stylesheet", href: orderCss },
-  { rel: "stylesheet", href: ordersPageCss },
+  { rel: "stylesheet", href: pageCss },
 ]
+
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Store Info ${data.store.name ?? ""}`,
+        title: `SnappFood Clone Store Info ${data.store.name ?? ""}`,
+      }
+    : { description: "No Store found", title: "No Store" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
 
 type LoaderType = {
   schedule: storeSchedule[]
@@ -120,7 +140,7 @@ export default function StoreInfoPage() {
           <Icon name="pay"></Icon>
           <dd>
             {store.takesOfflineOrder ? "آفلاین" : null}
-            {store.takesOnlineOrder ? " ,آنلاین" : null}
+            ,آنلاین
           </dd>
         </span>
         <span>
@@ -133,7 +153,6 @@ export default function StoreInfoPage() {
       <div>
         <p className="nonvisual">امتیازات فروشگاه</p>
         <span>
-
           <span className="_store-score">
             {store.score.toLocaleString("fa")}
             <Icon name="star"></Icon>
@@ -141,8 +160,7 @@ export default function StoreInfoPage() {
         </span>
 
         <span>
-          {" "}
-          <span> امتیاز </span>{" "}
+          <span> امتیاز </span>
           <span>
             از مجموع
             <span> {store.scoreCount.toLocaleString("fa")} </span>
@@ -165,9 +183,8 @@ export default function StoreInfoPage() {
               <div>
                 <span className="_name"> {comment?.user?.firstName}</span>
                 <span className="_score">
-                  {" "}
-                  {comment?.comment?.score.toLocaleString("fa")}{" "}
-                  <Icon name="star"></Icon>{" "}
+                  {comment?.comment?.score.toLocaleString("fa")}
+                  <Icon name="star"></Icon>
                 </span>
                 <time dateTime={comment.order.billDate.toString()}>
                   {/* {comment.order.billDate
@@ -177,7 +194,6 @@ export default function StoreInfoPage() {
               </div>
               <div>
                 <span className="_description">
-                  {" "}
                   {comment.comment.description}
                 </span>
                 <ul>
@@ -185,7 +201,6 @@ export default function StoreInfoPage() {
                     ? comment.items.map((item, index) =>
                         item ? (
                           <li className="_item" key={index}>
-                            {" "}
                             {item?.name}
                           </li>
                         ) : null,

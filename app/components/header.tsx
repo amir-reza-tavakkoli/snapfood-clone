@@ -18,7 +18,7 @@ import {
   VENDOR_NAME,
   VENDOR_NAME_ENG,
 } from "../constants"
-
+import { useSearch } from "~/hooks/search"
 
 type HeaderProps = {
   address?: Address | null
@@ -35,20 +35,9 @@ export const Header = ({
 }: HeaderProps) => {
   const [searchValue, setSearchValue] = useState("")
 
-  const [searchData, setSearchData] = useState<SearchType>()
-
-  useEffect(() => {
-    async function fetchData() {
-      if (searchValue == "") return
-      const data = await fetch(routes.search + `?search=${searchValue}`)
-
-      const jsonData = (await data.json()) as unknown as SearchType
-
-      setSearchData(jsonData)
-    }
-
-    fetchData()
-  }, [searchValue])
+  const { searchData } = useSearch({
+    searchValue,
+  })
 
   return (
     <header className="header" dir={dir}>
@@ -97,14 +86,16 @@ export const Header = ({
           <span className="nonvisual">Submit</span>
         </Button>
 
+        <Link to={routes.searchPage}>
         <Button
           className="_backup-button"
           type="button"
           icon={{ name: "search", color: "faded" }}
           role="presentation"
         >
-          <span className="nonvisual">Search</span>
+            <span className="nonvisual">Search</span>
         </Button>
+          </Link>
 
         <div role="presentation"></div>
       </Form>
@@ -139,8 +130,8 @@ export const Header = ({
             aria-label="Close"
           >
             <Icon name="multiply"></Icon>
-            </Button>
-            
+          </Button>
+
           {searchData.stores && searchData.stores.length > 0 ? (
             <p>فروشگاه ها</p>
           ) : null}

@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react"
 
 import { Button } from "./button"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 import { CartCompProps } from "./cart"
 
 type OrderProps = CartCompProps
@@ -42,14 +42,18 @@ export const Orders = ({ orders, dir }: OrderProps) => {
                     <span className="_space">&nbsp;</span>
                   </time>
                 </div>
-            </div>
+              </div>
 
               <div className="_comment" aria-label="Comment">
-              {!order.comment ? <p>
-                <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
+                {!order.comment ? (
+                  <p>
+                    <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
 
-                <Link to={`/comment/${order.order.id}`}>ثبت نظر</Link>
-              </p> : <span>نظر شما با موفقیت ثبت شد</span>}
+                    <Link to={`/comment/${order.order.id}`}>ثبت نظر</Link>
+                  </p>
+                ) : (
+                  <span>نظر شما با موفقیت ثبت شد</span>
+                )}
               </div>
               <span className="_buttons">
                 <Link to={`/order/${order.order.id}`}>

@@ -11,7 +11,7 @@ import {
 
 import { LoginFieldErrors } from "../routes/_home.login"
 
-import { AllowedStoresFeatures } from "../constants"
+import { AllowedStoresFeatures, VERIFICATION_CODE_EXPIRY_MINS } from "../constants"
 
 
 
@@ -36,8 +36,7 @@ export function generateVerificationCode(figures: number) {
 }
 
 export function generateVerificationExpiry(mins: number): Date {
-  const defaultMinutes = 4
-  mins = mins ?? defaultMinutes
+  mins = mins ?? VERIFICATION_CODE_EXPIRY_MINS
 
   return new Date(
     new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + mins),

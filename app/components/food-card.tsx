@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import { Form, Link } from "@remix-run/react"
 
 import { Button } from "./button"
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+import { COOKIE_City, DEFAULT_IMG_PLACEHOLDER } from "../constants"
+import { Store } from "@prisma/client"
 
 type FoodCardProps = {
   name: string
@@ -23,7 +24,7 @@ type FoodCardProps = {
   id: number
   address: number
   reRender: React.Dispatch<React.SetStateAction<{}>>
-  storeId: number
+  store: Store
 }
 
 export const FoodCard = ({
@@ -38,10 +39,21 @@ export const FoodCard = ({
   address,
   id,
   reRender,
-  storeId,
+  store,
 }: FoodCardProps) => {
   const [addressState, setAddressstate] = useState(address)
   console.log(address)
+  const [cityName, setCityName] = useState("")
+
+  useEffect(() => {
+    const choosedCity = localStorage.getItem(COOKIE_City)
+    if (!choosedCity) {
+      setCityName("ddd")
+      return
+    }
+    if (choosedCity !== cityName) setCityName(choosedCity)
+  })
+  console.log(cityName, "ppppppp")
 
   useEffect(() => {
     reRender({})
@@ -50,7 +62,7 @@ export const FoodCard = ({
   return (
     <dl className="food-card">
       <div>
-        <Link to={`/item/${id}/store/${storeId}`}>
+        <Link to={`/item/${id}/store/${store.id}`}>
           <dt className="nonvisual">Item</dt>
           <dl className="_identity">
             <dt className="nonvisual">Name</dt>
@@ -89,12 +101,14 @@ export const FoodCard = ({
                       <>
                         <dt className="nonvisual">Value</dt>
                         <dd aria-label="Before discount">
-                          <del>{item.vaule}</del>{" "}
+                          <del>{item.vaule}</del>
                         </dd>
                         <dt className="nonvisual" aria-label="After discount">
                           Value
                         </dt>
-                        <dd>{(item.vaule * (100 - item.discountPercent)) / 100}</dd>{" "}
+                        <dd>
+                          {(item.vaule * (100 - item.discountPercent)) / 100}
+                        </dd>
                       </>
                     ) : (
                       <>
@@ -120,7 +134,11 @@ export const FoodCard = ({
                   <input type="hidden" name="address" value={address} />
                   <Button
                     type="submit"
-                    disabled={remainingCount === 0 || !address}
+                    disabled={
+                      remainingCount === 0 ||
+                      !address ||
+                      cityName != store.cityName
+                    }
                     onClick={() => {
                       reRender({})
                     }}
@@ -134,7 +152,9 @@ export const FoodCard = ({
                   <input type="hidden" name="job" value="remove" />
                   <input type="hidden" name="address" value={address} />
 
-                  {!count ? undefined : <Button type="submit"> - </Button>}
+                  {!count || cityName != store.cityName ? undefined : (
+                    <Button type="submit"> - </Button>
+                  )}
                 </Form>
               </>
             ) : null}

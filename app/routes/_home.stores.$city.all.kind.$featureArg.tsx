@@ -1,23 +1,27 @@
 import { useLoaderData } from "@remix-run/react"
 
-import { redirect } from "@remix-run/node"
+import { redirect, V2_MetaFunction } from "@remix-run/node"
 
 import type { LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/node"
 
 import type { Store } from "@prisma/client"
 
-import { StoreContainer } from "~/components/store-container"
+import { StoreContainer } from "../components/store-container"
 
-import { getStoreCategories, getStoresByCity } from "~/queries.server/store.query.server"
+import {
+  getStoreCategories,
+  getStoresByCity,
+} from "../queries.server/store.query.server"
 
-import { requireValidatedUser, validateCity } from "~/utils/validate.server"
+import { requireValidatedUser, validateCity } from "../utils/validate.server"
 
-import { features } from "~/utils/utils.server"
+import { features } from "../utils/utils.server"
 
-import { AllowedStoresFeatures, StoreWithTags } from "~/constants"
+import { AllowedStoresFeatures, StoreWithTags } from "../constants"
 
 import storeCardCss from "./../components/styles/store-card.css"
-import pageCss from "./styles/stores-all.css"
+import pageCss from "./styles/stores-all-page.css"
+import { routes } from "../routes"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeCardCss },
@@ -30,8 +34,24 @@ type LoaderType = {
   stores: StoreWithTags[] | null
 }
 
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Stores ${data.title ?? ""}`,
+        title: `SnappFood Clone Stores ${data.title ?? ""}`,
+      }
+    : { description: "No Store found", title: "No Store" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
 export const loader = async ({
-  params,request
+  params,
+  request,
 }: LoaderArgs): Promise<LoaderType | TypedResponse<never>> => {
   try {
     const user = await requireValidatedUser(request)
@@ -39,7 +59,7 @@ export const loader = async ({
     let city = params.city
 
     if (!city || city === "") {
-      return redirect("/addresses")
+      return redirect(routes.addresses)
     }
 
     city = await validateCity({ cityName: city })
@@ -69,7 +89,6 @@ export const loader = async ({
         return { ...store, tags }
       }),
     )
-
 
     return {
       name: featureObject.name,

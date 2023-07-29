@@ -1,4 +1,4 @@
-import { db } from "~/utils/db.server"
+import { db } from "../utils/db.server"
 import { getStore } from "./store.query.server"
 
 type SearchParams = { param: string; takeThisMuch?: number }

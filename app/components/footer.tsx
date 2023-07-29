@@ -1,10 +1,10 @@
 import type { ComponentProps } from "react"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import { Icon } from "./icon"
 
-import { VENDOR_NAME, VENDOR_NAME_ENG } from "~/constants"
+import { VENDOR_NAME, VENDOR_NAME_ENG } from "../constants"
 
 type Reference = {
   name?: string

@@ -330,26 +330,36 @@ export async function getStoresWithFreeShipment({
   }
 }
 
-export async function updateStoreScore({
-  store,
-  comment,
-}: {
-  store: Store
-  comment: Comment
-}) {
+// export async function updateStoreScore({
+//   store,
+//   comment,
+// }: {
+//   store: Store
+//   comment: Comment
+// }) {
+//   try {
+//     const newScore =
+//       (store.score * store.scoreCount + comment.score) / (store.scoreCount + 1)
+
+//     const updatedStore = await db.store.update({
+//       where: { id: store.id },
+//       data: {
+//         score: newScore,
+//         scoreCount: store.scoreCount + 1,
+//       },
+//     })
+
+//     return updatedStore
+//   } catch (error) {
+//     throw error
+//   }
+// }
+
+export async function getStoreById({ storeId }: {
+  storeId: number}) {
   try {
-    const newScore =
-      (store.score * store.scoreCount + comment.score) / (store.scoreCount + 1)
-
-    const updatedStore = await db.store.update({
-      where: { id: store.id },
-      data: {
-        score: newScore,
-        scoreCount: store.scoreCount + 1,
-      },
-    })
-
-    return updatedStore
+    const store = await db.store.findUnique({ where: { id: storeId } })
+    return store
   } catch (error) {
     throw error
   }

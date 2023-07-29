@@ -5,6 +5,7 @@ import {
   useActionData,
   useLoaderData,
   useRouteError,
+  V2_MetaFunction,
 } from "@remix-run/react"
 
 import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
@@ -13,9 +14,9 @@ import {
   getAddressById,
   getCities,
   updateAddress,
-} from "~/queries.server/address.query.server"
-import { requirePhoneNumber } from "~/utils/session.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
+} from "../queries.server/address.query.server"
+import { requirePhoneNumber } from "../utils/session.server"
+import { getUserByPhone } from "../queries.server/user.query.server"
 import {
   DEAFULT_DIRECTION,
   DEFAULT_CITY,
@@ -26,28 +27,41 @@ import {
 import { ClientOnly } from "../client.map"
 import { MapComponent } from "../components/map.client"
 
-import { Button } from "~/components/button"
-import addressPageCss from "./styles/address-page.css"
-import { requireValidatedUser, validateUser } from "~/utils/validate.server"
+import { Button } from "../components/button"
+import pageCss from "./styles/address-page.css"
+import { requireValidatedUser, validateUser } from "../utils/validate.server"
 
 import type { LatLngTuple, Map } from "leaflet"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: addressPageCss },
+  { rel: "stylesheet", href: pageCss },
   {
     rel: "stylesheet",
     href: "https://unpkg.com/leaflet@1.8.0/dist/leaflet.css",
   },
 ]
 
-export const action = async ({
-  request,
-}: any): Promise<{
+export const meta: V2_MetaFunction = () => {
+  const { description, title } = {
+    description: "SnappFood Clone Address",
+    title: "SnappFood Clone Address",
+  }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type ActionType = {
   isSuccessful?: boolean
   isUnsuccessful?: boolean
   reason?: string
-}> => {
+}
+
+export const action = async ({ request }: any): Promise<ActionType> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
@@ -116,13 +130,15 @@ export const action = async ({
   }
 }
 
+type LoaderType = {
+  cities: City[]
+  address: Address
+}
+
 export const loader = async ({
   params,
   request,
-}: LoaderArgs): Promise<{
-  cities: City[]
-  address: Address
-}> => {
+}: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -184,9 +200,11 @@ export const loader = async ({
 }
 
 export default function AddressPage() {
-  const { address, cities } = useLoaderData<typeof loader>()
+  const { address, cities } = useLoaderData<
+    typeof loader
+  >() as unknown as LoaderType
 
-  const result = useActionData()
+  const result = useActionData() as unknown as ActionType | undefined
 
   const [addressState, setAddressState] = useState(address.address)
   const [title, setTitle] = useState(address.title)

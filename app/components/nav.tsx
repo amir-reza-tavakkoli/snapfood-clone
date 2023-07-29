@@ -1,4 +1,4 @@
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
 export type item = {
   name: string

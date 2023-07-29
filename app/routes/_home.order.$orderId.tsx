@@ -1,16 +1,16 @@
 import type { Order, Store, Comment } from "@prisma/client"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
-import type { FullOrderItem } from "~/queries.server/order.query.server"
+import type { FullOrderItem } from "../queries.server/order.query.server"
 import {
   getFullOrderItems,
   getOrder,
-} from "~/queries.server/order.query.server"
+} from "../queries.server/order.query.server"
 
-import { OrderComp } from "~/components/order"
+import { OrderComp } from "../components/order"
 
-import { getStore } from "~/queries.server/store.query.server"
+import { getStore } from "../queries.server/store.query.server"
 
 import {
   requireValidatedUser,
@@ -18,18 +18,35 @@ import {
   validateNumberParam,
   validateOrder,
   validateStore,
-} from "~/utils/validate.server"
+} from "../utils/validate.server"
 
-import { getComment } from "~/queries.server/comment.query"
+import { getComment } from "../queries.server/comment.query"
 
-import orderCss from "~/components/styles/order.css"
-import ordersPageCss from "./styles/order-page.css"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import orderCss from "../components/styles/order.css"
+import pageCss from "./styles/order-page.css"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },
-  { rel: "stylesheet", href: ordersPageCss },
+  { rel: "stylesheet", href: pageCss },
 ]
+
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Order From Store ${
+          data.store.name ?? ""
+        }`,
+        title: `SnappFood Clone Order From Store ${data.store.name ?? ""}`,
+      }
+    : { description: "No Order found", title: "No Order" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
 
 type LoaderType = {
   order: Order
@@ -51,7 +68,7 @@ export const loader = async ({
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber : user.phoneNumber })
+    order = validateOrder({ order, phoneNumber: user.phoneNumber })
 
     let store = await getStore({ storeId: order.storeId })
 

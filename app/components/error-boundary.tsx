@@ -1,10 +1,6 @@
-import {
-  Link,
-  useNavigate,
-  useRouteError,
-} from "@remix-run/react"
+import { Link, useNavigate, useRouteError } from "@remix-run/react"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import { Icon } from "./icon"
 
@@ -30,7 +26,7 @@ export function GlobalErrorBoundary() {
       {errorStack ? <p>{errorStack}</p> : null}
 
       <Link to={routes.index}>
-        <Icon name="flash" color="text"></Icon> بازگشت به خانه{" "}
+        <Icon name="flash" color="text"></Icon> بازگشت به خانه
       </Link>
 
       <button type="button" onClick={() => navigate(".", { replace: true })}>

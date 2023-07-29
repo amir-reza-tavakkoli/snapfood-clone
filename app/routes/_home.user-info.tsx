@@ -1,6 +1,11 @@
 import { useState } from "react"
 
-import { useActionData, useLoaderData, Form } from "@remix-run/react"
+import {
+  useActionData,
+  useLoaderData,
+  Form,
+  V2_MetaFunction,
+} from "@remix-run/react"
 
 import type {
   ActionArgs,
@@ -12,28 +17,51 @@ import {
   createOrUpdateUser,
   getUserByEmail,
   getUserByPhone,
-} from "~/queries.server/user.query.server"
+} from "../queries.server/user.query.server"
 
 import type { User } from "@prisma/client"
 
-import { Button } from "~/components/button"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
+import { Button } from "../components/button"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { DEAFULT_DIRECTION } from "~/constants"
+import {
+  DEAFULT_DIRECTION,
+  MAX_EMAIL_LENGTH,
+  MAX_NAME_LENGTH,
+  MIN_EMAIL_LENGTH,
+  MIN_NAME_LENGTH,
+} from "../constants"
 
 import {
   checkPhoneNumber,
   requireValidatedUser,
   validateUser,
-} from "~/utils/validate.server"
+} from "../utils/validate.server"
+
+import { evaluateUser } from "~/queries.server/evaluate.server"
 
 import pageCss from "./styles/user-page.css"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
 
-export const action = async ({
-  request,
-}: ActionArgs): Promise<{ successful?: boolean; unsuccessful?: boolean }> => {
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone User Info`,
+        title: `SnappFood Clone User Info`,
+      }
+    : { description: "No User found", title: "No User" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type ActionType = { successful?: boolean; unsuccessful?: boolean }
+
+export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
     const form = await request.formData()
 
@@ -43,14 +71,13 @@ export const action = async ({
     const gender = form.get("gender")
     const birthday = form.get("birthday")
     const email = form.get("email")
-    console.log(birthday)
 
     if (
       !phoneNumber ||
       typeof phoneNumber !== "string" ||
       checkPhoneNumber(phoneNumber)
     ) {
-      throw new Error("شماره تلفن اشتباه است")
+      throw new Response("شماره تلفن اشتباه است", { status: 404 })
     }
 
     if (
@@ -61,6 +88,10 @@ export const action = async ({
       (gender && typeof gender !== "string")
     ) {
       throw new Response("فرمت ورودی اشتباه است.", { status: 400 })
+    }
+
+    if (gender && Number(gender) !== 0 && Number(gender) !== 1) {
+      throw new Response("جنسیت وارد شده صحیح نیست", { status: 404 })
     }
 
     const oldUser = await getUserByPhone({ phoneNumber })
@@ -75,12 +106,24 @@ export const action = async ({
       }
     }
 
+    evaluateUser({ firstName, email, lastName })
+
+    if (birthday) {
+      try {
+        new Date(birthday)
+      } catch (error) {
+        throw new Response("فرمت تاریخ تولد وارد شده اشتباه است", {
+          status: 404,
+        })
+      }
+    }
+
     const user = await createOrUpdateUser({
       phoneNumber,
       firstName: firstName ?? undefined,
       lastName: lastName ?? undefined,
       gender: Boolean(Number(gender)) ?? undefined,
-      birthday: birthday ?  new Date(birthday) :  undefined,
+      birthday: birthday ? new Date(birthday) : undefined,
       email: email ?? undefined,
     })
 
@@ -94,7 +137,9 @@ export const action = async ({
   }
 }
 
-export const loader = async ({ request }: LoaderArgs): Promise<User> => {
+type LoaderType = User
+
+export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -105,14 +150,16 @@ export const loader = async ({ request }: LoaderArgs): Promise<User> => {
 }
 
 export default function UserInfoPage() {
-  const user = useLoaderData<typeof loader>()
+  const user = useLoaderData<typeof loader>() as unknown as LoaderType
 
-  const actionData = useActionData()
+  const actionData = useActionData() as unknown as ActionType | undefined
 
   const [firstName, setFirstName] = useState(user.firstName)
   const [lastName, setLastName] = useState(user.lastName)
   const [gender, setGender] = useState(user.gender)
-  const [birthday, setBirthday] = useState(user.birthday?.split("T")[0])
+  const [birthday, setBirthday] = useState(
+    user.birthday?.toString().split("T")[0],
+  )
   const [email, setEmail] = useState(user.email)
 
   return (
@@ -150,11 +197,13 @@ export default function UserInfoPage() {
             type="text"
             name="firstName"
             id="firstName"
+            minLength={MIN_NAME_LENGTH}
+            maxLength={MAX_NAME_LENGTH}
             value={firstName ?? undefined}
             onChange={e => {
               if (e.target.value) {
                 setFirstName(e.target.value)
-              }
+              } else setFirstName("")
             }}
           />
         </div>
@@ -163,15 +212,19 @@ export default function UserInfoPage() {
           <label htmlFor="lastName"> نام خانوادگی</label>
 
           <input
-            placeholder="..."
+            placeholder="فامیلی"
             autoComplete="family-name"
             type="text"
             name="lastName"
+            minLength={MIN_NAME_LENGTH}
+            maxLength={MAX_NAME_LENGTH}
             id="lastName"
             value={lastName ?? undefined}
             onChange={e => {
               if (e.target.value) {
                 setLastName(e.target.value)
+              } else {
+                setLastName("")
               }
             }}
           />
@@ -207,6 +260,8 @@ export default function UserInfoPage() {
             placeholder="abc@mail.com"
             type="email"
             autoComplete="email"
+            minLength={MIN_EMAIL_LENGTH}
+            maxLength={MAX_EMAIL_LENGTH}
             inputMode="email"
             name="email"
             id="email"
@@ -214,6 +269,8 @@ export default function UserInfoPage() {
             onChange={e => {
               if (e.target.value) {
                 setEmail(e.target.value)
+              } else {
+                setEmail("")
               }
             }}
           />

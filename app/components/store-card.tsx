@@ -39,7 +39,7 @@ export const VendorCard = ({
       {type ? (
         <>
           <dt className="nonvisual">Type</dt>
-          <dd className="nonvisual">{type}</dd>{" "}
+          <dd className="nonvisual">{type}</dd>
         </>
       ) : null}
 
@@ -91,7 +91,7 @@ export const VendorCard = ({
               {ratingValue ? (
                 <>
                   <dt className="nonvisual">Value</dt>
-                  <dd aria-label="Stars">{ratingValue}</dd>{" "}
+                  <dd aria-label="Stars">{ratingValue}</dd>
                 </>
               ) : null}
               {ratingRange ? (
@@ -103,7 +103,7 @@ export const VendorCard = ({
               {ratingCount ? (
                 <>
                   <dt className="nonvisual">Count</dt>
-                  <dd className="_rating-count">( {ratingCount} )</dd>{" "}
+                  <dd className="_rating-count">( {ratingCount} )</dd>
                 </>
               ) : null}
             </dl>

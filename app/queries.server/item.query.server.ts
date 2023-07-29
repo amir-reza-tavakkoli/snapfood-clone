@@ -9,7 +9,7 @@ export async function createItem({
   isAvailible,
   isVerified,
   itemCategoryName,
-  name,
+  name,estimatedReadyTime,
 }: Partial<Item> & {
   itemCategoryName: any
   name: string
@@ -26,6 +26,7 @@ export async function createItem({
         description,
         isAvailible,
         isVerified,
+        estimatedReadyTime,
         itemCategoryName,
         name,
       },
@@ -44,7 +45,7 @@ export async function updateItem({
   description,
   isAvailible,
   isVerified,
-  itemCategoryName,
+  itemCategoryName,estimatedReadyTime,
   name,
 }: Partial<Item> & { id: number }): Promise<Item> {
   try {
@@ -62,6 +63,7 @@ export async function updateItem({
         description,
         isAvailible,
         isVerified,
+        estimatedReadyTime,
         itemCategoryName,
         name,
       },

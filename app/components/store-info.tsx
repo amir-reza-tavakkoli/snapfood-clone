@@ -1,7 +1,7 @@
 import { Icon } from "./icon"
 import { Button } from "./button"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
 type StoreCardProps = {
   name: string
@@ -14,6 +14,7 @@ type StoreCardProps = {
   }
   categories?: string[]
   dir?: "rtl" | "lrt"
+  isOpen?: boolean
 }
 
 export const StoreInfo = ({
@@ -23,6 +24,7 @@ export const StoreInfo = ({
   rating,
   dir,
   categories,
+  isOpen = true,
 }: StoreCardProps) => {
   return (
     <dl className="store-info" dir={dir}>
@@ -39,6 +41,10 @@ export const StoreInfo = ({
 
             <dd className="nonvisual">{type}</dd>
 
+            <dt className="nonvisual">Status</dt>
+
+            <dd>{isOpen ? "باز" : "بسته"}</dd>
+
             {rating ? (
               <>
                 <dt className="nonvisual">Rating</dt>
@@ -54,7 +60,7 @@ export const StoreInfo = ({
                     {rating.value ? (
                       <>
                         <dt className="nonvisual">Value</dt>
-                        <dd aria-label="Stars">{rating.value}</dd>{" "}
+                        <dd aria-label="Stars">{rating.value}</dd>
                       </>
                     ) : null}
 
@@ -69,9 +75,7 @@ export const StoreInfo = ({
                     {rating.count ? (
                       <>
                         <dt className="nonvisual">Count</dt>
-                        <dd className="_rating-count">
-                          ( {rating.count} نظر)
-                        </dd>{" "}
+                        <dd className="_rating-count">( {rating.count} نظر)</dd>
                       </>
                     ) : null}
                   </dl>

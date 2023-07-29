@@ -2,13 +2,13 @@ import { Link } from "@remix-run/react"
 
 import type { Comment, Order, Store } from "@prisma/client"
 
-import type { FullOrderItem } from "~/queries.server/order.query.server"
+import type { FullOrderItem } from "../queries.server/order.query.server"
 
 import { Icon } from "./icon"
 
 import { DEFAULT_CURRENCY, DEFAULT_IMG_PLACEHOLDER } from "./../constants"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 export type CartCompProps = {
   orders:
@@ -39,7 +39,6 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
 
                   <span>
                     <p>
-                      {" "}
                       <span className="nonvisual">store Name</span>
                       {order.store.name}
                     </p>
@@ -52,15 +51,14 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
                       {new Date(
                         order.order.billDate ?? order.order.createdAt,
                       ).toLocaleString("fa-IR")}
-
-
                     </time>
                   </span>
 
                   <p>
                     <span className="nonvisual">Price</span>
 
-                    {order.order.totalPrice.toLocaleString("fa-IR") + " " +
+                    {order.order.totalPrice.toLocaleString("fa-IR") +
+                      " " +
                       DEFAULT_CURRENCY}
                   </p>
                 </div>
@@ -68,7 +66,10 @@ export const CartComp = ({ orders, dir }: CartCompProps) => {
                 <ul>
                   {order.items.map((item, index) => (
                     <li key={index} className="_item">
-                      <img src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER} alt=""></img>
+                      <img
+                        src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
+                        alt=""
+                      ></img>
 
                       <span className="nonvisual">{item.name}</span>
 

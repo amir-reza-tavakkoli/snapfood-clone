@@ -1,17 +1,17 @@
-import { Form } from "@remix-run/react";
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants";
+import { Form } from "@remix-run/react"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 import { Store } from "@prisma/client"
-import { FullOrderItem } from "~/queries.server/order.query.server";
-import { Button } from "./button";
-import { routes } from "~/routes";
+import { FullOrderItem } from "../queries.server/order.query.server"
+import { Button } from "./button"
+import { routes } from "../routes"
 
 type ItemProps = {
-    item: FullOrderItem
-    store: Store
-    address : number | undefined
+  item: FullOrderItem
+  store: Store
+  address: number | undefined
 }
 
-export function ItemComp({item, store, address} : ItemProps) {
+export function ItemComp({ item, store, address }: ItemProps) {
   return (
     <dl className="item-card">
       <dt className="nonvisual">Name</dt>
@@ -21,7 +21,6 @@ export function ItemComp({item, store, address} : ItemProps) {
       <dt className="nonvisual">Description</dt>
 
       <dd className="_description">{item.description}</dd>
-
 
       <dt className="nonvisual">Image</dt>
 

@@ -4,30 +4,47 @@ import { Link, useOutletContext } from "@remix-run/react"
 
 import type { Address } from "@prisma/client"
 
-import { setChosenAddress } from "~/utils/utils"
-import { getFullAddress, toPersianDigits } from "~/utils/utils"
+import { setChosenAddress } from "../utils/utils"
+import { getFullAddress, toPersianDigits } from "../utils/utils"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import { Icon } from "./icon"
 
-import { COOKIE_ADDRESS } from "~/constants"
+import { COOKIE_ADDRESS, COOKIE_City } from "../constants"
 
 type AddressesProps = {
   addresses: Address[] | null
   dir?: "lrt" | "rtl"
+  setHomeAddress: any
+  homeAddress: any
 }
 
-export function Addresses({ addresses, dir }: AddressesProps) {
-  const [HomeAddressState, setHomeAddressState] = useOutletContext<any>()
-
+export function Addresses({
+  addresses,
+  dir,
+  setHomeAddress,
+  homeAddress,
+}: AddressesProps) {
   const [addressId, setAddressId] = useState(-1)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setAddressId(Number(localStorage.getItem(COOKIE_ADDRESS)))
+      const choosedAddress = addresses?.find(a => a.id === addressId)
+      if (!choosedAddress) {
+        return
+      }
+      setHomeAddress(choosedAddress)
+      localStorage.setItem(COOKIE_ADDRESS, addressId.toString())
+      localStorage.setItem(COOKIE_City, choosedAddress?.cityName)
     }
   }, [addressId])
+
+  useEffect(() => {
+    setAddressId(Number(localStorage.getItem(COOKIE_ADDRESS)))
+  }, [])
+
+  console.log("addresses", addressId)
 
   return (
     <ul aria-label="address" className="addresses" dir={dir}>
@@ -55,16 +72,10 @@ export function Addresses({ addresses, dir }: AddressesProps) {
                 aria-describedby={"__" + address.id}
                 className="_choosed"
                 type="radio"
+                name="choosed"
                 aria-label="Choose"
                 checked={addressId === address.id}
-                onChange={() =>
-                  setChosenAddress({
-                    addressId: address.id,
-                    setHomeAddressState: setHomeAddressState,
-                    cityName: address.cityName,
-                    setAddressId,
-                  })
-                }
+                onChange={() => setAddressId(address.id)}
               />
 
               <p aria-label="address" id={"__" + address.id}>

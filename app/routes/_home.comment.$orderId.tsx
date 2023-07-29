@@ -1,29 +1,59 @@
 import { Comment, Order, Store } from "@prisma/client"
-import { Form, Link, useLoaderData, useRouteError } from "@remix-run/react"
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useRouteError,
+  V2_MetaFunction,
+} from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/server-runtime"
 import { Rating } from "@smastrom/react-rating"
-import { getFullOrderItems, getOrder } from "~/queries.server/order.query.server"
-
-import { requirePhoneNumber } from "~/utils/session.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
-import { getStore } from "~/queries.server/store.query.server"
 import {
+  getFullOrderItems,
+  getOrder,
+} from "../queries.server/order.query.server"
 
+import { requirePhoneNumber } from "../utils/session.server"
+import { getUserByPhone } from "../queries.server/user.query.server"
+import { getStore } from "../queries.server/store.query.server"
+import {
   requireValidatedUser,
   validateItems,
   validateNumberParam,
   validateOrder,
   validateStore,
   validateUser,
-} from "~/utils/validate.server"
+} from "../utils/validate.server"
 
-import { addComment, getComment } from "~/queries.server/comment.query"
+import { addComment, getComment } from "../queries.server/comment.query"
 import { useState } from "react"
-import { Button } from "~/components/button"
+import { Button } from "../components/button"
 
-import { getOrderStatus } from "~/queries.server/db.utils.query"
+import { getOrderStatus } from "../queries.server/db.utils.query"
+import { routes } from "../routes"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
-export const action = async ({ request, params }: any) => {
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Comment on Order From ${
+          data.store.name ?? ""
+        }`,
+        title: `SnappFood Clone Comment on Order From ${data.store.name ?? ""}`,
+      }
+    : { description: "No Comment found", title: "No Comment" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type ActionType = { isSuccessful: boolean }
+
+export const action = async ({ request, params }: any): Promise<ActionType> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
     const form = await request.formData()
@@ -44,7 +74,7 @@ export const action = async ({ request, params }: any) => {
       throw new Response("شما قبلا نظر خود را ثبت کرده اید", { status: 403 })
     }
 
-    await addComment({
+    const newComment = await addComment({
       description,
       orderId,
       score: orderRate,
@@ -52,19 +82,23 @@ export const action = async ({ request, params }: any) => {
       wasDeliveryPositive: deliveryRate > 3,
     })
 
-    return { isSuccessful: true }
+    if (newComment) return { isSuccessful: true }
+
+    return { isSuccessful: false }
   } catch (error) {
     throw error
   }
 }
 
+type LoaderType = {
+  order: Order
+  store: Store
+}
+
 export const loader = async ({
   request,
   params,
-}: LoaderArgs): Promise<{
-  order: Order
-  store: Store
-}> => {
+}: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -72,10 +106,9 @@ export const loader = async ({
 
     validateNumberParam(orderId)
 
-
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber : user.phoneNumber })
+    order = validateOrder({ order, phoneNumber: user.phoneNumber })
 
     if (getOrderStatus({ order }).status !== "fullfilled") {
       console.log(getOrderStatus({ order }).status)
@@ -120,10 +153,11 @@ function getRateDescription(rate: number) {
 }
 
 export default function CommentPage() {
-  const { order, store } = useLoaderData<typeof loader>() as unknown as {
-    order: Order
-    store: Store
-  }
+  const { order, store } = useLoaderData<
+    typeof loader
+  >() as unknown as LoaderType
+
+  const actionData = useActionData() as ActionType | undefined
   const [deliveryRate, setDeliveryRate] = useState(0)
   const [orderRate, setOrderRate] = useState(0)
   //   const [description, setdescription] = useState("")
@@ -181,22 +215,4 @@ export default function CommentPage() {
   )
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError()
-
-  const errorMessage = error instanceof Error ? error.message : undefined
-  return (
-    <div
-      aria-label="error"
-      role="alert"
-      aria-live="assertive"
-      className="boundary-error"
-    >
-      <h1>مشکلی پیش آمد!</h1>
-
-      {errorMessage ? <p>{errorMessage}</p> : null}
-
-      <Link to="/orders-summary">دوباره امتحان کنید</Link>
-    </div>
-  )
-}
+export const ErrorBoundary = GlobalErrorBoundary

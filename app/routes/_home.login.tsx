@@ -3,6 +3,7 @@ import {
   useActionData,
   useLoaderData,
   useSearchParams,
+  V2_MetaFunction,
 } from "@remix-run/react"
 
 import type {
@@ -17,18 +18,14 @@ import type { User } from "@prisma/client"
 import {
   createOrUpdateUser,
   getUserByPhone,
-} from "~/queries.server/user.query.server"
+} from "../queries.server/user.query.server"
 
-import { createUserSession, getPhoneNumber } from "~/utils/session.server"
-import { checkFieldsErrors } from "~/utils/utils.server"
+import { createUserSession, getPhoneNumber } from "../utils/session.server"
+import { checkFieldsErrors } from "../utils/utils.server"
 
-import {
+import { sendVerification, validateUrl } from "../utils/validate.server"
 
-  sendVerification,
-  validateUrl,
-} from "~/utils/validate.server"
-
-import { useLogin } from "~/hooks/login"
+import { useLogin } from "../hooks/login"
 
 import {
   ALLOWED_PHONE_PREFIX,
@@ -36,14 +33,14 @@ import {
   INDEX_URL,
   VENDOR_NAME_ENG,
   VERIFICATION_CODE_EXPIRY_MINS,
-} from "~/constants"
+} from "../constants"
 
-import { GlobalErrorBoundary } from "~/components/error-boundary"
-import { Button } from "~/components/button"
-import { Timer } from "~/components/timer"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+import { Button } from "../components/button"
+import { Timer } from "../components/timer"
 
 import pageCss from "./styles/login-page.css"
-import { Icon } from "~/components/icon"
+import { Icon } from "../components/icon"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
 export function checkPhoneNumber(phoneNumber: string) {
@@ -61,7 +58,20 @@ type FieldErrors = {
   verificationCode?: string
 }
 
-type ActionDataFileds = {
+export const meta: V2_MetaFunction = () => {
+  const { description, title } = {
+    description: `SnappFood Clone Login`,
+    title: `SnappFood Clone Login`,
+  }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
+
+type ActionType = {
   codeSent?: boolean
   fieldErrors?: FieldErrors
   formError?: string
@@ -70,7 +80,7 @@ type ActionDataFileds = {
 
 export const action = async ({
   request,
-}: ActionArgs): Promise<ActionDataFileds | TypedResponse<never>> => {
+}: ActionArgs): Promise<ActionType | TypedResponse<never>> => {
   try {
     const form = await request.formData()
 
@@ -190,9 +200,9 @@ export const action = async ({
   }
 }
 
-export const loader = async ({
-  request,
-}: LoaderArgs): Promise<{ isLoggedIn: boolean }> => {
+type LoaderType = { isLoggedIn: boolean }
+
+export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
     const phoneNumber = await getPhoneNumber(request)
 
@@ -215,9 +225,9 @@ export const loader = async ({
 export type LoginPageState = "phoneNumber" | "verification"
 
 export default function LoginPage() {
-  const loaderData = useLoaderData<typeof loader>()
+  const loaderData = useLoaderData<typeof loader>() as unknown as LoaderType
 
-  const actionData = useActionData() as ActionDataFileds
+  const actionData = useActionData() as ActionType
 
   const [searchParams] = useSearchParams()
 
@@ -246,7 +256,7 @@ export default function LoginPage() {
                 <div className="_identity">
                   <Icon name={VENDOR_NAME_ENG} color="accent"></Icon>
                   <p>
-                    ورود <span>یا </span> عضویت{" "}
+                    ورود <span>یا </span> عضویت
                   </p>
                 </div>
                 <div className="_input">
@@ -379,7 +389,7 @@ export default function LoginPage() {
                 <input type="hidden" name="state" value="verification" />
 
                 <small>
-                  ثبت نام در اسنپ‌فود به منزله{" "}
+                  ثبت نام در اسنپ‌فود به منزله
                   <span>پذیرش همه قوانین و شرایط</span>
                   استفاده است.
                 </small>
@@ -414,5 +424,5 @@ export default function LoginPage() {
 
 export const ErrorBoundary = GlobalErrorBoundary
 
-export { type ActionDataFileds as LoginActionData }
+export { type ActionType as LoginActionData }
 export { type FieldErrors as LoginFieldErrors }

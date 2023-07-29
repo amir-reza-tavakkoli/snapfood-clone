@@ -8,6 +8,7 @@ import { getOrdersInCart } from "./cart.query.server"
 import { getItemById } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
+import { evaluateComment } from "./evaluate.server"
 
 export type FullOrderStore = {
   id: number
@@ -111,7 +112,6 @@ export async function createOrder({
   userPhoneNumber,
   storeId,
   addressId,
-  estimatedDeliveryTime,
   isBilled,
   isCanceled,
   isDelayedByStore,
@@ -123,26 +123,17 @@ export async function createOrder({
   shipmentPrice,
   estimatedShipmentTime,
   estimatedReadyTime,
-
+  description,
+  billDate,
   totalPrice,
-}: {
-  userPhoneNumber: string
+}: Partial<Order> & {
+  totalPrice: number
+  shipmentPrice: number
+  estimatedReadyTime: number
+  estimatedShipmentTime: number
   storeId: number
   addressId: number
-  estimatedDeliveryTime: number
-  isBilled?: boolean
-  isCanceled?: boolean
-  isDelayedByStore?: boolean
-  isDelivered?: boolean
-  isInCart?: boolean
-  isShipped?: boolean
-  isVerifiedByAdmin?: boolean
-  isVerifiedByStore?: boolean
-  shipmentPrice: number
-  estimatedShipmentTime: number
-  estimatedReadyTime: number
-
-  totalPrice: number
+  userPhoneNumber: string
 }): Promise<Order> {
   try {
     const store = await getStore({ storeId })
@@ -196,6 +187,8 @@ export async function createOrder({
         isInCart,
         isShipped,
         isVerifiedByAdmin,
+        description,
+        billDate,
         isVerifiedByStore,
 
         shipmentPrice,
@@ -214,7 +207,6 @@ export async function updateOrder({
   userPhoneNumber,
   storeId,
   addressId,
-  estimatedDeliveryTime,
   isBilled,
   isCanceled,
   isDelayedByStore,
@@ -226,31 +218,11 @@ export async function updateOrder({
   isVerifiedByStore,
   estimatedShipmentTime,
   estimatedReadyTime,
-
+  billDate,
   shipmentPrice,
 
   totalPrice,
-}: {
-  id: number
-  userPhoneNumber?: string
-  storeId?: number
-  addressId?: number
-  description?: string
-  estimatedDeliveryTime?: number
-  isBilled?: boolean
-  isCanceled?: boolean
-  isDelayedByStore?: boolean
-  isDelivered?: boolean
-  isInCart?: boolean
-  isShipped?: boolean
-  isVerifiedByAdmin?: boolean
-  isVerifiedByStore?: boolean
-  shipmentPrice?: number
-  estimatedShipmentTime?: number
-  estimatedReadyTime?: number
-
-  totalPrice?: number
-}): Promise<Order> {
+}: Partial<Order> & { id: number }): Promise<Order> {
   try {
     const order = await getOrder({ orderId: id })
 
@@ -302,6 +274,7 @@ export async function updateOrder({
         isCanceled,
         isDelayedByStore,
         isDelivered,
+        billDate,
         isInCart,
         isShipped,
         isVerifiedByAdmin,
@@ -395,22 +368,23 @@ export async function changeOrderItems({
         throw new Error("تعداد ناکافی")
       }
 
-      const newItemInStore = await db.storeHasItems.update({
-        where: {
-          storeId_itemId: {
-            storeId: store.id,
-            itemId,
+      if (!itemInStore.infiniteSupply) {
+        const newItemInStore = await db.storeHasItems.update({
+          where: {
+            storeId_itemId: {
+              storeId: store.id,
+              itemId,
+            },
           },
-        },
-        data: {
-          remainingCount: itemInStore.remainingCount - count,
-        },
-      })
+          data: {
+            remainingCount: itemInStore.remainingCount - count,
+          },
+        })
 
-      if (!newItemInStore) {
-        throw new Error("")
+        if (!newItemInStore) {
+          throw new Error("")
+        }
       }
-
       const newItemInOrder = await db.orderHasItems.create({
         data: {
           orderId,
@@ -731,6 +705,7 @@ export async function changeComment({
   orderId,
   description,
   wasPositive,
+  wasDeliveryPositive,
   score,
   isVerified,
   isVisible,
@@ -748,6 +723,13 @@ export async function changeComment({
     }
     // need to evaluate comment
 
+    if (!score || !wasPositive || !wasDeliveryPositive) {
+      throw new Error("No Such Comment")
+    }
+
+    if (description && evaluateComment({ description })) {
+      throw new Error("No Such Comment")
+    }
     const changedComment = await db.comment.update({
       data: {
         wasPositive,
@@ -868,7 +850,6 @@ export function calculateItemsReadyTime({
   store: Store
 }) {
   try {
-    // let total = 0
     let max = 0
 
     items.forEach(item => {
@@ -876,14 +857,12 @@ export function calculateItemsReadyTime({
         return
       }
 
-      // total += item.estimatedReadyTime
       max < item.estimatedReadyTime
         ? (max = item.estimatedReadyTime)
         : undefined
     })
 
-    // total /= items.length
-    return max + READY_TIME_OFFSET
+    return max + READY_TIME_OFFSET + items.length
   } catch (error) {
     throw error
   }
