@@ -3,6 +3,7 @@ export const routes = {
   login: "/login",
   logout: "/logout",
   search: "/search",
+  searchPage: "/search-page",
   wallet: "/wallet",
   userInfo: "/user-info",
   about: "/about",
