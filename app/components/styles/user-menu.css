@@ -34,6 +34,7 @@
 :where(.user-menu > ul > li > a) {
   inline-size: 100%;
   display: flex;
+  padding-block-start: 2px;
 
   color: var(--color-text-2);
   font-size: var(--length-12);
@@ -91,6 +92,21 @@
 
 :where(.user-menu ._credit) {
   font-weight: 700;
+}
+
+:where(.user-menu ._close-popup) {
+  padding-inline-start: 10px;
+  padding-block: var(--length-6);
+  margin-block-start: 6px;
+  /* optical alignment */
+
+  cursor: pointer;
+}
+
+:where(.user-menu ._close-popup svg) {
+  inline-size: 16px;
+  block-size: 16px;
+  fill: var(--color-text);
 }
 
 @media (max-width: 34.375rem) {

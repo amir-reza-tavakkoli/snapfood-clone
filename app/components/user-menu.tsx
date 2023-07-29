@@ -4,17 +4,24 @@ import type { User } from "@prisma/client"
 
 import { Icon } from "./icon"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
-import { DEFAULT_CURRENCY } from "~/constants"
+import { DEFAULT_CURRENCY } from "../constants"
+import { getFullName } from "~/utils/utils"
 
 type UserMenuProps = {
   user: User
   dir?: "rtl" | "lrt"
   isShowing: boolean
+  setShowing: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
+export const UserMenu = ({
+  user,
+  dir,
+  isShowing,
+  setShowing,
+}: UserMenuProps) => {
   return (
     <nav className={isShowing ? "user-menu" : "nonvisual"} dir={dir}>
       <ul>
@@ -23,10 +30,21 @@ export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
             <Icon name="user" color="text"></Icon>
 
             <span className="_user" aria-label="Name">
-              <span>{user.firstName + "   " + user.lastName}</span>
+              <span>{getFullName(user)}</span>
+
               <span>مشاهده حساب کاربری</span>
             </span>
           </Link>
+
+          <button
+            onClick={() => {
+              setShowing(prev => !prev)
+            }}
+            className="_close-popup"
+            role="presentation"
+          >
+            <Icon name="multiply"></Icon>
+          </button>
         </li>
 
         <li>
@@ -47,6 +65,7 @@ export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
             tabIndex={isShowing ? undefined : -1}
           >
             <Icon name="gift" color="text"></Icon>
+
             <span aria-label="Reffer"> دعوت از دوستان</span>
           </Link>
         </li>
@@ -59,6 +78,7 @@ export const UserMenu = ({ user, dir, isShowing }: UserMenuProps) => {
             tabIndex={isShowing ? undefined : -1}
           >
             <Icon name="exit" color="text"></Icon>
+
             <button type="submit" tabIndex={isShowing ? undefined : -1}>
               خروج
             </button>
