@@ -1,23 +1,38 @@
 import { Order, Store, User, Comment } from "@prisma/client"
-import { useActionData, useLoaderData } from "@remix-run/react"
+import { useActionData, useLoaderData, V2_MetaFunction } from "@remix-run/react"
 import { LoaderArgs, LoaderFunction } from "@remix-run/server-runtime"
 import { useEffect, useState } from "react"
 
-import { getStoreOrderInCart } from "~/queries.server/cart.query.server"
-import { getItemById } from "~/queries.server/item.query.server"
-import { FullOrderItem } from "~/queries.server/order.query.server"
-import { requirePhoneNumber } from "~/utils/session.server"
+import { getStoreOrderInCart } from "../queries.server/cart.query.server"
+import { getItemById } from "../queries.server/item.query.server"
+import { FullOrderItem } from "../queries.server/order.query.server"
+import { requirePhoneNumber } from "../utils/session.server"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
-} from "~/queries.server/store.query.server"
-import { getUserByPhone } from "~/queries.server/user.query.server"
-import { GlobalErrorBoundary } from "~/components/error-boundary"
-import { getVerifiedItemComments } from "~/queries.server/comment.query"
-import { useCheckAddress } from "~/hooks/forceAddress"
-import { ItemComp } from "~/components/item"
-import { requireValidatedUser } from "~/utils/validate.server"
+} from "../queries.server/store.query.server"
+import { getUserByPhone } from "../queries.server/user.query.server"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+import { getVerifiedItemComments } from "../queries.server/comment.query"
+import { useCheckAddress } from "../hooks/forceAddress"
+import { ItemComp } from "../components/item"
+import { requireValidatedUser } from "../utils/validate.server"
+
+export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
+  const { description, title } = data
+    ? {
+        description: `SnappFood Clone Item ${data.foundItem.name ?? ""}`,
+        title: `SnappFood Clone Item ${data.foundItem.name ?? ""}`,
+      }
+    : { description: "No Item found", title: "No Item" }
+
+  return [
+    { name: "description", content: description },
+    { name: "twitter:description", content: description },
+    { title },
+  ]
+}
 
 type LoaderType = {
   foundItem: FullOrderItem
@@ -99,8 +114,6 @@ export default function ItemPage() {
   const { foundItem, store, order, comments } = useLoaderData<typeof loader>()
   const actionData = useActionData()
   const [item, setItem] = useState(foundItem)
-
-
 
   useEffect(() => {
     if (actionData && actionData.newItems) {
