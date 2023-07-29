@@ -3,17 +3,34 @@ import {
   getOrder,
   getOrderItems,
 } from "./order.query.server"
-import type { Comment, Item, Order, User } from "@prisma/client"
+import type {
+  Comment,
+  Item,
+  Order,
+  Store,
+  StoreHasItems,
+  User,
+} from "@prisma/client"
 import { getUserByPhone } from "./user.query.server"
 import { db } from "../utils/db.server"
+import { getStoreById } from "./store.query.server"
+import { MAX_COMMENT_SIZE, SCORE_ROUNDING } from "../constants"
+import { evaluateComment } from "./evaluate.server"
 
 export async function addComment({
   orderId,
   description,
-  wasPositive = false,
+  wasPositive,
   score,
-  wasDeliveryPositive = false,
-}: Partial<Comment> & { orderId: number; score: number }): Promise<Comment> {
+  response,
+  responsedBy,
+  wasDeliveryPositive,
+}: Partial<Comment> & {
+  orderId: number
+  score: number
+  wasPositive: boolean
+  wasDeliveryPositive: boolean
+}): Promise<Comment> {
   try {
     const order = await getOrder({ orderId })
 
@@ -39,26 +56,104 @@ export async function addComment({
       },
     })
 
+    const store = await getStoreById({ storeId: order.storeId })
+
     if (comment) {
       throw new Error("Comment Already Exists")
     }
 
-    // need to  evaluate comment
+    if (!score || score > 5 || score < 0) {
+      throw new Error("Error")
+    }
 
-    const newComment = await db.comment.create({
-      data: {
-        wasPositive,
-        wasDeliveryPositive,
-        score,
-        description,
-        orderId,
-      },
+    if (!wasPositive || !wasDeliveryPositive) {
+      throw new Error("Error")
+    }
+
+    if (!store) {
+      throw new Error("Error")
+    }
+
+    if (description && evaluateComment({ description })) {
+      throw new Error("Error")
+    }
+
+    const orderItems = await db.orderHasItems.findMany({
+      where: { orderId: order.id },
     })
+
+    if (description) description = description.slice(0, MAX_COMMENT_SIZE)
+
+    const newStoreScore = calculateScore({ newScore: score, store })
+
+    const [newComment, newStore] = await db.$transaction([
+      db.comment.create({
+        data: {
+          wasPositive,
+          wasDeliveryPositive,
+          score,
+          description,
+          orderId,
+          response,
+          responsedBy,
+        },
+      }),
+      db.store.update({
+        where: { id: store.id },
+        data: {
+          scoreCount: store.scoreCount + 1,
+          score: newStoreScore,
+        },
+      }),
+    ])
+    Promise.all(
+      orderItems.map(async orderItem => {
+        const storeItem = await db.storeHasItems.findUnique({
+          where: {
+            storeId_itemId: { itemId: orderItem.itemId, storeId: store.id },
+          },
+        })
+
+        if (!storeItem) return
+
+        await db.storeHasItems.update({
+          where: {
+            storeId_itemId: { itemId: orderItem.itemId, storeId: store.id },
+          },
+          data: {
+            scoreCount: storeItem.scoreCount + 1,
+            score: calculateScore({ store: storeItem, newScore: score }),
+          },
+        })
+      }),
+    )
 
     return newComment
   } catch (error) {
     throw error
   }
+}
+
+export function calculateScore({
+  newScore,
+  store,
+}: {
+  newScore: number
+  store: Store | StoreHasItems
+}) {
+  try {
+    const score = Number(
+      (
+        (store.score * store.scoreCount + newScore) /
+        (store.scoreCount + 1)
+      ).toFixed(SCORE_ROUNDING),
+    )
+
+    if (isNaN(score)) {
+      throw new Error("Error")
+    }
+    return score
+  } catch (error) {}
 }
 
 export async function changeComment({
@@ -67,9 +162,11 @@ export async function changeComment({
   wasPositive,
   score,
   isVerified,
+  responsedBy,
+  wasDeliveryPositive,
   isVisible,
   response,
-}: Comment): Promise<Comment> {
+}: Partial<Comment> & { orderId: number }): Promise<Comment> {
   try {
     const comment = await db.comment.findUnique({
       where: {
@@ -89,6 +186,8 @@ export async function changeComment({
         description,
         isVerified,
         isVisible,
+        responsedBy,
+        wasDeliveryPositive,
         response,
       },
       where: {
@@ -202,7 +301,7 @@ export async function getVerifiedItemComments({
   }
 }
 
-export type StoreComment = (
+export type StoreComment =
   | {
       user: User
       order: Order
@@ -210,7 +309,6 @@ export type StoreComment = (
       items: (Item | null)[]
     }
   | undefined
-)
 
 export async function getStoreComments({
   storeId,
@@ -247,7 +345,7 @@ export async function getStoreComments({
         }),
       ),
     )
-// console.log(comments, "p");
+    // console.log(comments, "p");
 
     if (isVisible)
       comments = comments.filter(comment => comment && comment.isVisible)
@@ -279,8 +377,6 @@ export async function getStoreComments({
     )
 
     storecomments = storecomments.filter(item => item != undefined)
-
-    // console.log(storecomments,"ppp")
 
     return storecomments
   } catch (error) {
