@@ -1,21 +1,24 @@
+import { useEffect, useState } from "react"
+
 import { Form, Link } from "@remix-run/react"
 
 import { Icon } from "./icon"
 import { Button } from "./button"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import type { Address } from "@prisma/client"
 
-import { getFullAddress } from "~/utils/utils"
+import { getFullAddress } from "../utils/utils"
+
+import { SearchType } from "../routes/search"
 
 import {
   DEFAULT_IMG_PLACEHOLDER,
   VENDOR_NAME,
   VENDOR_NAME_ENG,
-} from "~/constants"
-import { useEffect, useState } from "react"
-import { SearchType } from "~/routes/search"
+} from "../constants"
+
 
 type HeaderProps = {
   address?: Address | null
@@ -36,7 +39,7 @@ export const Header = ({
 
   useEffect(() => {
     async function fetchData() {
-      if(searchValue == "")return
+      if (searchValue == "") return
       const data = await fetch(routes.search + `?search=${searchValue}`)
 
       const jsonData = (await data.json()) as unknown as SearchType
@@ -46,7 +49,6 @@ export const Header = ({
 
     fetchData()
   }, [searchValue])
-  console.log(searchData)
 
   return (
     <header className="header" dir={dir}>
@@ -127,16 +129,27 @@ export const Header = ({
 
       {searchData &&
       (searchData.stores || searchData.itemsAndStores) &&
-      (searchData.stores.length > 0 || searchData?.itemsAndStores.length > 0) &&
+      (searchData.stores.length > 0 || searchData.itemsAndStores.length > 0) &&
       searchValue &&
       searchValue !== "" ? (
-        <ul className="search-bar">
-          {searchData.stores && searchData.stores.length > 0 ? <p>فروشگاه ها</p> : null}
-          {searchData?.stores?.map((store, index) => (
+        <ul className="search-bar" aria-live="polite" aria-atomic="true">
+          <Button
+            variant="primary"
+            onClick={() => setSearchValue("")}
+            aria-label="Close"
+          >
+            <Icon name="multiply"></Icon>
+            </Button>
+            
+          {searchData.stores && searchData.stores.length > 0 ? (
+            <p>فروشگاه ها</p>
+          ) : null}
+
+          {searchData.stores?.map((store, index) => (
             <li key={index} aria-label="Store">
               <Link to={routes.store(store.id)}>
-                {" "}
                 {store.name}
+
                 <img
                   src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                   alt=""
@@ -150,23 +163,27 @@ export const Header = ({
             <p>آیتم ها</p>
           ) : null}
 
-          {searchData?.itemsAndStores?.map((combo, index) => (
+          {searchData?.itemsAndStores?.map((itemInStore, index) => (
             <li key={index} aria-label="Store">
-              {combo.item.name}
+              {itemInStore.item.name}
+
               <img
-                src={combo.item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
+                src={itemInStore.item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                 alt=""
                 role="presentation"
               />
+
               <ul>
-                {combo.stores.map((store, index) =>
+                {itemInStore.stores.map((store, index) =>
                   store ? (
                     <li key={index}>
                       <Link to={routes.store(store.id)}>
                         {store.name}
+
                         <img
                           src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                           alt=""
+                          role="presentation"
                         />
                       </Link>
                     </li>
@@ -177,8 +194,16 @@ export const Header = ({
           ))}
         </ul>
       ) : searchValue && searchValue !== "" ? (
-        <ul className="search-bar">
+        <ul className="search-bar _no-found">
           <p>آیتمی یافت نشد</p>
+
+          <Button
+            variant="primary"
+            onClick={() => setSearchValue("")}
+            aria-label="Close"
+          >
+            <Icon name="multiply"></Icon>
+          </Button>
         </ul>
       ) : null}
     </header>
