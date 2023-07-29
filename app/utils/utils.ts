@@ -1,4 +1,5 @@
-import { Address } from "@prisma/client"
+import { Address, storeSchedule, User } from "@prisma/client"
+import { COOKIE_ADDRESS, COOKIE_City } from "../constants"
 // import { toPersianMonth } from "./utils"
 
 export function toPersianDigits(s: string) {
@@ -117,8 +118,8 @@ export function toPersianMonth(month: number) {
 //   return hierarchy
 // }
 
-export function replaceAll(string: string, rip: string) {
-  const regex = new RegExp(`/${rip}/g`)
+export function replaceAll(string: string, replace: string) {
+  const regex = new RegExp(`/${replace}/g`)
 
   return string.replace(regex, "")
 }
@@ -126,20 +127,49 @@ export function replaceAll(string: string, rip: string) {
 export function setChosenAddress({
   addressId,
   setAddressId,
+  address,
   cityName,
   setHomeAddressState,
 }: {
   addressId: number
   setAddressId: React.Dispatch<React.SetStateAction<number>>
+  address?: Address
   cityName: string
   setHomeAddressState: any
 }) {
+  console.log("ppp", address)
+
   try {
-    localStorage.setItem("addressId", addressId.toString())
-    localStorage.setItem("city", cityName.toString())
-    setHomeAddressState()
+    if (!address) {
+      throw new Error("eeee")
+    }
+    localStorage.setItem(COOKIE_ADDRESS, addressId.toString())
+    localStorage.setItem(COOKIE_City, cityName.toString())
+    setHomeAddressState(address)
     setAddressId(addressId)
   } catch (error) {
     throw error
   }
+}
+
+export function getStoreCurrentSchedule(
+  schedules: storeSchedule[],
+): storeSchedule | undefined {
+  const today = new Date(Date.now())
+  const todaySchedule = schedules.filter(s => s.dayNumber === today.getDay())
+  const isOpen = todaySchedule.find(
+    s => s.startTime < today.getHours() && s.endTime > today.getHours(),
+  )
+
+  return isOpen
+}
+
+export function getFullName(user: User) {
+  return (
+    (user.gender ? "خانوم" : "آقای") +
+    " " +
+    user.firstName +
+    "   " +
+    user.lastName
+  )
 }
