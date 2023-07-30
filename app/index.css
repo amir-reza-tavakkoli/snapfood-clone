@@ -173,7 +173,7 @@ input[type="radio"]:checked {
 }
 
 input[type="radio"]:checked::before {
-  transform: scale(1.5) translatex(-0.25px) translateY(-0.25px);
+  transform: scale(1.5) translateY(-0.25px);
 }
 
 input[type="radio"]:focus,
