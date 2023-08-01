@@ -1,6 +1,6 @@
 import { Icon } from "./icon"
 
-export type VendorCardProps = {
+type VendorCardProps = {
   name: string
   image: string
   type?: string
@@ -34,11 +34,13 @@ export const VendorCard = ({
   return (
     <dl className="vendor-card" dir={dir}>
       <dt className="nonvisual">Name</dt>
+
       <dd className="_name">{name ?? null}</dd>
 
       {type ? (
         <>
           <dt className="nonvisual">Type</dt>
+
           <dd className="nonvisual">{type}</dd>
         </>
       ) : null}
@@ -46,6 +48,7 @@ export const VendorCard = ({
       {tags ? (
         <>
           <dt className="nonvisual">Categories</dt>
+
           <dd>
             <ol className="_categories">
               {tags.map((tag, index, array) =>
@@ -62,8 +65,10 @@ export const VendorCard = ({
 
       <div className="_images">
         <dt className="nonvisual">Image</dt>
+
         <dd className="_image">
           {<img src={image} alt={`${name}  ${type}`} /> ?? null}
+
           {logo ? (
             <span className="_logo" role="presentation">
               <img src={logo} alt="" role="presentation" />
@@ -74,7 +79,10 @@ export const VendorCard = ({
         {discount ? (
           <>
             <dt className="nonvisual">Discount</dt>
-            <dd className="_discount">{` ${discount}%`}</dd>
+
+            <dd className="_discount">{` ${discount.toLocaleString(
+              "fa",
+            )}%`}</dd>
           </>
         ) : null}
       </div>
@@ -82,28 +90,38 @@ export const VendorCard = ({
       {ratingValue ? (
         <>
           <dt className="nonvisual">Rating</dt>
+
           <dd className="_rating">
             <dl>
               <dt className="nonvisual">Stars</dt>
+
               <dd className="_star-icon">
                 {<Icon name="star" role="presentation" />}
               </dd>
+
               {ratingValue ? (
                 <>
                   <dt className="nonvisual">Value</dt>
-                  <dd aria-label="Stars">{ratingValue}</dd>
+
+                  <dd aria-label="Stars">{ratingValue.toLocaleString("fa")}</dd>
                 </>
               ) : null}
               {ratingRange ? (
                 <>
                   <dd className="nonvisual">Range</dd>
-                  <dt className="nonvisual">/ {ratingRange}</dt>
+
+                  <dt className="nonvisual">
+                    / {ratingRange.toLocaleString("fa")}
+                  </dt>
                 </>
               ) : null}
               {ratingCount ? (
                 <>
                   <dt className="nonvisual">Count</dt>
-                  <dd className="_rating-count">( {ratingCount} )</dd>
+
+                  <dd className="_rating-count">
+                    ( {ratingCount.toLocaleString("fa")} )
+                  </dd>
                 </>
               ) : null}
             </dl>
@@ -114,26 +132,38 @@ export const VendorCard = ({
       {deliveryMethod ? (
         <>
           <dt className="nonvisual">Delivery</dt>
+
           <dd>
             <dl>
               {deliveryPrice && deliveryMethod ? (
                 <>
                   <dt className="nonvisual">Method / Price:</dt>
+
                   <dd className="_delivery">
                     <Icon name="delivery" role="presentation" />
+
                     <div>
                       <span>{deliveryMethod} </span>
-                      <span>{deliveryPrice ? deliveryPrice : "رایگان"} </span>
+
+                      <span>
+                        {deliveryPrice
+                          ? deliveryPrice.toLocaleString("fa")
+                          : "رایگان"}{" "}
+                      </span>
+
                       <span>{deliveryCurrency ?? null}</span>
                     </div>
                   </dd>
+
                   <dt className="nonvisual">Currency</dt>
                 </>
               ) : (
                 <>
                   <dt className="nonvisual">Method</dt>
+
                   <dd className="_delivery faded">
                     <Icon name="remainingTime" role="presentation" />
+
                     <span>{deliveryMethod ?? null}</span>
                   </dd>
                 </>
