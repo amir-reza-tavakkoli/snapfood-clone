@@ -7,7 +7,6 @@
   inline-size: 100%;
   padding-block-start: var(--length-16);
   margin-block: var(--length-4);
-
   font-size: var(--length-12);
   overflow-x: auto;
   box-shadow: var(--box-shadow-light);
@@ -25,7 +24,6 @@
 
 :where(.nav ._name) {
   max-inline-size: 75%;
-
   color: var(--color-text-2);
   line-height: var(--length-16);
   font-weight: 400;
@@ -38,8 +36,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
   padding-block-end: var(--length-16);
+  text-align: center;
 }
 
 :where(.nav a img) {
@@ -57,12 +55,11 @@
 }
 
 .nav ul::-webkit-scrollbar {
-  width: 0;
+  inline-size: 0;
   background: transparent;
-
 }
 
 .nav ul::-webkit-scrollbar-thumb {
-  width: 0;
+  inline-size: 0;
   background: transparent;
 }

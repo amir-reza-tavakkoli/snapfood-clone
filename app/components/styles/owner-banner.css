@@ -1,83 +1,80 @@
 :where(.owner-banner) {
-    display: flex;
-    justify-content: space-between;
-    inline-size: 85%;
-    margin-block: 10rem;
-    padding-inline: 24px;
-    padding-block: var(--length-24);
-    margin-inline: auto;
-
-    border-radius: 32px;
-    background-color: var(--color-faded-8);
+  display: flex;
+  justify-content: space-between;
+  inline-size: 85%;
+  padding-inline: 24px;
+  padding-block: var(--length-24);
+  margin-block: 10rem;
+  margin-inline: auto;
+  border-radius: 32px;
+  background-color: var(--color-faded-8);
 }
 
 :where(.owner-banner > div) {
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: column;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
 }
 
 :where(.owner-banner h1) {
-    margin-block-start: -16px;
+  margin-block-start: -16px;
 }
 
 :where(.owner-banner a) {
-    inline-size: max-content;
-    padding-inline: 12px;
-    margin-inline: 8px;
-    margin-block: var(--length-8);
-    padding-block: var(--length-16);
-
-    font-weight: 700;
-    background-color: var(--color-accent);
-    color: var(--color-primary);
-    border-radius: 6px;
-    text-align: center;
+  inline-size: max-content;
+  padding-block: var(--length-16);
+  padding-inline: 12px;
+  margin-inline: 8px;
+  margin-block: var(--length-8);
+  font-weight: 700;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  border-radius: 6px;
+  text-align: center;
 }
 
 :where(.owner-banner a > svg) {
-    fill: var(--color-primary);
-    margin-inline: 10px;
-    inline-size: 16px;
-    aspect-ratio: 1/1;
-    transform: scale(1.4);
+  margin-inline: 10px;
+  inline-size: 16px;
+  aspect-ratio: 1/1;
+  transform: scale(1.4);
+  fill: var(--color-primary);
 }
 
 :where(.owner-banner a > svg *) {
-    fill: var(--color-primary);
+  fill: var(--color-primary);
 }
 
-
 :where(.owner-banner > img) {
-    position: relative;
-    inset-block-start: -100px;
+  position: relative;
+  inset-block-start: -100px;
 }
 
 @media (max-width: 68.75rem) {
-    :where(.owner-banner) {
-        margin-block: var(--length-24);
-        inline-size: 85%;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
+  :where(.owner-banner) {
+    margin-block: var(--length-24);
+    inline-size: 85%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
 
-    :where(.owner-banner > div > *) {
-        margin-block: var(--length-12);
-    }
+  :where(.owner-banner > div > *) {
+    margin-block: var(--length-12);
+  }
 
-    :where(.owner-banner > div a) {
-        align-self: center;
-    }
+  :where(.owner-banner > div a) {
+    align-self: center;
+  }
 
-    :where(.owner-banner > img) {
-        display: none;
-    }
+  :where(.owner-banner > img) {
+    display: none;
+  }
 }
 
 @media (max-width: 34.5rem) {
-    :where(.owner-banner) {
-        margin-block: var(--length-24);
-        inline-size: 90%;
-    }
+  :where(.owner-banner) {
+    margin-block: var(--length-24);
+    inline-size: 90%;
+  }
 }

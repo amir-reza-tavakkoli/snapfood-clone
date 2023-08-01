@@ -1,147 +1,146 @@
 :where(.order) {
-    display: block;
-    inline-size: 100%;
-
-    border: solid var(--color-faded-4) var(--border-extra-thin);
-    color: var(--color-text-2);
+  display: block;
+  inline-size: 100%;
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+  color: var(--color-text-2);
 }
 
 :where(.order ul) {
-    inline-size: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding-block: var(--length-10);
-    padding-inline: var(--length-10);
+  display: flex;
+  inline-size: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-block: var(--length-10);
+  padding-inline: 10px;
 }
 
 :where(.order ul li) {
-    display: flex;
-    font-size: var(--length-12);
-    inline-size: 100%;
-    padding-block: var(--length-10);
-    padding-inline: var(--length-10);
-    justify-content: space-between;
-
-    color: var(--color-text-2);
+  display: flex;
+  justify-content: space-between;
+  inline-size: 100%;
+  padding-block: var(--length-10);
+  padding-inline: 10px;
+  font-size: var(--length-12);
+  color: var(--color-text-2);
 }
 
 :where(.order ul li img) {
-    inline-size: 40px;
-    aspect-ratio: 1/1;
-    padding-block: var(--length-6);
-    padding-inline: var(--length-4);
+  inline-size: 40px;
+  aspect-ratio: 1/1;
+  padding-block: var(--length-6);
+  padding-inline: 4px;
 }
 
 :where(.order ._item-name) {
-    padding-inline: var(--length-4);
-    align-self: center;
+  padding-inline: 4px;
+  align-self: center;
 }
 
 :where(.order ._total) {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 :where(.order ._discount) {
-    color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 :where(.order ._price) {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 :where(.order ._count) {
-    margin-inline-start: auto;
+  margin-inline-start: auto;
 }
 
 :where(.order ._store > span) {
-    margin-inline-start: 4px;
-    margin-inline-end: auto;
-    align-self: flex-end;
-    margin-block-end: 4px;
-    /* optical alignment */
-
-    font-weight: 700;
+  align-self: flex-end;
+  margin-inline-start: 4px;
+  margin-inline-end: auto;
+  margin-block-end: 4px;
+  /* optical alignment */
+  font-weight: 700;
 }
 
 :where(.order ._store-img) {
-    inline-size: 60px;
+  inline-size: 60px;
 }
 
 :where(.order ._comment p *) {
-    display: block;
-    margin-inline: 8px;
+  display: block;
+  margin-inline: 8px;
 }
 
 :where(.order ._comment) {
-    align-self: start;
-    inline-size: 100%;
-    display: flex;
-    justify-content: center;
-    
-    font-size: var(--length-10);
-    font-weight: 400;
+  display: flex;
+  align-self: start;
+  justify-content: center;
+  inline-size: 100%;
+  font-size: var(--length-10);
+  font-weight: 400;
 }
 
 :where(.order ._comment p) {
-    display: block;
-    inline-size: 100%;
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  inline-size: 100%;
+  justify-content: space-between;
 }
 
-
 :where(.order ._error) {
-    color: var(--color-error);
+  color: var(--color-error);
 }
 
 :where(.order ._comment) {
-    display: flex;
-    justify-content: flex-start;
-    padding-inline: var(--length-8);
-    margin-inline: var(--length-6);
-    padding-block: var(--length-6);
-
-    font-size: var(--length-10);
-    background-color: var(--color-action-4);
-    border-radius: var(--length-4);
-    white-space: nowrap;
+  display: flex;
+  justify-content: flex-start;
+  padding-inline: 8px;
+  padding-block: var(--length-6);
+  margin-inline: 6px;
+  font-size: var(--length-10);
+  background-color: var(--color-action-4);
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 :where(.order ._comment > span) {
-    font-size: var(--length-12);
-    font-weight: 600;
-    align-self: start;
-    text-align: start;
+  font-size: var(--length-12);
+  font-weight: 600;
+  align-self: start;
+  text-align: start;
 }
 
 :where(.order ._comment a) {
-    margin-inline: 4px;
-    margin-inline-start: auto;
+  margin-inline-end: 4px;
+  margin-inline-start: auto;
+  border: none;
+  background-color: transparent;
+  color: var(--color-action);
+  font-weight: 600;
+  font-size: var(--length-12);
+}
 
-    border: none;
-    background-color: transparent;
-    color: var(--color-action);
-    font-weight: 600;
-    font-size: var(--length-12);
+:where(.order ._order-button) {
+  align-self: center;
+  text-align: center;
+  justify-content: center;
+  margin-inline: auto;
 }
 
 @media (max-width: 34.5rem) {
-    :where(.order ul li) {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin-block: var(--length-8);
-    }
+  :where(.order ul li) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-block: var(--length-8);
+  }
 
-    :where(.order ul li *) {
-        margin-inline: auto;
-        margin-block: var(--length-4);
-        text-align: center;
-    }
+  :where(.order ul li *) {
+    margin-inline: auto;
+    margin-block: var(--length-4);
+    text-align: center;
+  }
 
-    :where(.order ul li img:not(._store-img)) {
-        inline-size: 44px;
-    }
+  :where(.order ul li img:not(._store-img)) {
+    inline-size: 44px;
+  }
 }

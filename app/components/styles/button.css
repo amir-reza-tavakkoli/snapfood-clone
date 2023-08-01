@@ -7,14 +7,14 @@
   max-inline-size: 100%;
   min-block-size: max-content;
   min-inline-size: max-content;
-  padding-block-start: min(var(--length-20), 16px);
+  padding-block-start: var(--length-16);
+  padding-block-end: var(--length-16);
+  padding-inline-start: 30px;
   padding-inline-end: min(var(--length-20), 30px);
-  padding-block-end: min(var(--length-20), 16px);
-  padding-inline-start: min(var(--length-20), 30px);
   font-size: var(--length-14);
-  border-width: var(--border-thick);
-  border-radius: min(var(--length-3), 3px);
+  border-radius: 3px;
   border: none;
+  border-width: var(--border-thick);
   border-style: solid;
   cursor: pointer;
   overflow: hidden;
@@ -102,14 +102,14 @@
 }
 
 :where(.button[data-rounding="full"]) {
-  border-radius: min(var(--length-48), 48px);
+  border-radius: 48px;
 }
 
 :where(.button > span > svg) {
   display: inline-block;
   min-inline-size: var(--length-12);
   min-block-size: var(--length-12);
-  margin-inline-start: min(var(--length-8), 14px);
+  margin-inline-start: 8px;
   aspect-ratio: 1/1;
 }
 

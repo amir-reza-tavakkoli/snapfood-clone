@@ -17,7 +17,6 @@
 :where(.addresses > div:first-of-type > p) {
   margin-inline-end: auto;
   margin-block: var(--length-6);
-
   font-weight: 700;
   font-size: var(--length-14);
 }
@@ -35,7 +34,6 @@
   flex-direction: column;
   inline-size: 100%;
   padding-inline: 10px;
-
   overflow-y: auto;
 }
 
@@ -43,12 +41,11 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding-inline: 8px;
+  padding-inline-end: 8px;
   padding-inline-start: 12px;
   padding-block: var(--length-28);
   margin-block-start: var(--length-4);
   margin-block-end: var(--length-12);
-
   border: var(--border-normal) solid var(--color-faded-4);
   border-radius: 6px;
   color: var(--color-text-2);
@@ -57,13 +54,11 @@
 
 :where(.addresses > div:last-of-type > li > p) {
   margin-inline-start: 24px;
-
   font-size: var(--length-12);
 }
 
 :where(.addresses > div:last-of-type > li ._delete) {
   margin-inline-start: auto;
-
   background-color: transparent;
   border: none;
 }
@@ -72,7 +67,6 @@
   padding-inline-start: 10px;
   padding-block: var(--length-16);
   margin-block-end: var(--length-8);
-
   color: var(--color-action-2);
   font-size: var(--length-16);
   font-weight: 700;
@@ -80,7 +74,6 @@
 
 :where(.addresses > a:hover, .addresses > a:active) {
   padding-inline-start: 8px;
-
   color: var(--color-action);
   background-color: var(--color-action-4);
   opacity: 0.75;
@@ -98,7 +91,6 @@
 
 :where(.addresses ._empty) {
   margin-block: var(--length-24);
-
   font-weight: 700;
   color: var(--color-error);
 }
@@ -123,7 +115,6 @@
   :where(.addresses > div:last-of-type > li > *) {
     margin-block: var(--length-4);
     margin-inline: initial;
-
     text-align: center;
   }
 }

@@ -8,8 +8,8 @@
 }
 
 :where(.food-card > div) {
-  flex-grow: 2;
   display: flex;
+  flex-grow: 2;
   padding-inline: var(--length-8);
 }
 
@@ -18,8 +18,8 @@
 }
 
 :where(.food-card ._identity) {
-  align-self: flex-start;
   display: flex;
+  align-self: flex-start;
   flex-direction: column;
   padding-block-start: var(--length-8);
 }
@@ -47,10 +47,8 @@
   padding-inline: var(--length-32);
   transition: all 150ms ease-out 0s;
   color: var(--color-accent);
-  box-shadow: var(--box-shadow-thick);
   border: var(--border-thick) solid var(--color-accent-4);
-  box-shadow: hsla(218, 6%, 24%, 0.06) 0px 1px 0px,
-    hsla(0, 0%, 0%, 0.2) 0px 4px 16px -8px;
+  box-shadow: var(--box-shadow-double);
 }
 
 :where(.food-card img:only-of-type) {
@@ -65,8 +63,8 @@
 
 :where(.food-card ._ingredients) {
   display: block;
-  max-width: max-content;
-  min-width: 100px;
+  max-inline-size: max-content;
+  min-inline-size: 100px;
   padding-block: var(--length-16);
   padding-inline-end: var(--length-16);
   margin-inline: 0px;
@@ -86,7 +84,6 @@
   font-weight: 700;
   line-height: var(--length-24);
   color: var(--color-text);
-  /* word-break: break-all; */
 }
 
 :where(.food-card ._price) {
@@ -100,17 +97,19 @@
 :where(.food-card ._forms dd) {
   display: flex;
 }
+
 :where(.food-card form button) {
-  margin-inline: 4px;
+  display: inline-flex;
   inline-size: 32px;
   block-size: 32px;
-  display: inline-flex;
   padding-inline: 0px;
   padding-block: 0px;
+  margin-inline: 4px;
   border-radius: 100%;
-  /* padding-inline: 12px;
-  padding-block: 8px; */
+  background-color: var(--color-accent);
+  color: var(--color-primary);
 }
+
 :where(.food-card ._price div) {
   display: flex;
 }
@@ -134,4 +133,11 @@
   color: var(--color-primary);
   border-color: var(--color-accent-4);
   box-shadow: var(--box-shadow-thick);
+}
+
+@media (max-width: 68.75rem) {
+  :where(.food-card img:only-of-type) {
+    max-inline-size: 16rem;
+    inline-size: 6rem;
+  }
 }

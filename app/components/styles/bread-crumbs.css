@@ -1,12 +1,11 @@
 :where(.bread-crumbs) {
-  margin-block-start: min(var(--length-24), 36px);
-  padding-inline-start: min(var(--length-20), 28px);
   inline-size: 100%;
+  padding-inline-start: 28px;
+  margin-block-start: var(--length-24);
 }
 
 :where(.bread-crumbs a) {
-  margin-inline-start: min(var(--length-8), 16px);
-
+  margin-inline-start: 16px;
   text-align: center;
   text-decoration: none;
   color: inherit;
@@ -26,12 +25,11 @@
 }
 
 :where(.bread-crumbs svg) {
-  margin-inline-start: min(var(--length-6), 24px);
-  margin-block-end: calc(var(--length-2) * -1);
   inline-size: var(--length-6);
   block-size: var(--length-12);
-
   aspect-ratio: 1/2;
+  margin-inline-start: var(--length-6);
+  margin-block-end: -2px;
   fill: var(--color-faded);
   transform: rotate(180deg);
 }

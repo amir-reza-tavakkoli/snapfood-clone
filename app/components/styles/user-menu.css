@@ -4,7 +4,6 @@
   inset-block-start: var(--length-64);
   inset-inline-start: 30px;
   inline-size: 350px;
-
   background-color: var(--color-primary);
   overflow: hidden;
   border-radius: 8px;
@@ -17,12 +16,11 @@
 }
 
 :where(.user-menu > ul > li) {
-  inline-size: 100%;
   display: flex;
+  inline-size: 100%;
   flex-direction: row;
   padding-block: var(--length-16);
   padding-inline: 12px;
-
   color: var(--color-text-2);
   font-weight: 400;
 }
@@ -32,10 +30,9 @@
 }
 
 :where(.user-menu > ul > li > a) {
-  inline-size: 100%;
   display: flex;
+  inline-size: 100%;
   padding-block-start: 2px;
-
   color: var(--color-text-2);
   font-size: var(--length-12);
 }
@@ -58,9 +55,8 @@
 :where(.user-menu > ul > li button) {
   display: inline;
   padding-inline: 0px;
-  padding-block: 0px;
+  padding-block-start: 0px;
   padding-block-end: var(--length-8);
-
   background-color: transparent;
   border: none;
   font-size: var(--length-12);
@@ -99,7 +95,6 @@
   padding-block: var(--length-6);
   margin-block-start: 6px;
   /* optical alignment */
-
   cursor: pointer;
 }
 

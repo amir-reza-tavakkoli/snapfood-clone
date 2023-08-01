@@ -2,7 +2,6 @@
   inline-size: 100%;
   padding-inline: 36px;
   padding-block: var(--length-32);
-
   border-block-start: var(--border-normal) solid var(--color-faded-2);
   background-color: var(--color-primary);
 }
@@ -28,7 +27,6 @@
   padding-block: var(--length-6);
   margin-inline: 0px;
   margin-block: 0px;
-
   text-align: start;
   font-weight: 400;
   font-size: var(--length-10);
