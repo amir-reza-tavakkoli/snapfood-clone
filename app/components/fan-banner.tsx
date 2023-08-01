@@ -1,8 +1,8 @@
 import { Form } from "@remix-run/react"
 
-import { routes } from "~/routes"
-
 import { Icon } from "./icon"
+
+import { routes } from "../routes"
 
 export function FanBanner() {
   return (
@@ -25,7 +25,9 @@ export function FanBanner() {
             <input
               type="text"
               id="__phoneNumber"
-              placeholder={"۰" + Number("9").toLocaleString("fa-IR") + "*******"}
+              placeholder={
+                "۰" + Number("9").toLocaleString("fa-IR") + "*******"
+              }
             />
 
             <button type="submit">دریافت لینک</button>
@@ -37,25 +39,33 @@ export function FanBanner() {
             <li>
               <span className="nonvisual">Iapps</span>
 
-             <a href={routes.notImplemented}>  <Icon name="iapps"></Icon> </a>
+              <a href={routes.notImplemented}>
+                <Icon name="iapps"></Icon>
+              </a>
             </li>
 
             <li>
               <span className="nonvisual">Bazzar</span>
 
-              <a href={routes.notImplemented}> <Icon name="bazzar"></Icon> </a>
+              <a href={routes.notImplemented}>
+                <Icon name="bazzar"></Icon>
+              </a>
             </li>
 
             <li>
               <span className="nonvisual">Googleplay</span>
 
-              <a href={routes.notImplemented}> <Icon name="googleplay"></Icon> </a>
+              <a href={routes.notImplemented}>
+                <Icon name="googleplay"></Icon>
+              </a>
             </li>
 
             <li>
               <span className="nonvisual">Iapps</span>
 
-              <a href={routes.notImplemented}> <Icon name="iapps"></Icon> </a>
+              <a href={routes.notImplemented}>
+                <Icon name="iapps"></Icon>
+              </a>
             </li>
           </ul>
         </Form>
