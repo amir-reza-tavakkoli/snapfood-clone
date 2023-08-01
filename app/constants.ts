@@ -1,5 +1,6 @@
 import type {
   Address,
+  Comment,
   Item,
   Order,
   Store,
@@ -54,6 +55,8 @@ export const DEFAULT_READY_TIME = 15
 export const DEFAULT_SHIPMENT_TIME = 15
 export const BASE_SHIPMENT_MULTIPLIER = 10
 export const PER_UNIT_ADDED_TIME = 2
+export const INVALID_ADDRESS_RANGE = -1
+export const MAX_ORDER_DELAY = 10
 
 export const DEFAULT_USER_NAME = "کاربر"
 export type RESPONDED_BY = "مدیر رستوران" | typeof VENDOR_NAME
@@ -61,6 +64,14 @@ export type AllowedStoresFeatures = "kind" | "discount" | "freeShipment" | "all"
 export type StoreWithTags = Store & {
   tags?: string[]
 }
+
+export type SearchType = {
+  stores: Store[]
+  itemsAndStores: {
+    item: Item
+    stores: (Store | null)[]
+  }[]
+} | null
 
 export type SearchParams = { param: string; takeThisMuch?: number }
 
@@ -77,6 +88,7 @@ export type CartCompProps = {
   billSection?: boolean
   address: Address | null
   schedule: storeSchedule[]
+  storeAddress? : Address
 }
 
 export type CartProps = {
@@ -117,10 +129,8 @@ export type FullOrderStore = {
   createdAt: Date
   updatedAt: Date
   totalPrice: number
-
   packagingPrice: number
   addressId: number
-
   isBilled: boolean
   isInCart?: boolean
   isVerifiedByAdmin?: boolean
@@ -129,7 +139,6 @@ export type FullOrderStore = {
   isDelivered?: boolean
   isCanceled?: boolean
   isDelayedByStore?: boolean
-
   storeId?: number
   storeKindName?: string
   name?: string
