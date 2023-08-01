@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
+
 import type { LatLngTuple, Map, Marker } from "leaflet"
+
 import {
   MapContainer,
   TileLayer,
   Marker as MarkerComponent,
 } from "react-leaflet"
+
 import { DEFAULT_MAP_ZOOM } from "../constants"
 
 function DisplayPosition({ map, marker }: { map: Map; marker: Marker | null }) {
@@ -18,11 +21,13 @@ function DisplayPosition({ map, marker }: { map: Map; marker: Marker | null }) {
     if (marker) {
       marker.setLatLng(map.getCenter())
     }
+
     setPosition(map.getCenter())
   }, [map])
 
   useEffect(() => {
     map.on("move", onMove)
+
     return () => {
       map.off("move", onMove)
     }
@@ -71,6 +76,7 @@ export function MapComponent({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
         <MarkerComponent
           position={initPosition}
           ref={setMarker}
@@ -83,6 +89,7 @@ export function MapComponent({
   return (
     <div>
       {map ? <DisplayPosition map={map} marker={marker} /> : null}
+
       {displayMap}
     </div>
   )
@@ -96,6 +103,7 @@ export function HiddenInput({
   return (
     <div style={{ width: 0 }}>
       <input type="hidden" name="xAxis" value={position.lat} />
+
       <input type="hidden" name="yAxis" value={position.lng} />
     </div>
   )

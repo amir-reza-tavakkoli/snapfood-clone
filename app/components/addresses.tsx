@@ -1,23 +1,20 @@
-import { useEffect, useState } from "react"
-
-import { Link, useOutletContext } from "@remix-run/react"
+import { Link } from "@remix-run/react"
 
 import type { Address } from "@prisma/client"
 
-import { setChosenAddress } from "../utils/utils"
-import { getFullAddress, toPersianDigits } from "../utils/utils"
-
-import { routes } from "../routes"
+import { getFullAddress } from "../utils/utils"
 
 import { Icon } from "./icon"
 
-import { COOKIE_ADDRESS, COOKIE_City } from "../constants"
+import { useSetAddress } from "~/hooks/setAddress"
+
+import { routes } from "../routes"
 
 type AddressesProps = {
   addresses: Address[] | null
   dir?: "lrt" | "rtl"
   setHomeAddress: any
-  homeAddress: any
+  homeAddress: Address
 }
 
 export function Addresses({
@@ -26,25 +23,10 @@ export function Addresses({
   setHomeAddress,
   homeAddress,
 }: AddressesProps) {
-  const [addressId, setAddressId] = useState(-1)
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const choosedAddress = addresses?.find(a => a.id === addressId)
-      if (!choosedAddress) {
-        return
-      }
-      setHomeAddress(choosedAddress)
-      localStorage.setItem(COOKIE_ADDRESS, addressId.toString())
-      localStorage.setItem(COOKIE_City, choosedAddress?.cityName)
-    }
-  }, [addressId])
-
-  useEffect(() => {
-    setAddressId(Number(localStorage.getItem(COOKIE_ADDRESS)))
-  }, [])
-
-  console.log("addresses", addressId)
+  const { addressId, setAddressId } = useSetAddress({
+    addresses,
+    setHomeAddress,
+  })
 
   return (
     <ul aria-label="address" className="addresses" dir={dir}>
@@ -56,6 +38,7 @@ export function Addresses({
           }}
         >
           <span className="nonvisual">Back To Previous</span>
+
           <Icon name="flash" color="action"></Icon>
         </Link>
 

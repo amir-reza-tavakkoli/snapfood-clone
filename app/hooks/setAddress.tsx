@@ -35,5 +35,5 @@ export function useSetAddress({
     setAddressId(Number(localStorage.getItem(COOKIE_ADDRESS)))
   }, [])
 
-    return { addressId, setAddressId }
+  return { addressId, setAddressId }
 }

@@ -2,14 +2,13 @@ import { Link } from "@remix-run/react"
 
 import { Button } from "./button"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
-import { CartProps } from "./cart"
+import { routes } from "../routes"
+
+import { type CartProps, DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
 type OrderProps = CartProps
 
 export const Orders = ({ orders, dir }: OrderProps) => {
-  console.log(orders)
-
   return (
     <ol className="order-summary" dir={dir}>
       <p className="nonvisual">Orders</p>
@@ -22,7 +21,7 @@ export const Orders = ({ orders, dir }: OrderProps) => {
               key={index}
             >
               <div>
-                <Link to={`/stores/${order.store.id}`}>
+                <Link to={routes.store(order.store.id)}>
                   <img
                     src={order.store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
@@ -31,10 +30,17 @@ export const Orders = ({ orders, dir }: OrderProps) => {
 
                   <p className="nonvisual">{order.store.name}</p>
                 </Link>
+
                 <div className="_identity">
                   <p aria-label="Name">{order.store.name}</p>
 
-                  <time className="_datetime" aria-label="Billed At">
+                  <time
+                    className="_datetime"
+                    aria-label="Billed At"
+                    dateTime={new Date(
+                      order.order.billDate ?? order.order.createdAt,
+                    ).toLocaleString("fa-IR")}
+                  >
                     {new Date(
                       order.order.billDate ?? order.order.createdAt,
                     ).toLocaleString("fa-IR")}
@@ -49,14 +55,15 @@ export const Orders = ({ orders, dir }: OrderProps) => {
                   <p>
                     <span> نظرتان را درباره این سفارش به اشتراک بگذارید</span>
 
-                    <Link to={`/comment/${order.order.id}`}>ثبت نظر</Link>
+                    <Link to={routes.comment(order.order.id)}>ثبت نظر</Link>
                   </p>
                 ) : (
                   <span>نظر شما با موفقیت ثبت شد</span>
                 )}
               </div>
+
               <span className="_buttons">
-                <Link to={`/order/${order.order.id}`}>
+                <Link to={routes.order(order.order.id)}>
                   <Button
                     variant="faded"
                     icon={{ name: "info", color: "text" }}
@@ -66,13 +73,15 @@ export const Orders = ({ orders, dir }: OrderProps) => {
                   </Button>
                 </Link>
 
-                <Button
-                  variant="faded"
-                  icon={{ name: "info", color: "text" }}
-                  type="button"
-                >
-                  سفارش مجدد
-                </Button>
+                <Link to={routes.store(order.store.id)}>
+                  <Button
+                    variant="faded"
+                    icon={{ name: "info", color: "text" }}
+                    type="button"
+                  >
+                    سفارش مجدد
+                  </Button>
+                </Link>
               </span>
             </li>
           ))

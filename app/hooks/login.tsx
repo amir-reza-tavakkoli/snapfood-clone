@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import type { LoginActionData, LoginPageState } from "../routes/_home.login"
 
-const phoneCookieName = "phoneNumber"
+import { COOKIE_PHONE } from "../constants"
 
 export function useLogin(actionData: LoginActionData) {
   const [phoneNumber, setPhoneNumber] = useState<string>("")
@@ -21,13 +21,13 @@ export function useLogin(actionData: LoginActionData) {
 
   useEffect(() => {
     if (pgaeState === "verification") {
-      setPhoneNumber(sessionStorage.getItem(phoneCookieName)!)
+      setPhoneNumber(sessionStorage.getItem(COOKIE_PHONE)!)
     }
   }, [verificationCode])
 
   useEffect(() => {
     if (pgaeState === "phoneNumber" && phoneNumber && phoneNumber !== "") {
-      sessionStorage.setItem(phoneCookieName, phoneNumber)
+      sessionStorage.setItem(COOKIE_PHONE, phoneNumber)
     }
   }, [phoneNumber])
 

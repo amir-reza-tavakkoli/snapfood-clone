@@ -43,7 +43,9 @@ export const StoreInfo = ({
 
             <dt className="nonvisual">Status</dt>
 
-            <dd>{isOpen ? "باز" : "بسته"}</dd>
+            <dd className={isOpen ? "_status-open" : "_status-closed"}>
+              {isOpen ? "باز" : "بسته"}
+            </dd>
 
             {rating ? (
               <>
@@ -60,7 +62,9 @@ export const StoreInfo = ({
                     {rating.value ? (
                       <>
                         <dt className="nonvisual">Value</dt>
-                        <dd aria-label="Stars">{rating.value}</dd>
+                        <dd aria-label="Stars">
+                          {rating.value.toLocaleString("fa")}
+                        </dd>
                       </>
                     ) : null}
 
@@ -68,14 +72,18 @@ export const StoreInfo = ({
                       <>
                         <dd className="nonvisual">Range</dd>
 
-                        <dt className="nonvisual">/ {rating.range}</dt>
+                        <dt className="nonvisual">
+                          / {rating.range.toLocaleString("fa")}
+                        </dt>
                       </>
                     ) : null}
 
                     {rating.count ? (
                       <>
                         <dt className="nonvisual">Count</dt>
-                        <dd className="_rating-count">( {rating.count} نظر)</dd>
+                        <dd className="_rating-count">
+                          ( {rating.count.toLocaleString("fa")} نظر)
+                        </dd>
                       </>
                     ) : null}
                   </dl>
@@ -119,7 +127,13 @@ export const StoreInfo = ({
         <ol className="_categories">
           {categories
             ? categories.map(category => (
-                <li>
+                <li
+                  className={
+                    decodeURI(location.hash) === `#__${category}`
+                      ? "_choosed-link"
+                      : undefined
+                  }
+                >
                   <a href={`#__${category}`}>{category}</a>
                 </li>
               ))

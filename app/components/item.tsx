@@ -1,9 +1,11 @@
 import { Form } from "@remix-run/react"
-import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
-import { Store } from "@prisma/client"
-import { FullOrderItem } from "../queries.server/order.query.server"
+
+import type { Store } from "@prisma/client"
+
 import { Button } from "./button"
 import { routes } from "../routes"
+
+import { DEFAULT_IMG_PLACEHOLDER, type FullOrderItem } from "../constants"
 
 type ItemProps = {
   item: FullOrderItem
@@ -25,12 +27,16 @@ export function ItemComp({ item, store, address }: ItemProps) {
       <dt className="nonvisual">Image</dt>
 
       <dd>
-        <img src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER} alt="" />
+        <img
+          src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
+          alt=""
+          role="presentation"
+        />
       </dd>
 
       <dt className="nonvisual">Price</dt>
 
-      <dd className="_price">{item.price}</dd>
+      <dd className="_price">{item.price?.toLocaleString("fa")}</dd>
 
       {item.isAvailible ? (
         <>
@@ -39,7 +45,7 @@ export function ItemComp({ item, store, address }: ItemProps) {
             action={routes.store(store.id)}
             reloadDocument={false}
           >
-            {item.count ? item.count : null}
+            {item.count ? item.count.toLocaleString("fa") : null}
 
             <input type="hidden" name="id" value={item.id} />
 

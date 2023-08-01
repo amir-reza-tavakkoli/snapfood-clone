@@ -4,6 +4,8 @@ import { routes } from "../routes"
 
 import { Icon } from "./icon"
 
+import { Link } from "@remix-run/react"
+
 import { VENDOR_NAME, VENDOR_NAME_ENG } from "../constants"
 
 type Reference = {
@@ -12,6 +14,7 @@ type Reference = {
 }
 
 type WithImage = Reference & { logo: string }
+
 type WithIcon = Reference & { logo: ComponentProps<typeof Icon> }
 
 type FooterProps = {
@@ -68,9 +71,9 @@ export const Footer = ({
 
       <div>
         <address className="_vendor">
-          <a href={homepage} aria-label="Homepage" rel="canonical">
+          <Link to={homepage} aria-label="Homepage" rel="canonical">
             <Icon name={logo.name} role="presentation" />
-          </a>
+          </Link>
 
           <span>
             <span>{name}</span>
@@ -99,7 +102,7 @@ export const Footer = ({
       <ul aria-label="Sitemap" className="_sitemap">
         {links.map((item, index) => (
           <li key={index}>
-            <a href={item.href}>{item.name}</a>
+            <Link to={item.href}>{item.name}</Link>
           </li>
         ))}
       </ul>

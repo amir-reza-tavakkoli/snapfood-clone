@@ -1,6 +1,6 @@
 import { Icon } from "./icon"
 
-export type ImageItemProps = {
+type ImageItemProps = {
   title: string
   type?: string
   image: string
@@ -16,8 +16,10 @@ export const ImageItem = ({
   return (
     <div className="image-item" aria-label={type ?? undefined} dir={dir}>
       <img src={image} alt="" role="presentation" />
+
       <p>
         {title}
+
         <span role="presentation">
           <Icon name="flash" color="accent" role="presentation" />
         </span>

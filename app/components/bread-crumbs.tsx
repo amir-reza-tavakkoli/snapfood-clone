@@ -13,6 +13,8 @@ type BreadCrumbsProps = {
 export const BreadCrumbs = ({ items, dir }: BreadCrumbsProps) => {
   return (
     <nav aria-label="Breadcrumb" className="bread-crumbs" dir={dir}>
+      <h1 className="nonvisual">Breadcrumb</h1>
+
       <ol>
         {items.map((item, index) => (
           <li key={index}>
@@ -22,6 +24,7 @@ export const BreadCrumbs = ({ items, dir }: BreadCrumbsProps) => {
             >
               {item.name}
             </a>
+
             {index !== items.length - 1 ? (
               <Icon name="flash" color="faded" role="presentation" />
             ) : null}

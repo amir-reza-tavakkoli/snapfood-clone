@@ -1,6 +1,12 @@
-import type { User } from "@prisma/client"
-import { DEFAULT_USER_NAME } from "../constants"
 import { db } from "../utils/db.server"
+
+import type { User } from "@prisma/client"
+
+import { evaluateUser } from "./evaluate.server"
+
+import { validateUser } from "../utils/validate.server"
+
+import { DEFAULT_USER_NAME } from "../constants"
 
 export async function getUserByPhone({
   phoneNumber,
@@ -27,11 +33,16 @@ export async function createOrUpdateUser({
   gender,
   birthday,
   email,
-  isSuspended,verificationCode,verificationCodeExpiry,credit,
+  isSuspended,
+  verificationCode,
+  verificationCodeExpiry,
+  credit,
   isVerified,
-}: Partial<User> & {phoneNumber : string}): Promise<User> {
+}: Partial<User> & { phoneNumber: string }): Promise<User> {
   try {
     let user = await getUserByPhone({ phoneNumber })
+
+    evaluateUser({ birthday, email, firstName, lastName, credit, phoneNumber })
 
     if (user) {
       user = await db.user.update({
@@ -58,7 +69,7 @@ export async function createOrUpdateUser({
     const newUser = await db.user.create({
       data: {
         phoneNumber,
-        firstName : firstName ?? DEFAULT_USER_NAME,
+        firstName: firstName ?? DEFAULT_USER_NAME,
         lastName,
         gender,
         birthday,
@@ -84,14 +95,12 @@ export async function updateVerificationCode(
 ): Promise<User | null> {
   try {
     if (!verificationCode || !verificationCodeExpiry) {
-      throw new Error("Provide Verification Information")
+      throw new Response("مشکلی در تولید کد ارسالی پیش آمد", { status: 404 })
     }
 
     const user = await getUserByPhone({ phoneNumber })
 
-    if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("User Not Found")
-    }
+    validateUser({ user })
 
     return await db.user.update({
       where: {

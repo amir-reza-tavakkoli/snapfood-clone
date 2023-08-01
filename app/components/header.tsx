@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import { Form, Link } from "@remix-run/react"
 
@@ -11,14 +11,13 @@ import type { Address } from "@prisma/client"
 
 import { getFullAddress } from "../utils/utils"
 
-import { SearchType } from "../routes/search"
+import { useSearch } from "../hooks/search"
 
 import {
   DEFAULT_IMG_PLACEHOLDER,
   VENDOR_NAME,
   VENDOR_NAME_ENG,
 } from "../constants"
-import { useSearch } from "~/hooks/search"
 
 type HeaderProps = {
   address?: Address | null
@@ -43,9 +42,9 @@ export const Header = ({
     <header className="header" dir={dir}>
       <h1 className="nonvisual">{VENDOR_NAME}</h1>
 
-      <a href={routes.index} aria-label="Home" className="_vendor">
+      <Link to={routes.index} aria-label="Home" className="_vendor">
         <Icon name={VENDOR_NAME_ENG} role="presentation" />
-      </a>
+      </Link>
 
       <div className="_identity">
         <Icon name="navigation" role="presentation"></Icon>
@@ -87,15 +86,15 @@ export const Header = ({
         </Button>
 
         <Link to={routes.searchPage}>
-        <Button
-          className="_backup-button"
-          type="button"
-          icon={{ name: "search", color: "faded" }}
-          role="presentation"
-        >
+          <Button
+            className="_backup-button"
+            type="button"
+            icon={{ name: "search", color: "faded" }}
+            role="presentation"
+          >
             <span className="nonvisual">Search</span>
-        </Button>
-          </Link>
+          </Button>
+        </Link>
 
         <div role="presentation"></div>
       </Form>

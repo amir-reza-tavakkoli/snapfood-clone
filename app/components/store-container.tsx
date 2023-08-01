@@ -2,6 +2,9 @@ import { Link } from "@remix-run/react"
 
 import { Icon } from "./icon"
 import { VendorCard } from "./store-card"
+
+import { routes } from "~/routes"
+
 import {
   DEFAULT_CURRENCY,
   DEFAULT_DELIVERY_METHOD,
@@ -26,16 +29,18 @@ export function StoreContainer({
     <ul className="store-container" aria-label="Stores" dir={dir}>
       <div>
         <p>{title}</p>
+
         {moreHref ? (
           <Link to={moreHref}>
             مشاهده همه{<Icon name="flash" color="action"></Icon>}
           </Link>
         ) : undefined}
       </div>
+
       <div>
         {stores &&
           stores.map((store, index) => (
-            <Link to={`/store/${store.id}`} key={index}>
+            <Link to={routes.store(store.id)} key={index}>
               <li>
                 <VendorCard
                   image={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}

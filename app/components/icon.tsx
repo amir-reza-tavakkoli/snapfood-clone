@@ -1,4 +1,4 @@
-import { SVG_ICON_PREFIX } from "~/constants"
+import { SVG_ICON_PREFIX } from "../constants"
 
 type IconName =
   | "snappfood"
@@ -1157,7 +1157,11 @@ const Helmet = ({ name, color, ...props }: IconProps) => (
 const Multiply = ({ name, color, ...props }: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    style={{verticalAlign: "middle", fill: "currentColor", overflow: "hidden"}}
+    style={{
+      verticalAlign: "middle",
+      fill: "currentColor",
+      overflow: "hidden",
+    }}
     viewBox="0 0 1024 1024"
     version="1.1"
   >

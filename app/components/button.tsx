@@ -26,6 +26,7 @@ export const Button = ({
       {...otherProps}
     >
       <span>{children}</span>
+
       {icon ? (
         <span>
           <Icon {...icon} />

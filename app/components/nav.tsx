@@ -1,6 +1,7 @@
+import { Link } from "@remix-run/react"
 import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
-export type item = {
+type item = {
   name: string
   avatarUrl?: string
   href: string
@@ -20,7 +21,7 @@ export const CategoryNav = ({ items, type, dir }: NavProps) => {
       <ul aria-label={type}>
         {items.map((item, index) => (
           <li key={index}>
-            <a href={item.href}>
+            <Link to={item.href}>
               <span>
                 <img
                   role="presentation"
@@ -30,7 +31,7 @@ export const CategoryNav = ({ items, type, dir }: NavProps) => {
 
                 <span className="_name">{item.name}</span>
               </span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

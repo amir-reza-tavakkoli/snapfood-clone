@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react"
-import { routes } from "~/routes"
-import { SearchType } from "~/routes/search"
 
-export function useSearch({
-  searchValue,
+import { routes } from "../routes"
 
-}: {
-  searchValue : string
-}) {
+import { SearchType } from "../constants"
+
+export function useSearch({ searchValue }: { searchValue: string }) {
   const [searchData, setSearchData] = useState<SearchType>()
 
   useEffect(() => {
     async function fetchData() {
       if (searchValue == "") return
+
       const data = await fetch(routes.search + `?search=${searchValue}`)
 
       const jsonData = (await data.json()) as unknown as SearchType
@@ -23,5 +21,5 @@ export function useSearch({
     fetchData()
   }, [searchValue])
 
-  return { searchData,setSearchData }
+  return { searchData, setSearchData }
 }

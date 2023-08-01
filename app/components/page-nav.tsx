@@ -17,7 +17,8 @@ export function PageNav() {
             to={routes.index}
             className={
               location.pathname === routes.index ||
-              location.pathname === routes.stores || location.pathname.match(routes.stores)
+              location.pathname === routes.stores ||
+              location.pathname.match(routes.stores)
                 ? "_choosed"
                 : undefined
             }

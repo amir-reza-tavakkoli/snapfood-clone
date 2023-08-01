@@ -1,3 +1,5 @@
+import { Link } from "@remix-run/react"
+
 type CityListProps = {
   title: string
   type?: string
@@ -16,13 +18,12 @@ export const CityList = ({
 }: CityListProps) => {
   return (
     <article className="city-list" dir={dir}>
-
       <h1>{title}</h1>
 
       <ul aria-label={type ?? undefined}>
         {items.map((item, index) => (
           <li key={index}>
-            {item.href ? <a href={item.href}>{item.name}</a> : item.name}
+            {item.href ? <Link to={item.href}>{item.name}</Link> : item.name}
           </li>
         ))}
       </ul>

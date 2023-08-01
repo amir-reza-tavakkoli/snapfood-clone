@@ -2,37 +2,38 @@ import { useEffect, useState } from "react"
 
 import { Link } from "@remix-run/react"
 
-import type { Comment, Order, Store } from "@prisma/client"
-
-import type { FullOrderItem } from "../queries.server/order.query.server"
-
 import { routes } from "../routes"
 
-import { DEFAULT_CURRENCY, DEFAULT_IMG_PLACEHOLDER } from "./../constants"
+import { getStoreCurrentSchedule } from "../utils/utils"
 
-export type CartCompProps = {
-  items: FullOrderItem[]
-  order: Order
-  store: Store
-  totalPrice?: number
-  dir?: "rtl" | "lrt"
-  comment?: Comment | null
-  commentSection?: boolean
-  billSection?: boolean
-}
+import { Button } from "./button"
+
+import { getOrderStatus } from "../queries.server/db.utils.query"
+
+import {
+  CartCompProps,
+  DEFAULT_CURRENCY,
+  DEFAULT_IMG_PLACEHOLDER,
+} from "./../constants"
+import { OrderStatus } from "./order-status"
 
 export const OrderComp = ({
   order,
   items,
   store,
   dir,
+  schedule,
   totalPrice,
+  address,
+  storeAddress,
   comment = null,
   commentSection = false,
   billSection = false,
 }: CartCompProps) => {
   const [newTotalPrice, setNewTotalPrice] = useState(0)
+
   const [totalDiscount, setTotalDiscount] = useState(0)
+
   const [finalPrice, setFinalPrice] = useState(totalPrice ?? 0)
 
   useEffect(() => {
@@ -65,6 +66,8 @@ export const OrderComp = ({
     if (totalDiscount !== tempPrice) setTotalDiscount(tempPrice)
   })
 
+  const status = getOrderStatus({ order }).status
+
   return (
     <Link to={routes.store(store.id)} className="order">
       <ul dir={dir}>
@@ -76,6 +79,18 @@ export const OrderComp = ({
             className="_store-img"
           />
 
+          <time
+            className="nonvisual"
+            aria-label="Billed At"
+            dateTime={new Date(
+              order.billDate ?? order.createdAt,
+            ).toLocaleString("fa-IR")}
+          >
+            {new Date(order.billDate ?? order.createdAt).toLocaleString(
+              "fa-IR",
+            )}
+          </time>
+
           <span>
             <p>
               <span className="nonvisual">store Name</span>
@@ -83,7 +98,6 @@ export const OrderComp = ({
             </p>
           </span>
         </li>
-
         {commentSection ? (
           <div className="_comment" aria-label="Comment">
             {!comment ? (
@@ -97,26 +111,29 @@ export const OrderComp = ({
             )}
           </div>
         ) : null}
-
         <li>
           <ul>
             {items.map((item, index) =>
-              item && item.count && item.count > 0 ? (
+              item &&
+              item.count &&
+              ((item.price && item.price > 0) ||
+                (item.basePrice && item.basePrice > 0)) ? (
                 <li key={index} className="_item">
                   <img
                     src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
+                    role="presentation"
                   ></img>
 
                   <span className="_item-name">{item.name}</span>
 
                   <span aria-label="Count" className="_count">
-                    {(item.count ?? 0).toLocaleString("fa-IR") + "×"}
+                    {item.count.toLocaleString("fa-IR") + "×"}
                   </span>
 
                   <span className="_price">
                     {" " +
-                      item.price?.toLocaleString("fa-IR") +
+                      (item.price ?? item.basePrice!).toLocaleString("fa-IR") +
                       " " +
                       DEFAULT_CURRENCY}
                   </span>
@@ -125,17 +142,15 @@ export const OrderComp = ({
             )}
           </ul>
         </li>
-
-        <li className="_price">
+        <li className="_price" aria-label="Totla">
           <span> جمع کل</span>
 
           <span className="_price">
             {newTotalPrice.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
-
         <li>
-          <span>هزینه ارسال</span>
+          <span aria-label="Shipment">هزینه ارسال</span>
 
           <span className="_price">
             {store.baseShipmentPrice.toLocaleString("fa-IR") +
@@ -143,9 +158,8 @@ export const OrderComp = ({
               DEFAULT_CURRENCY}
           </span>
         </li>
-
         <li>
-          <span>هزینه بسته بندی</span>
+          <span aria-label="Packaging">هزینه بسته بندی</span>
 
           <span className="_price">
             {store.packagingPrice.toLocaleString("fa-IR") +
@@ -153,30 +167,52 @@ export const OrderComp = ({
               DEFAULT_CURRENCY}
           </span>
         </li>
-
         <li className="_discount">
-          <span>تخفیف</span>
+          <span aria-label="Discount">تخفیف</span>
 
           <span className="_price">
             {totalDiscount.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
-
         <li className="_total">
-          <span>نهایی</span>
+          <span aria-label="final">نهایی</span>
 
           <span className="_price">
             {finalPrice.toLocaleString("fa-IR") + " " + DEFAULT_CURRENCY}
           </span>
         </li>
+        {newTotalPrice < store.minOrderPrice ? (
+          <li className="_total">
+            <span aria-label="final">باقی مانده</span>
+
+            <span className="_price">
+              {(store.minOrderPrice - newTotalPrice).toLocaleString("fa-IR") +
+                " " +
+                DEFAULT_CURRENCY}
+            </span>
+          </li>
+        ) : null}
+
+        {order && order.isBilled ? (
+          <OrderStatus order={order}></OrderStatus>
+        ) : null}
 
         {order &&
+        !order.isBilled &&
+        !order.isCanceled &&
         store.isVerified &&
         store.isAvailible &&
+        address &&
+        store.cityName === address.cityName &&
         billSection &&
-        newTotalPrice > store.minOrderPrice ? (
-          <li>
-            <Link to={routes.checkout(order.id)}> ثبت سفارش</Link>
+        newTotalPrice > store.minOrderPrice &&
+        getStoreCurrentSchedule(schedule) ? (
+          <li className="_order-button">
+            <Link to={routes.checkout(order.id)}>
+              <Button variant="accent" type="button" aria-label="Order">
+                ثبت سفارش{" "}
+              </Button>
+            </Link>
           </li>
         ) : null}
       </ul>
