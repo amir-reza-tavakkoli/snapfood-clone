@@ -1,36 +1,35 @@
 :where(.search-page) {
-    inline-size: 90%;
-    block-size: max-content;
-    margin-inline: auto;
-    margin-block: var(--length-32);
+  inline-size: 90%;
+  block-size: max-content;
+  margin-inline: auto;
+  margin-block: var(--length-32);
 }
 
 :where(.search-page form) {
-    inline-size: 100%;
-    justify-content: stretch;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    border-radius: 12px;
+  display: flex;
+  inline-size: 100%;
+  justify-content: stretch;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
 }
 
 :where(.search-page form input) {
-    display: flex;
-    inline-size: min-content;
-    block-size: var(--length-48);
-    padding-inline: 24px;
-    padding-block: var(--length-16);
-
-    border-radius: 12px;
-    background-color: var(--color-faded-2);
-    border: none;
-    outline: none;
+  display: flex;
+  inline-size: min-content;
+  block-size: var(--length-48);
+  padding-inline: 24px;
+  padding-block: var(--length-16);
+  border-radius: 12px;
+  background-color: var(--color-faded-2);
+  border: none;
+  outline: none;
 }
 
 :where(.search-page form svg) {
-    margin-inline: 8px;
+  margin-inline: 8px;
 }
 
 :where(.search-page .search-bar) {
-    inset-block-start: 17rem;
+  inset-block-start: 17rem;
 }

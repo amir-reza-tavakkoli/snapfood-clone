@@ -6,8 +6,8 @@
 
 :where(._address-page > p) {
   margin-inline: 16px;
-  font-size: var(--length-20);
   margin-block: var(--length-16);
+  font-size: var(--length-20);
   font-weight: 600;
 }
 
@@ -17,21 +17,20 @@
 }
 
 :where(._address-page > form > div > label) {
-  font-size: var(--length-14);
-  font-weight: 500;
   align-self: center;
   margin-block: var(--length-6);
+  font-size: var(--length-14);
+  font-weight: 500;
 }
 
 :where(._address-page > form > div) {
   display: flex;
+  padding-inline: 12px;
   margin-inline: 16px;
   margin-block: var(--length-12);
-  padding-inline: 12px;
   border: solid var(--color-faded-2) var(--border-thick);
   border-radius: 6px;
-  box-shadow: rgba(58, 61, 66, 0.06) 0px 1px 0px,
-    rgba(0, 0, 0, 0.2) 0px 4px 16px -8px;
+  box-shadow: var(--box-shadow-double);
 }
 
 :where(._address-page > form > div:focus-within) {
@@ -41,9 +40,9 @@
 }
 
 :where(._address-page > form button) {
-  margin-block: var(--length-8);
   align-self: center;
   inline-size: 36px;
+  margin-block: var(--length-8);
 }
 
 :where(
@@ -51,14 +50,14 @@
     ._address-page form select,
     ._address-page form textarea
   ) {
-  padding-inline: 12px;
-  text-align: end;
-  margin-inline: 12px;
-  margin-inline-end: 0px;
   inline-size: 100%;
+  padding-inline: 12px;
   padding-block: var(--length-6);
+  margin-inline-start: 12px;
+  margin-inline-end: 0px;
   margin-block: var(--length-6);
   background-color: var(--color-primary);
+  text-align: end;
   border-radius: 6px;
   border: none;
 }

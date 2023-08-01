@@ -1,136 +1,132 @@
 :where(.wallet-page) {
-    inline-size: 80%;
-    margin-block: var(--length-24);
-    margin-inline: auto;
-    padding-inline: 32px;
-    padding-block: var(--length-32);
-
-    border: var(--border-thin) solid var(--color-faded-3);
-    background-color: var(--color-faded-7);
-    border-radius: 20px;
+  inline-size: 80%;
+  padding-inline: 32px;
+  padding-block: var(--length-32);
+  margin-block: var(--length-24);
+  margin-inline: auto;
+  border: var(--border-thin) solid var(--color-faded-3);
+  background-color: var(--color-faded-7);
+  border-radius: 20px;
 }
 
 :where(.wallet-page ._credit) {
-    margin-block-start: var(--length-6);
-    margin-block-end: var(--length-16);
-    font-size: var(--length-14);
-    display: inline-block;
-    color: var(--color-faded-9);
+  display: inline-block;
+  margin-block-start: var(--length-6);
+  margin-block-end: var(--length-16);
+  font-size: var(--length-14);
+  color: var(--color-faded-9);
 }
 
 :where(.wallet-page form) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 :where(.wallet-page button) {
-    margin-block: var(--length-2);
+  margin-block: var(--length-2);
 }
 
 :where(.wallet-page label) {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
 }
 
 :where(.wallet-page label span) {
-    font-size: var(--length-12);
-    color: var(--color-faded-9);
-    margin-block-end: var(--length-10);
+  font-size: var(--length-12);
+  color: var(--color-faded-9);
+  margin-block-end: var(--length-10);
 }
 
 :where(.wallet-page input) {
-    display: inline-block;
-    inline-size: 70%;
-    margin-block: var(--length-12);
-    padding-inline: 12px;
-    padding-block: var(--length-10);
-    margin-inline: auto;
-
-    text-align: center;
-    font-size: var(--length-16);
-    font-weight: 700;
-    background-color: var(--color-primary);
-    border: var(--border-extra-thin) solid var(--color-faded-5);
-    box-shadow: var(--box-shadow-double);
-    border-radius: 6px;
-    overflow: hidden;
+  display: inline-block;
+  inline-size: 70%;
+  padding-inline: 12px;
+  padding-block: var(--length-10);
+  margin-inline: auto;
+  margin-block: var(--length-12);
+  text-align: center;
+  font-size: var(--length-16);
+  font-weight: 700;
+  background-color: var(--color-primary);
+  border: var(--border-extra-thin) solid var(--color-faded-5);
+  box-shadow: var(--box-shadow-double);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 :where(.wallet-page form div:first-of-type) {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 :where(.wallet-page form div:first-of-type button) {
-    border: none;
-    margin-inline: 16px;
-    padding-block: var(--length-6);
+  margin-inline: 16px;
+  padding-block: var(--length-6);
+  border: none;
 }
 
 :where(.wallet-page form div:last-of-type) {
-    display: flex;
-    inline-size: 75%;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  inline-size: 75%;
+  justify-content: center;
+  align-items: center;
 }
 
 :where(.wallet-page p._success) {
-    margin-block: var(--length-12);
-
-    color: var(--color-action);
-    text-align: center;
-    align-items: center;
+  align-items: center;
+  margin-block: var(--length-12);
+  color: var(--color-action);
+  text-align: center;
 }
 
 :where(.wallet-page p._error) {
-    margin-block: var(--length-12);
-    
-    color: var(--color-error);
-    text-align: center;
-    align-items: center;
+  align-items: center;
+  margin-block: var(--length-12);
+  color: var(--color-error);
+  text-align: center;
 }
 
 :where(.wallet-page form div:last-of-type button) {
-    inline-size: 24px;
-    block-size: 24px;
-    padding-inline: 10px;
-    inline-size: max-content;
-
-    border: none;
-    border-radius: 100000px;
-    background-color: transparent;
-    font-size: var(--length-20);
-    font-weight: 700;
-    color: var(--color-accent);
+  block-size: 24px;
+  inline-size: max-content;
+  padding-inline: 10px;
+  border: none;
+  border-radius: 100000px;
+  background-color: transparent;
+  font-size: var(--length-20);
+  font-weight: 700;
+  color: var(--color-accent);
 }
 
-:where(.wallet-page form div:last-of-type button:hover,
-    .wallet-page form div button:active) {
-    background-color: var(--color-faded-3);
+:where(
+    .wallet-page form div:last-of-type button:hover,
+    .wallet-page form div button:active
+  ) {
+  background-color: var(--color-faded-3);
 }
 
 @media (max-width: 34.5rem) {
-    :where(.wallet-page) {
-        inline-size: 90%;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
+  :where(.wallet-page) {
+    justify-content: center;
+    align-items: center;
+    inline-size: 90%;
+    text-align: center;
+  }
 
-    :where(.wallet-page form div:first-of-type) {
-        flex-direction: column;
-        margin-block: var(--length-12);
-        margin-inline: 0px;
-    }
+  :where(.wallet-page form div:first-of-type) {
+    flex-direction: column;
+    margin-block: var(--length-12);
+    margin-inline: 0px;
+  }
 
-    :where(.wallet-page form div:first-of-type button) {
-        margin-inline: 0px;
-    }
+  :where(.wallet-page form div:first-of-type button) {
+    margin-inline: 0px;
+  }
 
-    :where(.wallet-page form div:last-of-type) {
-        margin-inline: 0px;
-        flex-direction: column;
-    }
+  :where(.wallet-page form div:last-of-type) {
+    margin-inline: 0px;
+    flex-direction: column;
+  }
 }

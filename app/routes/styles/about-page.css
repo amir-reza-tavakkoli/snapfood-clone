@@ -1,72 +1,72 @@
 :where(.about-page) {
-    inline-size: 66%;
-    margin-block: var(--length-32);
-    margin-inline: auto;
-    padding-inline: 14px;
-    padding-block: var(--length-24);
+  inline-size: 66%;
+  padding-inline: 14px;
+  padding-block: var(--length-24);
+  margin-block: var(--length-32);
+  margin-inline: auto;
 }
 
 :where(.about-page img) {
-    max-inline-size: 100%;
+  max-inline-size: 100%;
 }
 
 :where(.about-page h1) {
-    margin-block: var(--length-24);
-    font-size: var(--length-24);
-    padding-inline: 10px;
+  padding-inline: 10px;
+  margin-block: var(--length-24);
+  font-size: var(--length-24);
 }
 
 :where(.about-page h2) {
-    margin-block: var(--length-18);
-    padding-inline: 10px;
-    font-size: var(--length-16);
+  padding-inline: 10px;
+  margin-block: var(--length-18);
+  font-size: var(--length-16);
 }
 
 :where(.about-page p) {
-    padding-inline: 6px;
-    font-size: var(--length-14);
-    color: var(--color-text-2);
+  padding-inline: 6px;
+  font-size: var(--length-14);
+  color: var(--color-text-2);
 }
 
 :where(.about-page a) {
-    padding-inline: 6px;
-    color: var(--color-accent);
-    font-weight: 700;
+  padding-inline: 6px;
+  color: var(--color-accent);
+  font-weight: 700;
 }
 
 :where(.about-page ul) {
-    padding-inline: 6px;
-    margin-block: var(--length-8);
+  padding-inline: 6px;
+  margin-block: var(--length-8);
 }
 
 :where(.about-page ul ul) {
-    padding-inline: 6px;
-    margin-block: var(--length-20);
-    margin-inline: 48px;
+  padding-inline: 6px;
+  margin-block: var(--length-20);
+  margin-inline: 48px;
 }
 
 :where(.about-page li) {
-    font-size: var(--length-14);
-    color: var(--color-text-2);
-    display: block;
-}
-
-@media (max-width: 34.5rem) {
-    :where(.about-page) {
-        inline-size: 90%;
-    }
-
-    :where(.about-page ul ul) {
-        margin-inline: 20px;
-    }
+  font-size: var(--length-14);
+  color: var(--color-text-2);
+  display: block;
 }
 
 .about-page li::before {
-    display: inline-block;
-    content: '  ';
-    background-color: var(--color-accent);
-    padding-inline: 3px;
-    padding-block: 3px;
-    border-radius: 100%;
-    margin-inline: 4px;
+  display: inline-block;
+  content: "  ";
+  background-color: var(--color-accent);
+  padding-inline: 3px;
+  padding-block: 3px;
+  border-radius: 100%;
+  margin-inline: 4px;
+}
+
+@media (max-width: 34.5rem) {
+  :where(.about-page) {
+    inline-size: 90%;
+  }
+
+  :where(.about-page ul ul) {
+    margin-inline: 20px;
+  }
 }

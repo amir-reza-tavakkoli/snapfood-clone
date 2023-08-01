@@ -1,53 +1,50 @@
-:where(._bill-page) {
+:where(.bill-page) {
   display: flex;
   flex-direction: column;
   inline-size: 75%;
+  align-items: center;
   margin-inline: auto;
   margin-block: var(--length-10);
   border: solid var(--color-faded-4) var(--border-extra-thin);
-  align-items: center;
 }
 
-:where(._bill-page > h1) {
+:where(.bill-page > h1) {
   font-size: var(--length-24);
   font-weight: 500;
 }
 
-:where(._bill-page > *) {
+:where(.bill-page > *) {
   margin-block: var(--length-10);
 }
 
-:where(._bill-page > a) {
-}
-
-:where(._bill-page > div p) {
+:where(.bill-page > div p) {
   font-weight: 600;
   font-size: var(--length-14);
 }
 
-:where(._bill-page > div form) {
+:where(.bill-page > div form) {
   display: flex;
   flex-direction: column;
 }
 
-:where(._bill-page > div form > button) {
-  margin-block: var(--length-16);
-  inline-size: 44px;
+:where(.bill-page > div form > button) {
   align-self: center;
+  inline-size: 44px;
+  margin-block: var(--length-16);
   text-align: center;
 }
 
-:where(._bill-page output ._success) {
+:where(.bill-page output ._success) {
   color: var(--color-action);
   font-weight: 600;
 }
 
-:where(._bill-page output ._error) {
+:where(.bill-page output ._error) {
   color: var(--color-error);
 }
 
 @media (max-width: 68.75rem) {
-  :where(._bill-page) {
+  :where(.bill-page) {
     inline-size: 90%;
   }
 }

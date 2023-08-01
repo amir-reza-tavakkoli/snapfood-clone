@@ -2,14 +2,14 @@
   display: flex;
   flex-wrap: wrap;
   margin-inline: 24px;
-  margin-block: var(--length-24);
+  margin-block-end: var(--length-24);
   margin-block-start: var(--length-12);
 }
 
 :where(.stores-page > h1) {
-  font-size: var(--length-20);
   margin-block-start: var(--length-12);
   margin-inline-start: 12px;
+  font-size: var(--length-20);
 }
 
 :where(.stores-page > ul > li) {

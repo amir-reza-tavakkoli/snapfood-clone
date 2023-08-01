@@ -1,102 +1,99 @@
 :where(.login-page) {
-    padding-inline: 32px;
-    padding-block: var(--length-32);
-    margin-block: var(--length-48);
-    inline-size: 66%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    margin-inline: auto;
-    /* align-items: center; */
-    max-inline-size: 440px;
-    background: rgb(255, 255, 255);
-    border-radius: 1rem;
-    box-shadow: rgba(0, 0, 0, 0.08) 0px 2px 8px, rgba(0, 0, 0, 0.16) 0px 8px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  inline-size: 66%;
+  max-inline-size: 440px;
+  padding-inline: 32px;
+  padding-block: var(--length-32);
+  margin-block: var(--length-48);
+  margin-inline: auto;
+  background-color: var(--color-primary);
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow-double);
 }
 
 :where(.login-page form) {
-    /* min-inline-size: 440px; */
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 :where(.login-page ._identity) {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 700;
-    font-size: var(--length-20);
-    margin-block-end: var(--length-24);
+  display: flex;
+  justify-content: space-between;
+  margin-block-end: var(--length-24);
+  font-weight: 700;
+  font-size: var(--length-20);
 }
 
 :where(.login-page ._identity span) {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 :where(.login-page button) {
-    display: inline-block;
-    /* max-inline-size: 44px; */
-    margin-block-start: var(--length-24);
-        margin-inline-end: 16px;
-        border-radius: 8px;
+  display: inline-block;
+  margin-block-start: var(--length-24);
+  margin-inline-end: 16px;
+  border-radius: 8px;
 }
 
 :where(.login-page ._input) {
-    display: flex;
-    flex-direction: column;
-    align-self: center;
-    inline-size: 100%;
-    margin-inline: auto;
-    font-size: var(--length-14);
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  inline-size: 100%;
+  margin-inline: auto;
+  font-size: var(--length-14);
 }
 
-:where(.login-page  label) {
-font-size: var(--length-12);
-font-weight: 700;
-    margin-block: var(--length-4);
-        color: var(--color-faded);
-
+:where(.login-page label) {
+  margin-block: var(--length-4);
+  font-size: var(--length-12);
+  font-weight: 700;
+  color: var(--color-faded);
 }
 
 :where(.login-page small span) {
-    color: var(--color-action);
+  color: var(--color-action);
 }
+
 :where(.login-page small) {
-        display: inline-block;
-            margin-inline: auto;
-    color: var(--color-faded);
-    font-size: var(--length-10);
-    margin-block-start: var(--length-6);
+  display: inline-block;
+  margin-inline: auto;
+  margin-block-start: var(--length-6);
+  color: var(--color-faded);
+  font-size: var(--length-10);
 }
 
 :where(.login-page input) {
-    max-inline-size: 440px;
-    /* inline-size: 90%; */
-    border-radius: 8px;
-    border: 0.15px solid var(--color-faded);
-    padding-inline: 6px;
-    margin-block: var(--length-14);padding-block: var(--length-8);
-
+  max-inline-size: 440px;
+  padding-inline: 6px;
+  margin-block: var(--length-14);
+  padding-block: var(--length-8);
+  border-radius: 8px;
+  border: var(--border-extra-thin) solid var(--color-faded);
 }
 
 :where(.login-page .timer) {
-    display: inline-block;
-    margin-inline: auto;
-    font-size: var(--length-10);
-    color: var(--color-faded);
-    margin-block: var(--length-14);padding-block: var(--length-32);
+  display: inline-block;
+  padding-block: var(--length-32);
+  margin-inline: auto;
+  margin-block: var(--length-14);
+  font-size: var(--length-10);
+  color: var(--color-faded);
 }
 
 :where(.login-page ._resend) {
-    font-size: var(--length-14);
-    margin-block: var(--length-14);
+  font-size: var(--length-14);
+  margin-block: var(--length-14);
 }
 
 :where(.login-page ._edit) {
-    border: none;
-    color: var(--color-action);
-    background-color: transparent;
-    align-self: flex-start;
-    font-weight: 700;
-    margin-block: var(--length-14);
-        font-size: var(--length-14);
+  align-self: flex-start;
+  margin-block: var(--length-14);
+  border: none;
+  color: var(--color-action);
+  background-color: transparent;
+  font-weight: 700;
+  font-size: var(--length-14);
 }

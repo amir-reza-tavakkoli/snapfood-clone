@@ -2,7 +2,6 @@
   position: sticky;
   inset-block-start: 0px;
   z-index: 1;
-
   background-color: var(--color-primary);
   color: var(--color-text-2);
 }
