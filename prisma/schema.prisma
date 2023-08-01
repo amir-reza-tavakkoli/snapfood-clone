@@ -55,20 +55,20 @@ model Store {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name              String
-  branchName        String?
-  description       String?
-  avatarUrl         String?
-  cityName          String // DENORMALIZATION
-  minOrderPrice     Float
-  packagingPrice    Float   @default(0)
-  taxPercent        Int     @default(0)
+  name           String
+  branchName     String?
+  description    String?
+  avatarUrl      String?
+  cityName       String // DENORMALIZATION
+  minOrderPrice  Float
+  packagingPrice Float   @default(0)
+  taxPercent     Int     @default(0)
 
-  baseShipmentTime Float   @default(10)
-  ships Boolean @default(true)
-  baseShipmentPrice Float   @default(0)
-  perUnitShipmentPrice Float @default(0)
-  shipmentRadius   Float? @default(10) // KM
+  baseShipmentTime     Float   @default(10)
+  ships                Boolean @default(true)
+  baseShipmentPrice    Float   @default(0)
+  perUnitShipmentPrice Float   @default(0)
+  shipmentRadius       Float?  @default(10) // KM
 
   isAvailible Boolean @default(true)
   isVerified  Boolean @default(true)
@@ -220,7 +220,7 @@ model Order {
   isDelivered       Boolean @default(false)
   isCanceled        Boolean @default(false)
   isDelayedByStore  Boolean @default(false)
-  isOrderOffline  Boolean @default(false)
+  isOrderOffline    Boolean @default(false)
 
   storeId Int
   store   Store @relation(fields: [storeId], references: [id])
