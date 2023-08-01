@@ -5,12 +5,12 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 import { getCart } from "../queries.server/cart.query.server"
 
 import { Orders } from "../components/order-summary"
-import type { CartProps } from "../components/cart"
+
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { requireValidatedUser, validateUser } from "../utils/validate.server"
+import { requireValidatedUser } from "../utils/validate.server"
 
-import { DEAFULT_DIRECTION } from "./../constants"
+import { type CartProps, DEAFULT_DIRECTION } from "./../constants"
 
 import orderCss from "../components/styles/order-summary.css"
 import pageCss from "./styles/orders-page.css"
@@ -22,8 +22,8 @@ export const links: LinksFunction = () => [
 
 export const meta: V2_MetaFunction = () => {
   const { description, title } = {
-    description: `SnappFood Clone Orders`,
-    title: `SnappFood Clone Orders`,
+    description: `SnappFood Clone Orders Summary`,
+    title: `SnappFood Clone Orders Summary`,
   }
 
   return [
@@ -52,12 +52,12 @@ export default function OrdersSummaryPage() {
 
   return (
     <main className="orders-page">
-      <p>سفارش‌ های پیشین</p>
+      <h1>سفارش‌ های پیشین</h1>
 
       {cart && cart.orders ? (
         <Orders orders={cart.orders} dir={DEAFULT_DIRECTION}></Orders>
       ) : (
-        <p>سفارشی وجود ندارد ! </p>
+        <p className="_no-order">سفارشی وجود ندارد ! </p>
       )}
     </main>
   )

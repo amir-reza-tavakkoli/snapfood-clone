@@ -1,20 +1,19 @@
+import { db } from "../utils/db.server"
+
 import type {
-  Comment,
   Item,
-  ItemCategory,
   Store,
   StoreHasItems,
   StoreKind,
+  storeSchedule,
 } from "@prisma/client"
-
-import { db } from "../utils/db.server"
-
-import type { FullOrderItem } from "./order.query.server"
 
 import { getOrder, getOrderItems } from "./order.query.server"
 
 import { validateStore } from "../utils/validate.server"
 import { validateCity } from "../utils/validate.server"
+
+import { DEFAULT_TAKE_THIS_MUCH, FullOrderItem } from "../constants"
 
 export async function getStore({
   storeId,
@@ -72,7 +71,7 @@ export async function getStoreItems({
   storeId,
 }: {
   storeId: number
-}): Promise<{ items: (Item | null)[]; itemsInStore: StoreHasItems[] }> {
+}): Promise<{ items: Item[]; itemsInStore: StoreHasItems[] }> {
   try {
     const itemsInStore = await db.storeHasItems.findMany({
       where: { storeId },
@@ -81,7 +80,7 @@ export async function getStoreItems({
       },
     })
 
-    const items = await Promise.all(
+    const items = (await Promise.all(
       itemsInStore.map(itemInStore =>
         db.item.findUnique({
           where: {
@@ -89,7 +88,7 @@ export async function getStoreItems({
           },
         }),
       ),
-    )
+    )) as Item[]
 
     return { items, itemsInStore }
   } catch (error) {
@@ -124,7 +123,7 @@ export async function getFullStoreItems({
       const found = items.find(item => item && item.id === itemInStore.itemId)
 
       if (!found) {
-        throw new Error("آیتم یافت نشد")
+        throw new Response("آیتم یافت نشد", { status: 404 })
       }
 
       return { ...found, ...itemInStore }
@@ -138,7 +137,7 @@ export async function getFullStoreItems({
 
 export async function getStoreCategories({
   storeId,
-  take = 4,
+  take = DEFAULT_TAKE_THIS_MUCH,
 }: {
   storeId: number
   take?: number
@@ -154,6 +153,7 @@ export async function getStoreCategories({
 
     items.forEach(item => {
       if (take <= 0) return
+
       item &&
       item.itemCategoryName &&
       !storeCategories.includes(item.itemCategoryName)
@@ -184,8 +184,8 @@ export async function getFullStoreOrdersItems({
 
     const order = await getOrder({ orderId })
 
-    if (!order || !order.isInCart || order.isBilled) {
-      throw new Error("Order Is Not In Cart")
+    if (!order) {
+      throw new Response("سفارش وجود ندارد", { status: 404 })
     }
 
     const { itemsInOrder } = await getOrderItems({ orderId })
@@ -204,7 +204,7 @@ export async function getFullStoreOrdersItems({
       const found = items.find(item => item && item.id === itemInStore.itemId)
 
       if (!found) {
-        throw new Error("آیتم یافت نشد")
+        throw new Response("آیتم یافت نشد", { status: 404 })
       }
 
       const itemInOrder = itemsInOrder.find(
@@ -249,7 +249,11 @@ export async function getStoresByKind({
   }
 }
 
-export async function getStoreSchedule({ store }: { store: Store }) {
+export async function getStoreSchedule({
+  store,
+}: {
+  store: Store
+}): Promise<storeSchedule[]> {
   try {
     const schedule = await db.storeSchedule.findMany({
       where: { storeId: store.id },
@@ -264,23 +268,23 @@ export async function getStoreSchedule({ store }: { store: Store }) {
 
 export async function getStoresWithDiscount({
   stores,
-  takes = undefined,
+  take = undefined,
 }: {
   stores: Store[] | null
-  takes?: number
-}) {
+  take?: number
+}): Promise<Store[]> {
   try {
     if (!stores) {
-      throw new Error("فروشگاهی وجود ندارد")
+      throw new Response("فروشگاهی وجود ندارد", { status: 404 })
     }
 
     const withDiscount = await Promise.all(
       stores.filter(async store => {
-        if (takes) {
-          takes--
+        if (take) {
+          take--
         }
 
-        if (takes && takes <= 0) {
+        if (take && take <= 0) {
           return false
         }
 
@@ -302,64 +306,29 @@ export async function getStoresWithDiscount({
 
 export async function getStoresWithFreeShipment({
   stores,
-  takes,
+  take,
 }: {
   stores: Store[] | null
-  takes?: number
-}) {
+  take?: number
+}): Promise<Store[]> {
   try {
     if (!stores) {
-      throw new Error("فروشگاهی وجود ندارد")
+      throw new Response("فروشگاهی وجود ندارد", { status: 404 })
     }
 
     const withFreeShipment = stores.filter(store => {
-      if (takes) {
-        takes--
+      if (take) {
+        take--
       }
 
-      if (takes && takes <= 0) {
+      if (take && take <= 0) {
         return false
       }
 
-      return store.baseShipmentPrice === 0
+      return store.baseShipmentPrice === 0 && store.perUnitShipmentPrice === 0
     })
 
     return withFreeShipment
-  } catch (error) {
-    throw error
-  }
-}
-
-// export async function updateStoreScore({
-//   store,
-//   comment,
-// }: {
-//   store: Store
-//   comment: Comment
-// }) {
-//   try {
-//     const newScore =
-//       (store.score * store.scoreCount + comment.score) / (store.scoreCount + 1)
-
-//     const updatedStore = await db.store.update({
-//       where: { id: store.id },
-//       data: {
-//         score: newScore,
-//         scoreCount: store.scoreCount + 1,
-//       },
-//     })
-
-//     return updatedStore
-//   } catch (error) {
-//     throw error
-//   }
-// }
-
-export async function getStoreById({ storeId }: {
-  storeId: number}) {
-  try {
-    const store = await db.store.findUnique({ where: { id: storeId } })
-    return store
   } catch (error) {
     throw error
   }

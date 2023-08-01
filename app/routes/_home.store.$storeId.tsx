@@ -7,20 +7,18 @@ import {
   useActionData,
   useLoaderData,
   useNavigate,
-
 } from "@remix-run/react"
 
-import { LinksFunction } from "@remix-run/server-runtime"
+import { ActionArgs, LinksFunction } from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "../utils/session.server"
 
 import {
   calculateOrder,
   changeOrderItems,
-  ChangeOrderItemState,
   createOrder,
-  FullOrderItem,
   getFullOrderItems,
+  shouldOrderCancel,
 } from "../queries.server/order.query.server"
 import { getStoreOrderInCart } from "../queries.server/cart.query.server"
 import {
@@ -30,30 +28,50 @@ import {
   getStoreSchedule,
 } from "../queries.server/store.query.server"
 import { categorizeItems } from "../queries.server/db.utils.query"
-import { getAddressById } from "../queries.server/address.query.server"
+import {
+  getAddressById,
+  getUserAddresses,
+} from "../queries.server/address.query.server"
 
-import type { Order, Store, storeSchedule, User } from "@prisma/client"
+import type { Address, Order, Store, storeSchedule, User } from "@prisma/client"
 
 import { StoreInfo } from "../components/store-info"
 import { FoodCard } from "../components/food-card"
 import { OrderComp } from "../components/order"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { COOKIE_ADDRESS,  DEFAULT_CURRENCY } from "../constants"
+import {
+  ChangeOrderItemState,
+  COOKIE_ADDRESS,
+  DEFAULT_CURRENCY,
+  DEFAULT_IMG_PLACEHOLDER,
+  FullOrderItem,
+  INVALID_ADDRESS_RANGE,
+} from "../constants"
 
 import { routes } from "../routes"
-import { getStoreCurrentSchedule } from "../utils/utils"
-import { requireValidatedUser } from "../utils/validate.server"
+import {
+  getStoreCurrentSchedule,
+  validateStorePossibility,
+} from "../utils/utils"
+import {
+  requireValidatedUser,
+  validateNumberParam,
+  validateStore,
+  validateUser,
+} from "../utils/validate.server"
 
 import foodCardCss from "./../components/styles/food-card.css"
 import storeInfoCss from "./../components/styles/store-info.css"
 import orderCss from "./../components/styles/order.css"
+import orderStatusCss from "./../components/styles/order-status.css"
 import pageCss from "./styles/store-page.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeInfoCss },
   { rel: "stylesheet", href: foodCardCss },
   { rel: "stylesheet", href: orderCss },
+  { rel: "stylesheet", href: orderStatusCss },
   { rel: "stylesheet", href: pageCss },
 ]
 
@@ -83,25 +101,34 @@ type ActionType = {
   orderInCart: Order
 }
 
-export const action = async ({ request, params }: any): Promise<ActionType> => {
+export const action = async ({
+  request,
+  params,
+}: ActionArgs): Promise<ActionType> => {
   try {
     const storeId = Number(params.storeId)
 
-    if (!storeId || isNaN(storeId)) {
-      throw new Error("خطا")
-    }
+    validateNumberParam(storeId)
+
+    const store = await getStore({ storeId })
+
+    validateStore({ store })
 
     const form = await request.formData()
 
     const phoneNumber = await requirePhoneNumber(request)
-    const job: ChangeOrderItemState | undefined = form.get("job")
+    const job = form.get("job") as ChangeOrderItemState | undefined
     const addressId: number | undefined = Number(form.get("address"))
     const itemId: number | undefined = Number(form.get("id"))
+
+    if (job && typeof job !== "string") {
+      throw new Response("خطایی پیش آمد")
+    }
 
     const address = await getAddressById({ addressId })
 
     if (!address || address.userPhoneNumber != phoneNumber) {
-      throw new Error("آدرس اشتباه است")
+      throw new Response("آدرس اشتباه است")
     }
 
     let orderInCart = await getStoreOrderInCart({ phoneNumber, storeId })
@@ -122,11 +149,11 @@ export const action = async ({ request, params }: any): Promise<ActionType> => {
     }
 
     if (!orderInCart) {
-      throw new Error("خطا")
+      throw new Response("خطا")
     }
 
     if (job !== "add" && job !== "remove" && job !== "set") {
-      throw new Error("خطا")
+      throw new Response("نوع کار اشتباه است")
     }
 
     await changeOrderItems({
@@ -170,7 +197,9 @@ type LoaderType = {
     value: FullOrderItem[]
   }[]
   orderItems: FullOrderItem[] | undefined
-  schedule: storeSchedule[]
+  schedules: storeSchedule[]
+  addresses: Address[]
+  storeAddress: Address
 }
 
 export const loader: LoaderFunction = async ({
@@ -182,23 +211,18 @@ export const loader: LoaderFunction = async ({
 
     const storeId = Number(params.storeId)
 
-    const store = await getStore({ storeId })
+    let store = await getStore({ storeId })
 
-    if (
-      !store ||
-      !storeId ||
-      isNaN(storeId) ||
-      !user.phoneNumber ||
-      !user ||
-      user.isSuspended
-    ) {
-      throw new Error("خطا")
-    }
+    validateUser({ user })
+
+    store = validateStore({ store })
 
     let order = await getStoreOrderInCart({
       phoneNumber: user.phoneNumber,
       storeId,
     })
+
+    order = order ? await shouldOrderCancel({ order }) : undefined
 
     let totalPrice: number = 0
 
@@ -225,16 +249,27 @@ export const loader: LoaderFunction = async ({
 
     const categorizedItems = categorizeItems({ items })
 
-    const schedule = await getStoreSchedule({ store })
+    const schedules = await getStoreSchedule({ store })
+
+    const addresses = await getUserAddresses({ phoneNumber: user.phoneNumber })
+
+    const storeAddress = await getAddressById({ addressId: store.id })
+
+    if (!storeAddress) {
+      throw new Response("آدرس فروشگاه صحیح نیست")
+    }
+
     return {
       user,
-      schedule,
+      schedules,
       store,
       items,
       order,
       totalPrice,
+      storeAddress,
       categorizedItems,
       orderItems,
+      addresses,
     }
   } catch (error) {
     throw error
@@ -244,12 +279,14 @@ export const loader: LoaderFunction = async ({
 export default function StorePage() {
   const {
     user,
-    schedule,
+    schedules,
     store,
     order,
     totalPrice,
     categorizedItems,
     orderItems,
+    storeAddress,
+    addresses,
   } = useLoaderData<typeof loader>() as unknown as LoaderType
 
   const navigate = useNavigate()
@@ -271,10 +308,14 @@ export default function StorePage() {
   const actionData = useActionData() as unknown as ActionType
 
   useEffect(() => {
+    const redirectionDealy = 2000
     const choosedAddress = localStorage.getItem(COOKIE_ADDRESS)
 
     if (!choosedAddress || isNaN(Number(choosedAddress))) {
-      setTimeout(() => navigate(`/addresses?storeId=${store.id}`), 2000)
+      setTimeout(
+        () => navigate(routes.addresses + `?storeId=${store.id}`),
+        redirectionDealy,
+      )
       setAddress(-1)
     }
 
@@ -306,19 +347,30 @@ export default function StorePage() {
     }
   }, [actionData])
 
-  const s = getStoreCurrentSchedule(schedule)
+  const currentSchedule = getStoreCurrentSchedule(schedules)
+
+  const currentAddress = addresses.find(a => a.id === address)
+
   return (
     <>
-      {!address || address <= -1  ? (
-        <Link to={routes.addresses}>یک آدرس جدید ایجاد کنید</Link>
+      {!address || address <= INVALID_ADDRESS_RANGE ? (
+        <Link to={routes.addresses} className="_no-address">
+          یک آدرس جدید ایجاد کنید
+        </Link>
       ) : (
-        <main className={!!s ? "store-page" : "store-page store-colsed"}>
+        <main
+          className={
+            !!currentSchedule ? "store-page" : "store-page store-colsed"
+          }
+        >
+          <h1 className="nonvisual">{store.name}</h1>
+
           <StoreInfo
             name={store.name}
-            logo={store.avatarUrl ?? ""}
+            logo={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
             type={store.storeKindName}
             categories={categorizedItems.map(category => category.name)}
-            isOpen={!!s}
+            isOpen={!!currentSchedule}
           ></StoreInfo>
 
           <div className="_store-page-items">
@@ -355,12 +407,34 @@ export default function StorePage() {
             ))}
           </div>
 
-          {orderItems && orderItemsState && order && orderState ? (
+          {storeAddress &&
+          validateStorePossibility({
+            address: currentAddress,
+            schedules,
+            store,
+            storeAddress,
+          }) ? (
+            <output className="_close-popup">
+              <p>فروشگاه بسته است</p>
+            </output>
+          ) : null}
+
+          {orderItems &&
+          orderItemsState &&
+          order &&
+          orderState &&
+          addresses &&
+          orderItems.length > 0 &&
+          currentAddress ? (
             <OrderComp
+              address={currentAddress}
+              schedule={schedules}
               items={orderItemsState}
               order={orderState}
+              storeAddress={storeAddress}
               store={store}
               totalPrice={totalPriceState}
+              commentSection={false}
               billSection={true}
             ></OrderComp>
           ) : null}

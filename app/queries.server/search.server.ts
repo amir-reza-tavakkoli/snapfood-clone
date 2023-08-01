@@ -1,7 +1,8 @@
 import { db } from "../utils/db.server"
+
 import { getStore } from "./store.query.server"
 
-type SearchParams = { param: string; takeThisMuch?: number }
+import { SearchParams } from "../constants"
 
 export async function searchStore({ param, takeThisMuch = 4 }: SearchParams) {
   const nears = await db.store.findMany({
@@ -9,6 +10,7 @@ export async function searchStore({ param, takeThisMuch = 4 }: SearchParams) {
     orderBy: { score: "desc" },
     take: takeThisMuch,
   })
+
   return nears
 }
 

@@ -1,23 +1,27 @@
-import { Order, Store, User, Comment } from "@prisma/client"
-import { useActionData, useLoaderData, V2_MetaFunction } from "@remix-run/react"
-import { LoaderArgs, LoaderFunction } from "@remix-run/server-runtime"
 import { useEffect, useState } from "react"
+import { useActionData, useLoaderData, V2_MetaFunction } from "@remix-run/react"
+
+import type { LoaderArgs, LoaderFunction } from "@remix-run/server-runtime"
+
+import type { Order, Store, User, Comment } from "@prisma/client"
 
 import { getStoreOrderInCart } from "../queries.server/cart.query.server"
 import { getItemById } from "../queries.server/item.query.server"
-import { FullOrderItem } from "../queries.server/order.query.server"
-import { requirePhoneNumber } from "../utils/session.server"
+import { getVerifiedItemComments } from "../queries.server/comment.query"
 import {
   getFullStoreItems,
   getFullStoreOrdersItems,
   getStore,
 } from "../queries.server/store.query.server"
-import { getUserByPhone } from "../queries.server/user.query.server"
-import { GlobalErrorBoundary } from "../components/error-boundary"
-import { getVerifiedItemComments } from "../queries.server/comment.query"
-import { useCheckAddress } from "../hooks/forceAddress"
+
 import { ItemComp } from "../components/item"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+
 import { requireValidatedUser } from "../utils/validate.server"
+
+import { useCheckAddress } from "../hooks/checkAddress"
+
+import { FullOrderItem } from "../constants"
 
 export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
   const { description, title } = data
@@ -58,19 +62,19 @@ export const loader: LoaderFunction = async ({
     const storeId = Number(params.storeId)
 
     if (!itemId || !storeId) {
-      throw new Error("404")
+      throw new Response("چنین آیتمی وجود ندارد")
     }
 
     const item = await getItemById({ itemId })
 
     if (!item) {
-      throw new Error("چنین آیتمی وجود ندارد")
+      throw new Response("چنین آیتمی وجود ندارد")
     }
 
     const store = await getStore({ storeId })
 
     if (!store) {
-      throw new Error("فروشگاهی با این مشخصات وجود ندارد")
+      throw new Response("فروشگاهی با این مشخصات وجود ندارد")
     }
 
     let items: FullOrderItem[] = []
@@ -91,13 +95,13 @@ export const loader: LoaderFunction = async ({
     }
 
     if (!items) {
-      throw new Error("No Items There")
+      throw new Response("چنین آیتمی وجود ندارد")
     }
 
     const foundItem = items.find(item => item.id === itemId)
 
     if (!foundItem || !foundItem.id) {
-      throw new Error("No Items There")
+      throw new Response("آیتمی وجود ندارد")
     }
 
     const comments = await getVerifiedItemComments({
@@ -126,8 +130,6 @@ export default function ItemPage() {
   }, [actionData])
 
   const { addressState: address } = useCheckAddress()
-  console.log("add", address)
-
   return (
     <main>
       <ItemComp address={address} item={item} store={store}></ItemComp>

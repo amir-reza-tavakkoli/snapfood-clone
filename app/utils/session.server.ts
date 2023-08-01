@@ -1,10 +1,11 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node"
+
 import { routes } from "../routes"
 
 const sessionSecret = process.env.SESSION_SECRET
 
 if (!sessionSecret) {
-  throw new Error("SESSION_SECRET must be set")
+  throw new Response("SESSION_SECRET must be set")
 }
 
 const authCookieName = "SF_SESSION"

@@ -1,19 +1,12 @@
-import { Item, Store } from "@prisma/client"
-
-import { LoaderArgs } from "@remix-run/server-runtime"
+import type { LoaderArgs } from "@remix-run/server-runtime"
 
 import { searchItem, searchStore } from "../queries.server/search.server"
 
-type LoaderType = {
-  stores: Store[]
-  itemsAndStores: {
-    item: Item
-    stores: (Store | null)[]
-  }[]
-} | null
+import type { SearchType } from "../constants"
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({ request }: LoaderArgs): Promise<SearchType> => {
   const search = new URL(request.url).searchParams.get("search")
+
   const count = new URL(request.url).searchParams.get("count")
 
   const defaultTake = 4
@@ -21,8 +14,6 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
     count && Number(count) && !isNaN(Number(count))
       ? Number(count)
       : defaultTake
-
-  console.log(search)
 
   if (!search || typeof search !== "string" || search === "") {
     return null
@@ -40,5 +31,3 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
 
   return { stores, itemsAndStores }
 }
-
-export { type LoaderType as SearchType }

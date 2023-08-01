@@ -88,7 +88,7 @@ export type CartCompProps = {
   billSection?: boolean
   address: Address | null
   schedule: storeSchedule[]
-  storeAddress? : Address
+  storeAddress?: Address
 }
 
 export type CartProps = {

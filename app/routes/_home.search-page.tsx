@@ -4,14 +4,14 @@ import { Form, Link, V2_MetaFunction } from "@remix-run/react"
 
 import type { LinksFunction } from "@remix-run/server-runtime"
 
-import { Button } from "~/components/button"
-import { Icon } from "~/components/icon"
+import { Button } from "../components/button"
+import { Icon } from "../components/icon"
 
-import { useSearch } from "~/hooks/search"
+import { useSearch } from "../hooks/search"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "~/constants"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
 import pageCss from "./styles/search-page.css"
 

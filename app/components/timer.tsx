@@ -12,6 +12,7 @@ export function Timer({
   setTimerFinished,
 }: TimerProps) {
   const [minutes, setMinutes] = useState(initialMinute)
+
   const [seconds, setSeconds] = useState(initialSeconds)
 
   useEffect(() => {

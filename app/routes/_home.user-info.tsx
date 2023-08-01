@@ -18,11 +18,18 @@ import {
   getUserByEmail,
   getUserByPhone,
 } from "../queries.server/user.query.server"
+import { evaluateUser } from "../queries.server/evaluate.server"
 
 import type { User } from "@prisma/client"
 
 import { Button } from "../components/button"
 import { GlobalErrorBoundary } from "../components/error-boundary"
+
+import {
+  checkPhoneNumber,
+  requireValidatedUser,
+  validateUser,
+} from "../utils/validate.server"
 
 import {
   DEAFULT_DIRECTION,
@@ -31,14 +38,6 @@ import {
   MIN_EMAIL_LENGTH,
   MIN_NAME_LENGTH,
 } from "../constants"
-
-import {
-  checkPhoneNumber,
-  requireValidatedUser,
-  validateUser,
-} from "../utils/validate.server"
-
-import { evaluateUser } from "~/queries.server/evaluate.server"
 
 import pageCss from "./styles/user-page.css"
 
@@ -155,11 +154,15 @@ export default function UserInfoPage() {
   const actionData = useActionData() as unknown as ActionType | undefined
 
   const [firstName, setFirstName] = useState(user.firstName)
+
   const [lastName, setLastName] = useState(user.lastName)
+
   const [gender, setGender] = useState(user.gender)
+
   const [birthday, setBirthday] = useState(
     user.birthday?.toString().split("T")[0],
   )
+
   const [email, setEmail] = useState(user.email)
 
   return (

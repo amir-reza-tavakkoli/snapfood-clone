@@ -1,23 +1,26 @@
-import { getCities } from "../queries.server/address.query.server"
-
 import type { Order, Store, User } from "@prisma/client"
-import type { FullOrderItem } from "../queries.server/order.query.server"
 
-import {
-  ALLOWED_PHONE_PREFIX,
-  DEFAULT_MIN_ADDRESS_LENGTH,
-  VERIFICATION_CODE_EXPIRY_MINS,
-  VERIFICATION_CODE_FIGURES,
-} from "../constants"
 import {
   generateVerificationCode,
   generateVerificationExpiry,
 } from "./utils.server"
+
+import { requirePhoneNumber } from "./session.server"
+
 import {
   getUserByPhone,
   updateVerificationCode,
 } from "../queries.server/user.query.server"
-import { requirePhoneNumber } from "./session.server"
+import { getCities } from "../queries.server/address.query.server"
+
+import { routes } from "../routes"
+
+import {
+  ALLOWED_PHONE_PREFIX,
+  FullOrderItem,
+  VERIFICATION_CODE_EXPIRY_MINS,
+  VERIFICATION_CODE_FIGURES,
+} from "../constants"
 
 export function checkPhoneNumber(phoneNumber: string) {
   if (
@@ -34,25 +37,15 @@ export function validateUrl(url: string, urls: string[]) {
   if (urls.includes(url)) {
     return url
   }
-  return "/"
+  return routes.index
 }
 
-export async function validateAddress({
-  address,
-  unit,
-}: {
-  address?: string
-  unit?: number
-}) {
-  if (address && address.length < DEFAULT_MIN_ADDRESS_LENGTH) {
-    throw new Response(".طول آدرس کوتاه است.", { status: 422 })
-  }
-
+export async function validateUnit({ unit }: { unit?: number }) {
   if (unit && (typeof unit !== "number" || isNaN(unit))) {
     throw new Response(".شماره واحد تعیین نشده است", { status: 404 })
   }
 
-  return { address, unit }
+  return { unit }
 }
 
 export async function validateCity({ cityName }: { cityName: string }) {
@@ -153,7 +146,7 @@ export async function sendVerification({
   )
 
   if (!user) {
-    throw new Error("An error occured")
+    throw new Response("کاربر وجود ندارد", { status: 404 })
   }
 
   // sending ver code by SMS goes here
@@ -163,6 +156,7 @@ export async function sendVerification({
 
 export async function requireValidatedUser(request: Request) {
   const phoneNumber = await requirePhoneNumber(request)
+
   let user = await getUserByPhone({ phoneNumber })
 
   user = validateUser({ user })

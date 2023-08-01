@@ -11,9 +11,10 @@ import {
 
 import { LoginFieldErrors } from "../routes/_home.login"
 
-import { AllowedStoresFeatures, VERIFICATION_CODE_EXPIRY_MINS } from "../constants"
-
-
+import {
+  AllowedStoresFeatures,
+  VERIFICATION_CODE_EXPIRY_MINS,
+} from "../constants"
 
 export const badRequest = <T>(data: T) => json<T>(data, { status: 400 })
 
@@ -35,11 +36,13 @@ export function generateVerificationCode(figures: number) {
   return String(Math.floor(Math.random() * (max - min) + min))
 }
 
-export function generateVerificationExpiry(mins: number): Date {
-  mins = mins ?? VERIFICATION_CODE_EXPIRY_MINS
+export function generateVerificationExpiry(duration: number): Date {
+  duration = duration ?? VERIFICATION_CODE_EXPIRY_MINS
 
   return new Date(
-    new Date(Date.now()).setMinutes(new Date(Date.now()).getMinutes() + mins),
+    new Date(Date.now()).setMinutes(
+      new Date(Date.now()).getMinutes() + duration,
+    ),
   )
 }
 
@@ -55,7 +58,7 @@ export function checkFieldsErrors(
   }
 }
 
-type Features = ({
+type Features = {
   name: AllowedStoresFeatures
   getStores: ({
     kind,
@@ -65,7 +68,7 @@ type Features = ({
     stores: Store[]
   }) => Promise<Store[]>
   title?: string
-})[]
+}[]
 export const features: Features = [
   {
     name: "kind",
@@ -73,7 +76,7 @@ export const features: Features = [
       const kinds = await getStoresKinds()
 
       if (!kind || kinds.find(storeKind => storeKind.name === kind))
-        throw new Error("این نوع وجود ندارد.")
+        throw new Response("این نوع وجود ندارد.", { status: 404 })
 
       const featureStores = await getStoresByKind({ kind })
 
@@ -92,7 +95,7 @@ export const features: Features = [
       const featureStores = await getStoresWithDiscount({ stores })
 
       if (!featureStores) {
-        throw new Error("خطا")
+        throw new Response("این نوع وجود ندارد.", { status: 404 })
       }
 
       return featureStores
@@ -105,7 +108,7 @@ export const features: Features = [
     getStores: async ({ stores }: { stores: Store[] }) => {
       const featureStores = await getStoresWithFreeShipment({ stores })
       if (!featureStores) {
-        throw new Error("خطا")
+        throw new Response("این نوع وجود ندارد.", { status: 404 })
       }
 
       return featureStores

@@ -1,9 +1,18 @@
-import { Address, storeSchedule, User } from "@prisma/client"
-import { COOKIE_ADDRESS, COOKIE_City } from "../constants"
-// import { toPersianMonth } from "./utils"
+import { Address, Order, Store, storeSchedule, User } from "@prisma/client"
 
-export function toPersianDigits(s: string) {
-  return s.replace(/\d/g, (d: any) => "۰۱۲۳۴۵۶۷۸۹"[d])
+import { getOrderStatus } from "../queries.server/db.utils.query"
+
+import {
+  BASE_SHIPMENT_MULTIPLIER,
+  COOKIE_ADDRESS,
+  COOKIE_City,
+  FullOrderItem,
+  PER_UNIT_ADDED_TIME,
+  READY_TIME_OFFSET,
+} from "../constants"
+
+export function toPersianDigits(string: string) {
+  return string.replace(/\d/g, (digit: any) => "۰۱۲۳۴۵۶۷۸۹"[digit])
 }
 
 export function getFullAddress(address: Address) {
@@ -20,13 +29,50 @@ export function getFullAddress(address: Address) {
   )
 }
 
+function isAddressInRange({
+  storeAddress,
+  destinationAddress,
+  store,
+}: {
+  storeAddress: Address
+  destinationAddress: Address
+  store: Store
+}) {
+  const distance = getDistance({ destinationAddress, storeAddress })
+
+  if (isNaN(distance)) {
+    return
+  }
+
+  return store.shipmentRadius! > distance * BASE_SHIPMENT_MULTIPLIER
+}
+
+function getDistance({
+  storeAddress,
+  destinationAddress,
+}: {
+  storeAddress: Address
+  destinationAddress: Address
+}): number {
+  return Number(
+    Math.sqrt(
+      (storeAddress.xAxis - destinationAddress.xAxis) ** 2 +
+        (storeAddress.yAxis - destinationAddress.yAxis) ** 2,
+    ).toPrecision(1),
+  )
+}
+
 export function getFormattedDate(date: Date) {
-  const x = date.toLocaleDateString("fa").split("/")
+  const persianDate = date.toLocaleDateString("fa").split("/")
 
-  const p2e = (s: any) =>
-    s.replace(/[۰-۹]/g, (d: any) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+  const p2e = (string: any) =>
+    string.replace(/[۰-۹]/g, (digit: any) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
 
-  return x[0] + toPersianMonth(Number(p2e(x[1]))) + x[2]
+  return (
+    persianDate[0] +
+    toPersianMonth(Number(p2e(persianDate[1]))) +
+    persianDate[2]
+  )
 }
 
 export function toPersianDay(day: number) {
@@ -55,7 +101,8 @@ export function toPersianDay(day: number) {
 }
 
 export function toPersianMonth(month: number) {
-  month--
+  month-- // offset by one
+
   switch (month) {
     case 0:
       return "فروردین"
@@ -95,29 +142,6 @@ export function toPersianMonth(month: number) {
   }
 }
 
-// function linksHierarchy() {
-//   const location = useLocation().pathname
-//   const splits = location.split("/")
-//   const hierarchy: string[] = []
-
-//   splits.forEach(split => {
-//     if (
-//       split === "home" ||
-//       split === "stores" ||
-//       split === "orders" ||
-//       split === "orders-summary" ||
-//       split === "cart" ||
-//       split === "bill"
-//     ) {
-//       hierarchy.push(split)
-//     }
-//   })
-
-//   // console.log(hierarchy)
-
-//   return hierarchy
-// }
-
 export function replaceAll(string: string, replace: string) {
   const regex = new RegExp(`/${replace}/g`)
 
@@ -137,15 +161,17 @@ export function setChosenAddress({
   cityName: string
   setHomeAddressState: any
 }) {
-  console.log("ppp", address)
-
   try {
     if (!address) {
-      throw new Error("eeee")
+      throw new Response("آدرس صحیح نیست", { status: 404 })
     }
+
     localStorage.setItem(COOKIE_ADDRESS, addressId.toString())
+
     localStorage.setItem(COOKIE_City, cityName.toString())
+
     setHomeAddressState(address)
+
     setAddressId(addressId)
   } catch (error) {
     throw error
@@ -155,13 +181,18 @@ export function setChosenAddress({
 export function getStoreCurrentSchedule(
   schedules: storeSchedule[],
 ): storeSchedule | undefined {
-  const today = new Date(Date.now())
-  const todaySchedule = schedules.filter(s => s.dayNumber === today.getDay())
-  const isOpen = todaySchedule.find(
-    s => s.startTime < today.getHours() && s.endTime > today.getHours(),
+  const now = new Date(Date.now())
+
+  const todaySchedule = schedules.filter(
+    schedule => schedule.dayNumber === now.getDay(),
   )
 
-  return isOpen
+  const schedule = todaySchedule.find(
+    schedule =>
+      schedule.startTime < now.getHours() && schedule.endTime > now.getHours(),
+  )
+
+  return schedule
 }
 
 export function getFullName(user: User) {
@@ -172,4 +203,182 @@ export function getFullName(user: User) {
     "   " +
     user.lastName
   )
+}
+
+export function validateOrderPossibility({
+  store,
+  order,
+  address,
+  schedules,
+  storeAddress,
+}: {
+  store: Store
+  order?: Order
+  address: Address | undefined | null
+  storeAddress: Address | undefined | null
+  schedules: storeSchedule[]
+}) {
+  try {
+    if (order && (order.isBilled || order.isCanceled || !order.isInCart)) {
+      throw new Response("سفارش قبلا تایید شده است", { status: 404 })
+    }
+
+    if (!store.isVerified || !store.isAvailible) {
+      throw new Response("فروشگاه دردسترس نیست", { status: 404 })
+    }
+
+    if (!address || store.cityName !== address.cityName) {
+      throw new Response("آدرس صحیح نیست", { status: 404 })
+    }
+
+    if (order && order.totalPrice < store.minOrderPrice) {
+      throw new Response("حداقل قیمت صحیح نیست", { status: 404 })
+    }
+
+    if (!schedules || getStoreCurrentSchedule(schedules)) {
+      throw new Response("فروشگاه بسته است", { status: 404 })
+    }
+
+    if (order && getOrderStatus({ order }).status !== "inCart") {
+      throw new Response("مشکلی در دریافت وضعیت سفارش پیش آمد", { status: 404 })
+    }
+
+    if (
+      !storeAddress ||
+      !isAddressInRange({ destinationAddress: address, store, storeAddress })
+    ) {
+      throw new Response("فروشگاه در رنج نیست", { status: 404 })
+    }
+
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+export function validateStorePossibility({
+  store,
+
+  address,
+  schedules,
+  storeAddress,
+}: {
+  store: Store
+  address: Address | undefined
+  storeAddress: Address | undefined
+  schedules: storeSchedule[]
+}) {
+  if (!address || store.cityName !== address.cityName) {
+    return "آدرس صحیح نیست"
+  }
+
+  if (!schedules || !getStoreCurrentSchedule(schedules)) {
+    return "فروشگاه بسته است"
+  }
+
+  if (
+    !storeAddress ||
+    !isAddressInRange({ destinationAddress: address, store, storeAddress })
+  ) {
+    return "فروشگاه در رنج نیست"
+  }
+
+  return false
+}
+
+// In tooman
+export function calculateShipmentTime({
+  storeAddress,
+  store,
+  destinationAddress,
+}: {
+  storeAddress: Address
+  store: Store
+  destinationAddress: Address
+}) {
+  const distance = getDistance({ destinationAddress, storeAddress })
+
+  if (isNaN(distance)) {
+    return
+  }
+
+  return (
+    distance * BASE_SHIPMENT_MULTIPLIER * PER_UNIT_ADDED_TIME +
+    store.baseShipmentTime
+  )
+}
+
+// In mins
+export function calculateShipmentPrice({
+  storeAddress,
+  store,
+  destinationAddress,
+}: {
+  storeAddress: Address
+  store: Store
+  destinationAddress: Address
+}) {
+  const distance = getDistance({ destinationAddress, storeAddress })
+
+  if (isNaN(distance)) {
+    return
+  }
+
+  return (
+    distance * BASE_SHIPMENT_MULTIPLIER * store.perUnitShipmentPrice +
+    store.baseShipmentPrice
+  )
+}
+
+export function getRateDescription(rate: number) {
+  switch (rate) {
+    case 1:
+      return "خیلی بد"
+
+    case 2:
+      return "نسبتا بد"
+
+    case 3:
+      return "معمولی"
+
+    case 4:
+      return "خوب"
+
+    case 5:
+      return "عالی"
+
+    default:
+      throw new Error("Wrong Number")
+  }
+}
+
+export function calculateItemsReadyTime({
+  store,
+  items,
+}: {
+  items: FullOrderItem[]
+  store: Store
+}) {
+  try {
+    let max = 0
+
+    items.forEach(item => {
+      if (!item.estimatedReadyTime) {
+        return
+      }
+
+      max < item.estimatedReadyTime
+        ? (max = item.estimatedReadyTime)
+        : undefined
+    })
+
+    return max + READY_TIME_OFFSET + items.length
+  } catch (error) {
+    throw error
+  }
+}
+
+export function getDiffInMinutes(endTime: Date, startTime: Date) {
+  let difference = Math.abs(endTime.getTime() - startTime.getTime())
+  return Math.round(difference / 60000)
 }

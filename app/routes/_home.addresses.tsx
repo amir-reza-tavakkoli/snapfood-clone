@@ -17,9 +17,7 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import pageCss from "./../components/styles/addresses.css"
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: pageCss },
-]
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
 
 export const meta: V2_MetaFunction = () => {
   const { description, title } = {
@@ -49,7 +47,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
 }
 
 export default function AddressesPage() {
-  const [HomeAddressState, setHomeAddressState] = useOutletContext<any>() // for side effetcs
+  const [HomeAddressState, setHomeAddressState] = useOutletContext<any>()
 
   const addresses = useLoaderData<typeof loader>() as unknown as LoaderType
 

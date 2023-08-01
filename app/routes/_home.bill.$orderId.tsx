@@ -3,10 +3,11 @@ import {
   Link,
   useActionData,
   useLoaderData,
-  useRouteError,
   V2_MetaFunction,
 } from "@remix-run/react"
+
 import {
+  ActionArgs,
   LinksFunction,
   LoaderArgs,
   redirect,
@@ -17,32 +18,36 @@ import type { Order, Store, User } from "@prisma/client"
 
 import { CartComp } from "../components/cart"
 import { Button } from "../components/button"
+import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import {
   billOrder,
   calculateOrder,
-  FullOrderItem,
   getFullOrderItems,
   getOrder,
   updateOrder,
 } from "../queries.server/order.query.server"
-import { getUserByPhone } from "../queries.server/user.query.server"
-import { requirePhoneNumber } from "../utils/session.server"
-import { getStore } from "../queries.server/store.query.server"
+import {
+  getStore,
+  getStoreSchedule,
+} from "../queries.server/store.query.server"
+import { getAddressById } from "../queries.server/address.query.server"
 
-import { DEFAULT_CURRENCY } from "../constants"
-
-import cartCss from "./../components/styles/cart.css"
-import pageCss from "./styles/bill-page.css"
 import {
   requireValidatedUser,
   validateNumberParam,
   validateOrder,
   validateStore,
-  validateUser,
 } from "../utils/validate.server"
-import { GlobalErrorBoundary } from "../components/error-boundary"
+
+import { validateOrderPossibility } from "../utils/utils"
+
 import { routes } from "../routes"
+
+import { DEFAULT_CURRENCY, type FullOrderItem } from "../constants"
+
+import cartCss from "./../components/styles/cart.css"
+import pageCss from "./styles/bill-page.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: cartCss },
@@ -68,55 +73,62 @@ export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
 
 type ActionType = {
   isUnsuccessful?: boolean
-  error?: Error
+  error?: Response
 }
 
 export const action = async ({
   request,
   params,
-}: any): Promise<ActionType | TypedResponse<never>> => {
+}: ActionArgs): Promise<ActionType | TypedResponse<never>> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const user = await requireValidatedUser(request)
+
     const orderId = Number(params.orderId)
 
-    const user = await getUserByPhone({ phoneNumber })
-
-    if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
-
     if (!orderId || isNaN(orderId)) {
-      throw new Error("مشکلی پیش آمد")
+      throw new Response("مشکلی پیش آمد")
     }
 
     const order = await getOrder({ orderId })
 
-    if (!order || order.userPhoneNumber != phoneNumber) {
-      throw new Error("مشکلی پیش آمد")
+    if (!order || order.userPhoneNumber != user.phoneNumber) {
+      throw new Response("مشکلی پیش آمد")
     }
 
-    if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
+    let store = await getStore({ storeId: order.storeId })
+
+    store = validateStore({ store })
 
     const form = await request.formData()
 
-    const offline = String(form.get("offline")).toString() === "offline"
+    const isOffline = String(form.get("offline")).toString() === "offline"
 
-    const isSuccessful = !offline
+    if (isOffline && !store.takesOfflineOrder) {
+      throw new Response("فروشگاه آفلاین نیست")
+    }
+
+    const address = await getAddressById({ addressId: order.addressId })
+
+    const schedules = await getStoreSchedule({ store })
+
+    const storeAddress = await getAddressById({ addressId: store.id })
+
+    validateOrderPossibility({ address, order, schedules, store, storeAddress })
+
+    const isSuccessful = !isOffline
       ? !!(await billOrder({ orderId }))
-      : updateOrder({ id: order.id, isBilled: true })
+      : updateOrder({
+          id: order.id,
+          isBilled: true,
+          billDate: new Date(Date.now()),
+        })
 
-    if (isSuccessful) {
-      return redirect(routes.order(orderId))
-    } else {
+    if (isSuccessful) return redirect(routes.order(orderId))
+    else
       return {
         isUnsuccessful: true,
       }
-    }
   } catch (error: any) {
-    console.log(error)
-
     return {
       isUnsuccessful: true,
       error,
@@ -148,27 +160,32 @@ export const loader = async ({
     order = validateOrder({ order, phoneNumber: user.phoneNumber })
 
     let price: number = order.totalPrice
+
     if (!price || price === 0) {
       price = await calculateOrder({ orderId })
+    }
+
+    if (price == null || price == undefined) {
+      throw new Response("امکان محاسبه وجود ندارد")
     }
 
     let store = await getStore({ storeId: order.storeId })
 
     store = validateStore({ store })
 
-    if (price == null || price == undefined) {
-      throw new Error("امکان محاسبه وجود ندارد")
-    }
-
-    if (store.minOrderPrice > price) {
-      throw new Error("سفارش شما به حداقل مجاز نرسیده است")
-    }
-
     const items = await getFullOrderItems({ orderId })
 
     if (!items || items.length === 0) {
-      throw new Error("مشکلی پیش آمد")
+      throw new Response("مشکلی پیش آمد")
     }
+
+    const address = await getAddressById({ addressId: order.addressId })
+
+    const schedules = await getStoreSchedule({ store })
+
+    const storeAddress = await getAddressById({ addressId: store.id })
+
+    validateOrderPossibility({ address, order, schedules, store, storeAddress })
 
     return { user, order, price, store, items }
   } catch (error) {
@@ -184,14 +201,20 @@ export default function BillPage() {
   const actionData = useActionData() as unknown as ActionType | undefined
 
   return (
-    <main className="_bill-page" aria-label="Bill">
+    <main className="bill-page" aria-label="Bill">
       <h1> پرداخت سفارش </h1>
 
       {!order.isBilled ? (
         <div>
-          <p> اعتبار مانده :{" " + user.credit + " " + DEFAULT_CURRENCY}</p>
+          <p>
+            اعتبار مانده :
+            {" " + user.credit.toLocaleString("fa") + " " + DEFAULT_CURRENCY}
+          </p>
 
-          <p> هزینه سفارش {" " + price + " " + DEFAULT_CURRENCY} </p>
+          <p>
+            هزینه سفارش
+            {" " + price.toLocaleString("fa") + " " + DEFAULT_CURRENCY}
+          </p>
 
           <Link to={routes.wallet}>افزایش اعتبار</Link>
         </div>
@@ -223,6 +246,7 @@ export default function BillPage() {
           </Form>
         </div>
       ) : null}
+
       <output role="alert" aria-aria-live="assertive">
         {(actionData && !actionData.isUnsuccessful) || order.isBilled ? (
           <p className="_success" aria-label="success">
@@ -232,12 +256,17 @@ export default function BillPage() {
 
         {actionData && actionData.isUnsuccessful ? (
           <p className="_error" aria-label="error">
-            مشکلی پیش آمد {actionData?.error?.message}
+            مشکلی پیش آمد
+            <span>
+              {actionData.error
+                ? actionData.error.status.toLocaleString("fa")
+                : null}
+            </span>
           </p>
         ) : undefined}
       </output>
 
-      <Link to={`/order/${order.id}`}>بازگشت به صفحه سفارش</Link>
+      <Link to={routes.order(order.id)}>بازگشت به صفحه سفارش</Link>
     </main>
   )
 }

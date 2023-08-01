@@ -1,6 +1,8 @@
+import { db } from "../utils/db.server"
+
 import type { Item, ItemCategory } from "@prisma/client"
 
-import { db } from "../utils/db.server"
+import { evaluateItem } from "./evaluate.server"
 
 export async function createItem({
   avatarUrl,
@@ -9,7 +11,8 @@ export async function createItem({
   isAvailible,
   isVerified,
   itemCategoryName,
-  name,estimatedReadyTime,
+  name,
+  estimatedReadyTime,
 }: Partial<Item> & {
   itemCategoryName: any
   name: string
@@ -18,6 +21,8 @@ export async function createItem({
     if (!name || !itemCategoryName) {
       throw new Response("آیتم با این مشخصات قابل سخت نیست", { status: 404 })
     }
+
+    evaluateItem({ basePrice, description, estimatedReadyTime, name })
 
     const item = await db.item.create({
       data: {
@@ -45,15 +50,18 @@ export async function updateItem({
   description,
   isAvailible,
   isVerified,
-  itemCategoryName,estimatedReadyTime,
+  itemCategoryName,
+  estimatedReadyTime,
   name,
 }: Partial<Item> & { id: number }): Promise<Item> {
   try {
-    const previousItem = await db.item.findUnique({ where: { id } })
+    const previousItem = await getItemById({ itemId: id })
 
     if (!previousItem) {
       throw new Response("آیتم با این مشخصات موجود نیست", { status: 404 })
     }
+
+    evaluateItem({ basePrice, description, estimatedReadyTime, name })
 
     const item = await db.item.update({
       where: { id },
@@ -110,7 +118,6 @@ export async function deleteItemById({
     throw error
   }
 }
-
 
 export async function getItemCategories(): Promise<ItemCategory[]> {
   try {

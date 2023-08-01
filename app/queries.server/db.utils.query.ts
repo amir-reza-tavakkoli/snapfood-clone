@@ -1,6 +1,12 @@
-import { Order } from "@prisma/client"
-import { db } from "../utils/db.server"
-import { FullOrderItem } from "./order.query.server"
+import type { Order } from "@prisma/client"
+
+import { updateOrder } from "./order.query.server"
+
+import {
+  type FullOrderItem,
+  MAX_ORDER_IN_CART_TIME,
+  OrderStatus,
+} from "../constants"
 
 export function categorizeItems({ items }: { items: FullOrderItem[] }) {
   const itemsInCategory = new Map<string, FullOrderItem[]>()
@@ -25,17 +31,6 @@ export function categorizeItems({ items }: { items: FullOrderItem[] }) {
   return categorizedItems
 }
 
-export type OrderStatus =
-  | "inCart"
-  | "taken"
-  | "adminNotVerified"
-  | "storeNotVerified"
-  | "inProgress"
-  | "canceled"
-  | "delayed"
-  | "shipped"
-  | "fullfilled"
-
 export function getOrderStatus({ order }: { order: Order }): {
   status: OrderStatus
 } {
@@ -52,7 +47,7 @@ export function getOrderStatus({ order }: { order: Order }): {
   }
 
   if (!order.isBilled) {
-    throw new Error("")
+    throw new Response("این وضعیت سفارش وجود ندارد", { status: 404 })
   }
 
   if (!order.isVerifiedByAdmin && !order.isVerifiedByStore) {
@@ -90,35 +85,43 @@ export function getOrderStatus({ order }: { order: Order }): {
   }
 }
 
-export function f(order: Order) {
-  if (!order.billDate) {
-    return
-  }
-  const now = new Date(Date.now());
-  const neww = order.billDate.setMinutes(
-    order.billDate.getMinutes() + order.estimatedReadyTime,
-  );
+// export function getInProgressOrderTime(order: Order) {
+//   if (getOrderStatus({ order }).status !== "inProgress") {
+//     throw new Response("سفارش قبلا تکمیل شده است");
+//   }
 
-  (order.billDate > now)
-}
+//   const now = new Date(Date.now());
+
+//   const maxTime = order.billDate!.setMinutes(
+//     order.billDate!.getMinutes() + order.estimatedReadyTime,
+//   );
+
+//   const remainingReadyTime =
+
+//   return {
+//     remainingReadyTime , remainingFullTime
+//   }
+// }
 
 export async function deleteUnbilledOrder({ order }: { order: Order }) {
   try {
-    if (order.isBilled || order.addressId || !order.isInCart) {
+    if (getOrderStatus({ order }).status !== "inCart") {
       return
     }
 
-    const threshold = 5 // mins
+    const threshold = MAX_ORDER_IN_CART_TIME // mins
+
     const lastUpdate = new Date(order.updatedAt)
+
     const now = new Date(Date.now())
+
     lastUpdate.setMinutes(lastUpdate.getMinutes() + threshold)
 
     if (now < lastUpdate) {
       return
     }
 
-    const deletedOrder = db.order.delete({ where: { id: order.id } })
-    return deletedOrder
+    return await updateOrder({ id: order.id, isCanceled: true })
   } catch (error) {
     throw error
   }

@@ -1,21 +1,19 @@
 import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
-import {
-  Link,
-  useLoaderData,
-  useRouteError,
-  V2_MetaFunction,
-} from "@remix-run/react"
+
+import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
 import { getCart } from "../queries.server/cart.query.server"
 
+import { requireValidatedUser } from "../utils/validate.server"
+
 import { CartComp } from "../components/cart"
-import type { CartProps } from "../components/cart"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+import { Icon } from "../components/icon"
+
+import { CartProps } from "~/constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
-import { requireValidatedUser, validateUser } from "../utils/validate.server"
-import { GlobalErrorBoundary } from "../components/error-boundary"
-import { Icon } from "../components/icon"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: cartCss },
@@ -35,7 +33,7 @@ export const meta: V2_MetaFunction = () => {
   ]
 }
 
-type LoaderType = CartProps | undefined
+type LoaderType = CartProps | null
 
 export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   try {
@@ -43,7 +41,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
 
     const cart = await getCart({ phoneNumber: user.phoneNumber })
 
-    return cart
+    return cart ?? null
   } catch (error) {
     throw error
   }
@@ -54,7 +52,7 @@ export default function CartPage() {
 
   return (
     <main className="orders-page">
-      <p>سفارش‌های من</p>
+      <h1>سفارش‌های من</h1>
 
       {cart && cart.orders ? (
         <CartComp orders={cart.orders}></CartComp>

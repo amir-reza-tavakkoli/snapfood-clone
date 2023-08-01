@@ -4,8 +4,6 @@ import { redirect, V2_MetaFunction } from "@remix-run/node"
 
 import type { LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/node"
 
-import type { Store } from "@prisma/client"
-
 import { StoreContainer } from "../components/store-container"
 
 import {
@@ -17,11 +15,12 @@ import { requireValidatedUser, validateCity } from "../utils/validate.server"
 
 import { features } from "../utils/utils.server"
 
-import { AllowedStoresFeatures, StoreWithTags } from "../constants"
+import { routes } from "../routes"
+
+import { type AllowedStoresFeatures, type StoreWithTags } from "../constants"
 
 import storeCardCss from "./../components/styles/store-card.css"
 import pageCss from "./styles/stores-all-page.css"
-import { routes } from "../routes"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeCardCss },

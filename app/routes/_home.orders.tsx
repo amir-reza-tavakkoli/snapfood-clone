@@ -9,7 +9,7 @@ import { requireValidatedUser } from "../utils/validate.server"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { CartComp } from "../components/cart"
 
-import type { CartProps } from "../components/cart"
+import { type CartProps } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
@@ -51,7 +51,7 @@ export default function OrdersPage() {
 
   return (
     <main className="orders-page">
-      <p>سفارش‌های من</p>
+      <h1>سفارش‌های من</h1>
 
       {cart && cart.orders ? (
         <CartComp orders={cart.orders}></CartComp>

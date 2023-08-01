@@ -21,38 +21,33 @@ import {
 } from "../queries.server/user.query.server"
 
 import { createUserSession, getPhoneNumber } from "../utils/session.server"
+
 import { checkFieldsErrors } from "../utils/utils.server"
 
-import { sendVerification, validateUrl } from "../utils/validate.server"
+import {
+  checkPhoneNumber,
+  sendVerification,
+  validateUrl,
+} from "../utils/validate.server"
 
 import { useLogin } from "../hooks/login"
 
+import { GlobalErrorBoundary } from "../components/error-boundary"
+import { Button } from "../components/button"
+import { Timer } from "../components/timer"
+import { Icon } from "../components/icon"
+
 import {
-  ALLOWED_PHONE_PREFIX,
   ALLOWED_URLS,
   INDEX_URL,
   VENDOR_NAME_ENG,
   VERIFICATION_CODE_EXPIRY_MINS,
 } from "../constants"
 
-import { GlobalErrorBoundary } from "../components/error-boundary"
-import { Button } from "../components/button"
-import { Timer } from "../components/timer"
-
 import pageCss from "./styles/login-page.css"
-import { Icon } from "../components/icon"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
-export function checkPhoneNumber(phoneNumber: string) {
-  if (
-    phoneNumber.length != 11 ||
-    !phoneNumber.match(/\d{11}/) ||
-    !Boolean(parseInt(phoneNumber)) ||
-    !phoneNumber.startsWith(ALLOWED_PHONE_PREFIX)
-  ) {
-    return "شماره تلفن اشتباه است"
-  }
-}
+
 type FieldErrors = {
   phoneNumber?: string
   verificationCode?: string
@@ -270,12 +265,12 @@ export default function LoginPage() {
                     inputMode="tel"
                     required={true}
                     placeholder={
-                      Number("09").toLocaleString("fa-IR") + "*******"
+                      "۰" + Number("9").toLocaleString("fa-IR") + "*******"
                     }
                     aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
                     aria-errormessage={
                       actionData?.fieldErrors?.phoneNumber
-                        ? "Phone Number Error"
+                        ? "Phone Number Response"
                         : undefined
                     }
                     onChange={e => {
@@ -361,7 +356,7 @@ export default function LoginPage() {
                   )}
                   aria-errormessage={
                     actionData.fieldErrors?.verificationCode
-                      ? "Verification Code Error"
+                      ? "Verification Code Response"
                       : undefined
                   }
                   onChange={e => {
@@ -373,8 +368,8 @@ export default function LoginPage() {
                 />
 
                 <Timer
-                  initialSeconds={0}
-                  initialMinute={VERIFICATION_CODE_EXPIRY_MINS}
+                  initialSeconds={59}
+                  initialMinute={VERIFICATION_CODE_EXPIRY_MINS - 1}
                   setTimerFinished={setTimerFinished}
                 ></Timer>
 
@@ -410,7 +405,7 @@ export default function LoginPage() {
           {actionData && actionData.formError ? (
             <output aria-label="error" aria-live="assertive" role="alert">
               <>
-                <p className="nonvisual">Error</p>
+                <p className="nonvisual">Response</p>
 
                 <p>{actionData.formError}</p>
               </>

@@ -1,67 +1,23 @@
-import type { Comment, Item, Order, OrderHasItems, Store } from "@prisma/client"
-import { READY_TIME_OFFSET } from "../constants"
-import { validateStore } from "../utils/validate.server"
 import { db } from "../utils/db.server"
+
+import type { Item, Order, OrderHasItems } from "@prisma/client"
+
+import { validateStore, validateUser } from "../utils/validate.server"
 
 import { getAddressById } from "./address.query.server"
 import { getOrdersInCart } from "./cart.query.server"
 import { getItemById } from "./item.query.server"
 import { getStore, getStoreItems } from "./store.query.server"
 import { getUserByPhone } from "./user.query.server"
-import { evaluateComment } from "./evaluate.server"
 
-export type FullOrderStore = {
-  id: number
-  createdAt: Date
-  updatedAt: Date
-  totalPrice: number
+import { getOrderStatus } from "./db.utils.query"
 
-  packagingPrice: number
-  addressId: number
-
-  isBilled: boolean
-  isInCart?: boolean
-  isVerifiedByAdmin?: boolean
-  isVerifiedByStore?: boolean
-  isShipped?: boolean
-  isDelivered?: boolean
-  isCanceled?: boolean
-  isDelayedByStore?: boolean
-
-  storeId?: number
-  storeKindName?: string
-  name?: string
-  branchName?: string | null
-  description?: string | null
-  avatarUrl?: string | null
-  cityName?: string
-  minOrderPrice?: number
-  shipmentPrice?: number
-  estimatedShipmentTime: number
-  estimatedReadyTime: number
-}
-
-export type FullOrderItem = {
-  storeId?: number
-  id?: number
-  itemId?: number
-  orderId?: number
-  count?: number
-  createdAt?: Date
-  updatedAt?: Date
-  price?: number
-  name?: string
-  description?: string | null
-  avatarUrl?: string | null
-  basePrice?: number | null
-  itemCategoryName?: any
-  discountPercent?: number | null
-  remainingCount?: number
-  estimatedReadyTime?: number
-  isAvailible?: boolean
-  isVerified?: boolean
-}
-
+import {
+  type ChangeOrderItemState,
+  type FullOrderItem,
+  type FullOrderStore,
+  MAX_ORDER_IN_CART_TIME,
+} from "../constants"
 export async function getOrder({
   orderId,
 }: {
@@ -125,6 +81,8 @@ export async function createOrder({
   estimatedReadyTime,
   description,
   billDate,
+  isOrderOffline,
+  paymentNumber,
   totalPrice,
 }: Partial<Order> & {
   totalPrice: number
@@ -136,29 +94,23 @@ export async function createOrder({
   userPhoneNumber: string
 }): Promise<Order> {
   try {
-    const store = await getStore({ storeId })
+    let store = await getStore({ storeId })
 
-    if (!store || !store.isAvailible || !store.isVerified) {
-      throw new Error("قروشگاه در دسترس نیست")
-    }
+    store = validateStore({ store })
 
     const address = await getAddressById({ addressId })
 
     if (!address || !address.isAvailible || !address.isValid) {
-      throw new Error("آدرس مجاز نیست")
+      throw new Response("آدرس مجاز نیست", { status: 404 })
     }
 
     if (address.cityName !== store.cityName) {
-      throw new Error("در یک شهر قرار ندارند")
+      throw new Response("در یک شهر قرار ندارند", { status: 404 })
     }
 
-    // need to evaluate shipment price dynamically and check for availibility of distance
+    let user = await getUserByPhone({ phoneNumber: userPhoneNumber })
 
-    const user = await getUserByPhone({ phoneNumber: userPhoneNumber })
-
-    if (!user || user.isSuspended || !address.isAvailible) {
-      throw new Error("کاربر مجاز نیست")
-    }
+    user = validateUser({ user })
 
     const ordersInCart = await getOrdersInCart({
       phoneNumber: user.phoneNumber,
@@ -170,7 +122,7 @@ export async function createOrder({
         orderInCart => orderInCart.storeId === storeId && !orderInCart.isBilled,
       )
     ) {
-      throw new Error("سفارش در جریان است")
+      throw new Response("سفارش در جریان است", { status: 404 })
     }
 
     const newOrder = await db.order.create({
@@ -190,12 +142,13 @@ export async function createOrder({
         description,
         billDate,
         isVerifiedByStore,
-
+        isOrderOffline,
+        paymentNumber,
         shipmentPrice,
-
         totalPrice,
       },
     })
+
     return newOrder
   } catch (error) {
     throw error
@@ -213,6 +166,8 @@ export async function updateOrder({
   isDelivered,
   description,
   isInCart,
+  isOrderOffline,
+  paymentNumber,
   isShipped,
   isVerifiedByAdmin,
   isVerifiedByStore,
@@ -227,39 +182,7 @@ export async function updateOrder({
     const order = await getOrder({ orderId: id })
 
     if (!order) {
-      throw new Error("سقارشی وجود ندارد")
-    }
-
-    if (order.isDelivered) {
-      throw new Error("سفارش  از قبل کامل شده است")
-    }
-
-    if (order.isCanceled) {
-      throw new Error("سفارش کنسل شده است")
-    }
-
-    const store = await getStore({ storeId: order.storeId })
-
-    if (!store || !store.isAvailible || !store.isVerified) {
-      throw new Error("قروشگاه در دسترس نیست")
-    }
-
-    const address = await getAddressById({ addressId: order.addressId })
-
-    if (!address || !address.isAvailible || !address.isValid) {
-      throw new Error("آدرس مجاز نیست")
-    }
-
-    if (address.cityName !== store.cityName) {
-      throw new Error("در یک شهر قرار ندارند")
-    }
-
-    // need to evaluate shipment price dynamically and check for availibility of distance
-
-    const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
-
-    if (!user || user.isSuspended) {
-      throw new Error("کاربر مجاز نیست")
+      throw new Response("سفارشی وجود ندارد", { status: 404 })
     }
 
     const newOrder = await db.order.update({
@@ -274,14 +197,14 @@ export async function updateOrder({
         isCanceled,
         isDelayedByStore,
         isDelivered,
+        isOrderOffline,
+        paymentNumber,
         billDate,
         isInCart,
         isShipped,
         isVerifiedByAdmin,
         isVerifiedByStore,
-
         shipmentPrice,
-
         totalPrice,
         description,
       },
@@ -291,8 +214,6 @@ export async function updateOrder({
     throw error
   }
 }
-
-export type ChangeOrderItemState = "add" | "set" | "remove"
 
 export async function changeOrderItems({
   orderId,
@@ -309,28 +230,22 @@ export async function changeOrderItems({
     const item = await getItemById({ itemId })
 
     if (!item || !item.isAvailible || !item.isVerified) {
-      throw new Error("چنین آیتمی وجود ندارد")
+      throw new Response("چنین آیتمی وجود ندارد", { status: 404 })
     }
 
     const order = await getOrder({ orderId })
 
     if (!order || order.isCanceled) {
-      throw new Error("چنین سفارشی وجود ندارد")
+      throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
     }
 
     if (order.isDelivered) {
-      throw new Error("Order Alreafy Delivered")
+      throw new Response("سفارش قبلا ارسال شده", { status: 404 })
     }
 
-    if (order.isCanceled) {
-      throw new Error("مشکلی در ثبت سفارش بوجود آمد")
-    }
+    let store = await getStore({ storeId: order?.storeId })
 
-    const store = await getStore({ storeId: order?.storeId })
-
-    if (!store || !store.isAvailible || !store.isVerified) {
-      throw new Error("چنین سفارشی وجود ندارد")
-    }
+    store = validateStore({ store })
 
     const itemInStore = await db.storeHasItems.findUnique({
       where: {
@@ -347,7 +262,7 @@ export async function changeOrderItems({
       itemInStore.remainingCount == null ||
       itemInStore.remainingCount < 0
     ) {
-      throw new Error("چنین آیتمی وجود ندارد")
+      throw new Response("چنین آیتمی وجود ندارد", { status: 404 })
     }
 
     const itemInOrder = await db.orderHasItems.findUnique({
@@ -365,7 +280,7 @@ export async function changeOrderItems({
         count === 0 ||
         itemInStore.remainingCount < 0
       ) {
-        throw new Error("تعداد ناکافی")
+        throw new Response("تعداد ناکافی", { status: 404 })
       }
 
       if (!itemInStore.infiniteSupply) {
@@ -382,7 +297,7 @@ export async function changeOrderItems({
         })
 
         if (!newItemInStore) {
-          throw new Error("")
+          throw new Response("آیتم وجود ندارد", { status: 404 })
         }
       }
       const newItemInOrder = await db.orderHasItems.create({
@@ -404,7 +319,7 @@ export async function changeOrderItems({
         }
 
         if (itemInStore.remainingCount - count < 0) {
-          throw new Error("تعداد ناکافی")
+          throw new Response("تعداد ناکافی", { status: 404 })
         }
 
         const newItemInStore = await db.storeHasItems.update({
@@ -420,12 +335,12 @@ export async function changeOrderItems({
         })
 
         if (!newItemInStore) {
-          throw new Error("چنین آیتمی وجود ندارد")
+          throw new Response("چنین آیتمی وجود ندارد", { status: 404 })
         }
 
         const newCount = itemInOrder.count + count
         if (newCount < 0) {
-          throw new Error("تعداد ناکافی")
+          throw new Response("تعداد ناکافی", { status: 404 })
         }
 
         if (newCount === 0) {
@@ -453,7 +368,7 @@ export async function changeOrderItems({
         })
 
         if (!newItemInOrder) {
-          throw new Error("چنین آیتمی وجود ندارد")
+          throw new Response("چنین آیتمی وجود ندارد", { status: 404 })
         }
 
         return newItemInOrder
@@ -476,11 +391,11 @@ export async function changeOrderItems({
           (count && itemInStore.remainingCount < itemInOrder.count + count) ||
           count === 0
         ) {
-          throw new Error("تعداد ناکافی")
+          throw new Response("تعداد ناکافی", { status: 404 })
         }
 
         if (itemInStore.remainingCount + itemInOrder.count - count < 0) {
-          throw new Error("تعداد ناکافی")
+          throw new Response("تعداد ناکافی", { status: 404 })
         }
 
         await db.storeHasItems.update({
@@ -550,7 +465,7 @@ export async function billOrder({
     const order = await getOrder({ orderId })
 
     if (!order) {
-      throw new Error("چنین سفارشی وجود ندارد")
+      throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
     }
 
     if (
@@ -559,17 +474,15 @@ export async function billOrder({
       !order.isVerifiedByStore ||
       !order.isVerifiedByAdmin
     ) {
-      throw new Error("مشکلی در ثبت سفارش بوجود آمد")
+      throw new Response("مشکلی در ثبت سفارش بوجود آمد", { status: 404 })
     }
 
-    const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
+    let user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
 
-    if (!user || user.isSuspended || !user.isVerified) {
-      throw new Error("چنین کاربری وجود ندارد")
-    }
+    user = validateUser({ user })
 
     if (user.credit < order.totalPrice || user.credit < 0) {
-      throw new Error("کمبود وجه")
+      throw new Response("کمبود وجه", { status: 404 })
     }
 
     const [updatedUser, updatedOrder] = await db.$transaction([
@@ -587,12 +500,13 @@ export async function billOrder({
         },
         data: {
           isBilled: true,
+          billDate: new Date(Date.now()),
         },
       }),
     ])
 
     if (!updatedUser || !updatedOrder) {
-      throw new Error("Could Not Perform The Operation")
+      throw new Response("عملیات ممکن نیست", { status: 404 })
     }
 
     return updatedOrder
@@ -608,18 +522,19 @@ export async function calculateOrder({
 }): Promise<number> {
   try {
     const order = await getOrder({ orderId })
-    console.log(1)
+
     if (!order) {
-      throw new Error("چنین سفارشی وجود ندارد")
+      throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
     }
 
     const orderItems = await getFullOrderItems({ orderId })
 
-    if (!orderItems || orderItems.length === 0) {
-      throw new Error("سفارش خالی است")
+    if (!orderItems) {
+      throw new Response("سفارش خالی است", { status: 404 })
     }
 
     let totalPrice: number = 0
+
     orderItems.forEach(orderItem => {
       if (!orderItem || !orderItem.price || !orderItem.count) {
         return
@@ -637,7 +552,6 @@ export async function calculateOrder({
     let store = await getStore({ storeId: order.storeId })
 
     store = validateStore({ store })
-    console.log(2)
 
     totalPrice +=
       order.shipmentPrice +=
@@ -645,12 +559,13 @@ export async function calculateOrder({
         totalPrice * store.taxPercent
 
     if (totalPrice < 0) {
-      throw new Error("قیمت اشتباه است")
+      throw new Response("قیمت اشتباه است", { status: 404 })
     }
 
     if (order.totalPrice === totalPrice || order.isBilled) {
       return totalPrice
     }
+
     const newOrder = await db.order.update({
       where: { id: orderId },
       data: { totalPrice },
@@ -671,7 +586,7 @@ export async function getFullOrderItems({
     const order = await getOrder({ orderId })
 
     if (!order) {
-      throw new Error("چنین سفارشی وجود ندارد")
+      throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
     }
 
     const storeHasItems = await getStoreItems({ storeId: order.storeId })
@@ -696,55 +611,6 @@ export async function getFullOrderItems({
     })
 
     return fullOrderItems as FullOrderItem[]
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function changeComment({
-  orderId,
-  description,
-  wasPositive,
-  wasDeliveryPositive,
-  score,
-  isVerified,
-  isVisible,
-  response,
-}: Comment): Promise<Comment> {
-  try {
-    const comment = await db.comment.findUnique({
-      where: {
-        orderId,
-      },
-    })
-
-    if (!comment) {
-      throw new Error("No Such Comment")
-    }
-    // need to evaluate comment
-
-    if (!score || !wasPositive || !wasDeliveryPositive) {
-      throw new Error("No Such Comment")
-    }
-
-    if (description && evaluateComment({ description })) {
-      throw new Error("No Such Comment")
-    }
-    const changedComment = await db.comment.update({
-      data: {
-        wasPositive,
-        score,
-        description,
-        isVerified,
-        isVisible,
-        response,
-      },
-      where: {
-        orderId,
-      },
-    })
-
-    return changedComment
   } catch (error) {
     throw error
   }
@@ -801,7 +667,7 @@ export async function getFullOrderStore({
     const order = await getOrder({ orderId })
 
     if (!order) {
-      throw new Error("چنین سفارشی وجود ندارد")
+      throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
     }
 
     const store = await db.store.findUnique({
@@ -811,7 +677,7 @@ export async function getFullOrderStore({
     })
 
     if (!store) {
-      throw new Error("فروشگاهی با این مشخصات وجود ندارد")
+      throw new Response("فروشگاهی با این مشخصات وجود ندارد", { status: 404 })
     }
 
     return { ...store, ...order }
@@ -829,7 +695,7 @@ export async function getFullOrdersStore({
     const orders = await getOrders({ phoneNumber })
 
     if (!orders) {
-      throw new Error("Not Any Order")
+      throw new Response("سفارشی وجود ندارد", { status: 404 })
     }
 
     const fullOrder = await Promise.all(
@@ -842,27 +708,70 @@ export async function getFullOrdersStore({
   }
 }
 
-export function calculateItemsReadyTime({
-  store,
-  items,
-}: {
-  items: FullOrderItem[]
-  store: Store
-}) {
+export async function cancelOrder({ order }: { order: Order }) {
   try {
-    let max = 0
+    if (getOrderStatus({ order }).status !== "inCart") {
+      return
+    }
 
-    items.forEach(item => {
-      if (!item.estimatedReadyTime) {
-        return
-      }
+    const items = await getFullOrderItems({ orderId: order.id })
 
-      max < item.estimatedReadyTime
-        ? (max = item.estimatedReadyTime)
-        : undefined
-    })
+    const store = await getStore({ storeId: order.storeId })
 
-    return max + READY_TIME_OFFSET + items.length
+    if (!store) {
+      throw new Response("فروشگاهی با این اسم وجود ندارد", { status: 404 })
+    }
+
+    const newItems = await Promise.all(
+      items.map(async item => {
+        if (!item || !item.id || !item.count) {
+          throw new Response("آیتم وجود ندارد", { status: 404 })
+        }
+
+        const itemInStore = await db.storeHasItems.findUnique({
+          where: { storeId_itemId: { itemId: item.id, storeId: store.id } },
+        })
+
+        if (!itemInStore) {
+          throw new Response("آیتم وجود ندارد", { status: 404 })
+        }
+
+        await db.storeHasItems.update({
+          where: { storeId_itemId: { itemId: item.id, storeId: store.id } },
+          data: { remainingCount: itemInStore.remainingCount + item.count },
+        })
+      }),
+    )
+
+    if (!newItems) {
+      throw new Response("آیتم وجود ندارد", { status: 404 })
+    }
+
+    const canceledOrder = await updateOrder({ id: order.id, isCanceled: true })
+
+    return canceledOrder
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function shouldOrderCancel({ order }: { order: Order }) {
+  try {
+    if (getOrderStatus({ order }).status !== "inCart") {
+      return
+    }
+
+    const lastUpdate = order.updatedAt
+
+    const now = new Date(Date.now())
+
+    lastUpdate.setMinutes(lastUpdate.getMinutes() + MAX_ORDER_IN_CART_TIME)
+
+    if (now > lastUpdate) {
+      return await cancelOrder({ order })
+    }
+
+    return order
   } catch (error) {
     throw error
   }

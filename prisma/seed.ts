@@ -493,13 +493,6 @@ async function seedFirstDataChunk() {
 
   const totalPrice = await calculateOrder({ orderId: order.id })
 
-  await prisma.order.update({
-    where: { id: order.id },
-    data: {
-      totalPrice,
-    },
-  })
-
   const commentRespondedBy: RESPONDED_BY = "مدیر رستوران"
 
   const comment = await prisma.comment.create({
@@ -680,13 +673,6 @@ async function seedSecondDataChunk() {
   )
 
   const totalPrice = await calculateOrder({ orderId: order.id })
-
-  await prisma.order.update({
-    where: { id: order.id },
-    data: {
-      totalPrice,
-    },
-  })
 
   const comment = await prisma.comment.create({
     data: {
@@ -892,13 +878,6 @@ async function seedThirdDataChunk() {
   )
 
   const totalPrice = await calculateOrder({ orderId: order.id })
-
-  await prisma.order.update({
-    where: { id: order.id },
-    data: {
-      totalPrice,
-    },
-  })
 
   const comment = await prisma.comment.create({
     data: {

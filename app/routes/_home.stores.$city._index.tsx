@@ -13,15 +13,15 @@ import {
   getStoresWithFreeShipment,
 } from "../queries.server/store.query.server"
 
-import { AllowedStoresFeatures, StoreWithTags } from "../constants"
-
 import { validateCity } from "../utils/validate.server"
 
 import { GlobalErrorBoundary } from "../components/error-boundary"
-
 import storeCardCss from "./../components/styles/store-card.css"
 import { StoreContainer } from "../components/store-container"
+
 import { routes } from "../routes"
+
+import { type AllowedStoresFeatures, type StoreWithTags } from "../constants"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeCardCss },
@@ -49,8 +49,6 @@ export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
   ]
 }
 
-const takeThisMuch = 4
-
 export const loader = async ({
   params,
 }: LoaderArgs): Promise<LoaderType | TypedResponse<never>> => {
@@ -67,14 +65,16 @@ export const loader = async ({
       cityName: city,
     })
 
+    const takeThisMuch = 4
+
     let withDiscount = await getStoresWithDiscount({
       stores,
-      takes: takeThisMuch,
+      take: takeThisMuch,
     })
 
     let withFreeShipment = await getStoresWithFreeShipment({
       stores,
-      takes: takeThisMuch,
+      take: takeThisMuch,
     })
 
     if (stores)
@@ -100,6 +100,7 @@ export const loader = async ({
           return { ...store, tags }
         }),
       )
+
     return {
       stores,
       cityName: city,
@@ -134,7 +135,7 @@ export default function CityStores() {
           <>
             <StoreContainer
               title={`همه در ${cityName}`}
-              moreHref={`/stores/all/${cityName}/${features.all}`}
+              moreHref={routes.storesFeature(cityName, features.all!)}
               stores={stores}
             ></StoreContainer>
 
@@ -142,7 +143,10 @@ export default function CityStores() {
               <StoreContainer
                 title="تخفیف دار"
                 stores={withDiscount}
-                moreHref={`/stores/all/${cityName}/${features.withDiscount}`}
+                moreHref={routes.storesFeature(
+                  cityName,
+                  features.withDiscount!,
+                )}
               ></StoreContainer>
             ) : null}
 
@@ -150,7 +154,10 @@ export default function CityStores() {
               <StoreContainer
                 title="ارسال رایگان"
                 stores={withFreeShipment}
-                moreHref={`/stores/all/${cityName}/${features.withFreeShipment}`}
+                moreHref={routes.storesFeature(
+                  cityName,
+                  features.withFreeShipment!,
+                )}
               ></StoreContainer>
             ) : null}
           </>
@@ -158,6 +165,7 @@ export default function CityStores() {
           <p>فروشگاهی وجود ندارد</p>
         )}
       </main>
+
       <Outlet></Outlet>
     </>
   )

@@ -1,3 +1,5 @@
+import { PropsWithChildren } from "react"
+
 import {
   Links,
   LiveReload,
@@ -13,12 +15,12 @@ import { GlobalErrorBoundary } from "./components/error-boundary"
 
 import baseCss from "./index.css"
 import errorBoundaryCss from "./components/styles/error-boundary.css"
-import { PropsWithChildren } from "react"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: baseCss },
   { rel: "stylesheet", href: errorBoundaryCss },
   { rel: "icon", href: "https://i.postimg.cc/kXNr9gTb/vendor-img-big.png" },
+  { rel: "favicon", href: "https://i.postimg.cc/kXNr9gTb/vendor-img-big.png" },
 ]
 
 export const meta: V2_MetaFunction = () => {
@@ -31,7 +33,10 @@ export const meta: V2_MetaFunction = () => {
   ]
 }
 
-export default function App({ children, title }: PropsWithChildren<{ title?: string }>) {
+export default function App({
+  children,
+  title,
+}: PropsWithChildren<{ title?: string }>) {
   return (
     <html lang="fa">
       <head>

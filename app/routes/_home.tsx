@@ -101,7 +101,9 @@ export default function HomePage() {
   const navigate = useNavigate()
 
   const FooterMemo = memo(Footer, () => true)
+
   const CityListMemo = memo(CityList, () => true)
+
   const CategoryNavMemo = memo(CategoryNav, () => true)
 
   const [userMenuShowing, setUserMenuShowing] = useState(false)

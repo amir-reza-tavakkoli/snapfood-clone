@@ -13,10 +13,7 @@ import type {
   LoaderArgs,
 } from "@remix-run/server-runtime"
 
-import {
-  createOrUpdateUser,
-
-} from "../queries.server/user.query.server"
+import { createOrUpdateUser } from "../queries.server/user.query.server"
 
 import { requireValidatedUser } from "../utils/validate.server"
 
@@ -52,8 +49,6 @@ type ActionType = { successful?: boolean; unsuccessful?: boolean }
 
 export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
-    console.log(1)
-
     const user = await requireValidatedUser(request)
 
     const form = await request.formData()
@@ -89,10 +84,11 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
   }
 }
 
-
 export default function WalletPage() {
   const basePrice = 1000
+
   const maxPrice = 1000 * basePrice
+
   const multipliers = [10, 20, 50]
 
   const user = useLoaderData<typeof loader>() as unknown as LoaderType
@@ -104,6 +100,7 @@ export default function WalletPage() {
   return (
     <main className="wallet-page">
       <h1>افزایش اعتبار</h1>
+
       <dl>
         <dt>موجودی فعلی</dt>
 
@@ -171,7 +168,7 @@ export default function WalletPage() {
               </label>
 
               <Button
-                aria-label="reduce by"
+                aria-label={`reduce by ${basePrice}`}
                 type="button"
                 onClick={() => {
                   if (priceToPay <= basePrice || priceToPay >= maxPrice) {

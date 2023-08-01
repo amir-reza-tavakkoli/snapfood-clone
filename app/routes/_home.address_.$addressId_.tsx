@@ -1,22 +1,35 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
+
 import type { Address, City } from "@prisma/client"
+
 import {
   Form,
   useActionData,
   useLoaderData,
-  useRouteError,
   V2_MetaFunction,
 } from "@remix-run/react"
 
 import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+
 import {
   createAddress,
   getAddressById,
   getCities,
   updateAddress,
 } from "../queries.server/address.query.server"
+
 import { requirePhoneNumber } from "../utils/session.server"
-import { getUserByPhone } from "../queries.server/user.query.server"
+
+import { requireValidatedUser, validateUser } from "../utils/validate.server"
+
+import type { LatLngTuple, Map } from "leaflet"
+
+import { ClientOnly } from "../client.map"
+
+import { MapComponent } from "../components/map.client"
+import { Button } from "../components/button"
+import { GlobalErrorBoundary } from "../components/error-boundary"
+
 import {
   DEAFULT_DIRECTION,
   DEFAULT_CITY,
@@ -24,15 +37,7 @@ import {
   DEFAULT_MIN_ADDRESS_LENGTH,
 } from "../constants"
 
-import { ClientOnly } from "../client.map"
-import { MapComponent } from "../components/map.client"
-
-import { Button } from "../components/button"
 import pageCss from "./styles/address-page.css"
-import { requireValidatedUser, validateUser } from "../utils/validate.server"
-
-import type { LatLngTuple, Map } from "leaflet"
-import { GlobalErrorBoundary } from "../components/error-boundary"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageCss },
@@ -148,7 +153,7 @@ export const loader = async ({
     }
 
     if (!params.addressId) {
-      throw new Error("چنین آدرسی وجود ندارد")
+      throw new Response("چنین آدرسی وجود ندارد")
     }
 
     const addressId = Number(params.addressId)
@@ -157,7 +162,7 @@ export const loader = async ({
       (isNaN(addressId) && !isNew) ||
       (typeof addressId !== "number" && !isNew)
     ) {
-      throw new Error("آدرس اشتباه است")
+      throw new Response("آدرس اشتباه است")
     }
 
     let address: Address | null
@@ -184,11 +189,11 @@ export const loader = async ({
     }
 
     if (!address || (!address.isValid && !isNew)) {
-      throw new Error("چنین آدرسی وجود ندارد")
+      throw new Response("چنین آدرسی وجود ندارد")
     }
 
     if (address.userPhoneNumber != user.phoneNumber) {
-      throw new Error("دسترسی ندارید")
+      throw new Response("دسترسی ندارید")
     }
 
     const cities = (await getCities()) ?? []
@@ -210,7 +215,6 @@ export default function AddressPage() {
   const [title, setTitle] = useState(address.title)
   const [unit, setUnit] = useState(address.unit)
   const [details, setDetails] = useState(address.details)
-  console.log(address)
 
   const [map, setMap] = useState<Map | null>(null)
 

@@ -1,4 +1,9 @@
-import { LinksFunction, LoaderArgs, redirect } from "@remix-run/server-runtime"
+import {
+  ActionArgs,
+  LinksFunction,
+  LoaderArgs,
+  redirect,
+} from "@remix-run/server-runtime"
 import {
   Form,
   Link,
@@ -22,17 +27,28 @@ import {
   validateUser,
 } from "../utils/validate.server"
 import {
-  FullOrderItem,
   getFullOrderItems,
   getOrder,
   updateOrder,
 } from "../queries.server/order.query.server"
-import { Order, Store } from "@prisma/client"
-import { getStore } from "../queries.server/store.query.server"
+import { Address, Order, Store, storeSchedule } from "@prisma/client"
+import {
+  getStore,
+  getStoreSchedule,
+} from "../queries.server/store.query.server"
 import { Button } from "../components/button"
 import { OrderComp } from "../components/order"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { routes } from "../routes"
+import { getAddressById } from "../queries.server/address.query.server"
+import {
+  calculateItemsReadyTime,
+  calculateShipmentPrice,
+  calculateShipmentTime,
+  validateOrderPossibility,
+} from "../utils/utils"
+import { Response } from "@remix-run/web-fetch"
+import { FullOrderItem } from "../constants"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },
@@ -56,17 +72,17 @@ export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
   ]
 }
 
-export const action = async ({ request, params }: any) => {
+export const action = async ({ request, params }: ActionArgs) => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
-
-    const user = await getUserByPhone({ phoneNumber })
-
-    validateUser({ user })
+    const user = await requireValidatedUser(request)
 
     const form = await request.formData()
 
-    const description: string | undefined = form.get("description")
+    const description = form.get("description")
+
+    if (description && typeof description !== "string") {
+      throw new Response("توضیحات وجود ندارد", { status: 404 })
+    }
 
     const orderId = Number(params.orderId)
 
@@ -74,15 +90,13 @@ export const action = async ({ request, params }: any) => {
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber })
+    order = validateOrder({ order, phoneNumber: user.phoneNumber })
 
     const newOrder = await updateOrder({ id: orderId, description })
 
-    if (newOrder) {
-      return redirect(routes.bill(orderId))
-    } else {
-      throw new Error("خطا")
-    }
+    if (newOrder) return redirect(routes.bill(orderId))
+
+    throw new Response("مشکلی پیش آمد", { status: 404 })
   } catch (error) {
     throw error
   }
@@ -92,6 +106,8 @@ type LoaderType = {
   items: FullOrderItem[]
   order: Order
   store: Store
+  address: Address | null
+  schedules: storeSchedule[]
 }
 
 export const loader = async ({
@@ -109,10 +125,6 @@ export const loader = async ({
 
     order = validateOrder({ order, phoneNumber: user.phoneNumber })
 
-    if (order.isBilled || order.isCanceled || !order.isInCart) {
-      throw new Error("سفارش قبلا تایید شده است")
-    }
-
     let store = await getStore({ storeId: order.storeId })
 
     store = validateStore({ store })
@@ -120,27 +132,76 @@ export const loader = async ({
     const items = await getFullOrderItems({ orderId })
 
     if (!items) {
-      throw new Error("آیتمی وجود ندارد")
+      throw new Response("آیتمی وجود ندارد", { status: 404 })
     }
 
-    return { items, order, store }
+    const address = await getAddressById({ addressId: order.addressId })
+
+    const schedules = await getStoreSchedule({ store })
+
+    const storeAddress = await getAddressById({ addressId: store.id })
+
+    if (!storeAddress || !address) {
+      throw new Error("ادرس ها اشتباه هستند")
+    }
+
+    validateOrderPossibility({
+      address,
+      order,
+      schedules: schedules,
+      store,
+      storeAddress,
+    })
+
+    const estimatedReadyTime = calculateItemsReadyTime({ items, store })
+
+    const estimatedShipmentTime = calculateShipmentTime({
+      destinationAddress: address,
+      store,
+      storeAddress,
+    })
+
+    const shipmentPrice = calculateShipmentPrice({
+      destinationAddress: address,
+      store,
+      storeAddress,
+    })
+
+    const updatedOrder = await updateOrder({
+      id: order.id,
+      estimatedReadyTime,
+      estimatedShipmentTime,
+      shipmentPrice,
+    })
+
+    if (!updateOrder) {
+      throw new Response("مشکلی پیش آمد")
+    }
+
+    return { items, order, store, address, schedules }
   } catch (error) {
     throw error
   }
 }
 
 export default function CheckoutPage() {
-  const { items, order, store } = useLoaderData<
-    typeof loader
-  >() as unknown as LoaderType
+  const { items, order, store, address, schedules } =
+    useLoaderData() as unknown as LoaderType
 
   return (
-    <main className="_checkout-page">
+    <main className="checkout-page">
       <h1>بررسی و تایید سفارش</h1>
 
       {items && order ? (
         <>
-          <OrderComp order={order} items={items} store={store}></OrderComp>
+          <OrderComp
+            order={order}
+            items={items}
+            store={store}
+            address={address}
+            schedule={schedules}
+            billSection={false}
+          ></OrderComp>
 
           <Form method="post" aria-label="Confirm">
             <input type="hidden" name="order-id" value={order.id} />
@@ -161,7 +222,7 @@ export default function CheckoutPage() {
           </Form>
         </>
       ) : (
-        <p>سفارشی وجود ندارد ! </p>
+        <p className="_no-order">سفارشی وجود ندارد ! </p>
       )}
     </main>
   )

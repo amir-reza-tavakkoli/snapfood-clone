@@ -25,7 +25,7 @@ export default function AboutPage() {
       <picture>
         <source
           media="(max-width: 799px)"
-          srcSet="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
+          srcSet="https://i.postimg.cc/HxJjbpGz/vendor-img-small.png"
         />
         <source
           media="(min-width: 800px)"
@@ -33,7 +33,8 @@ export default function AboutPage() {
         />
         <img
           src="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
-          alt="Chris standing up holding his daughter Elva"
+          alt=""
+          role="presentation"
         />
       </picture>
       <h2>Overview</h2>

@@ -7,11 +7,11 @@
 }
 
 @font-face {
-  font-family: 'IRANSansMobile';
+  font-family: "IRANSansMobile";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('https://cdn.snappfood.ir/pwa/assets/fonts/woff2/IRANSansWeb_Bold.woff2');
+  src: url("https://cdn.snappfood.ir/pwa/assets/fonts/woff2/IRANSansWeb_Bold.woff2");
 }
 
 :where(:root) {
@@ -105,8 +105,7 @@
   margin: 0;
   outline-offset: var(--length-8);
   font-family: "IRANSans", "IRANSansMobile", system-ui, -apple-system,
-    /* Firefox supports this but not yet `system-ui` */
-    Helvetica, Roboto,
+    /* Firefox supports this but not yet `system-ui` */ Helvetica, Roboto,
     "Segoe UI", sans-serif, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 

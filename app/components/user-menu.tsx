@@ -6,8 +6,9 @@ import { Icon } from "./icon"
 
 import { routes } from "../routes"
 
+import { getFullName } from "../utils/utils"
+
 import { DEFAULT_CURRENCY } from "../constants"
-import { getFullName } from "~/utils/utils"
 
 type UserMenuProps = {
   user: User

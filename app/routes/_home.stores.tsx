@@ -20,9 +20,9 @@ import { useForceAddress } from "../hooks/forceAddress"
 
 import { requireValidatedUser } from "../utils/validate.server"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
+import { routes } from "../routes"
 
-import { routes } from "~/routes"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
 import imageItemCss from "./../components/styles/image-item.css"
 import pageCss from "./styles/stores-page.css"
