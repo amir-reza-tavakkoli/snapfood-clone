@@ -1,27 +1,14 @@
 import { Link } from "@remix-run/react"
 
-import type { Comment, Order, Store } from "@prisma/client"
-
-import type { FullOrderItem } from "../queries.server/order.query.server"
-
 import { Icon } from "./icon"
-
-import { DEFAULT_CURRENCY, DEFAULT_IMG_PLACEHOLDER } from "./../constants"
 
 import { routes } from "../routes"
 
-export type CartProps = {
-  orders:
-    | {
-        items: FullOrderItem[]
-        order: Order
-        store: Store
-        comment?: Comment
-      }[]
-    | undefined
-
-  dir?: "rtl" | "lrt"
-}
+import {
+  CartProps,
+  DEFAULT_CURRENCY,
+  DEFAULT_IMG_PLACEHOLDER,
+} from "./../constants"
 
 export const CartComp = ({ orders, dir }: CartProps) => {
   return (
@@ -69,6 +56,7 @@ export const CartComp = ({ orders, dir }: CartProps) => {
                       <img
                         src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                         alt=""
+                        role="presentation"
                       ></img>
 
                       <span className="nonvisual">{item.name}</span>
