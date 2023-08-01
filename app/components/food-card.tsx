@@ -3,8 +3,12 @@ import { useEffect, useState } from "react"
 import { Form, Link } from "@remix-run/react"
 
 import { Button } from "./button"
+
+import type { Store } from "@prisma/client"
+
+import { routes } from "../routes"
+
 import { COOKIE_City, DEFAULT_IMG_PLACEHOLDER } from "../constants"
-import { Store } from "@prisma/client"
 
 type FoodCardProps = {
   name: string
@@ -42,18 +46,20 @@ export const FoodCard = ({
   store,
 }: FoodCardProps) => {
   const [addressState, setAddressstate] = useState(address)
-  console.log(address)
+
   const [cityName, setCityName] = useState("")
 
   useEffect(() => {
     const choosedCity = localStorage.getItem(COOKIE_City)
+
     if (!choosedCity) {
-      setCityName("ddd")
+      setCityName("")
+
       return
     }
+
     if (choosedCity !== cityName) setCityName(choosedCity)
   })
-  console.log(cityName, "ppppppp")
 
   useEffect(() => {
     reRender({})
@@ -62,24 +68,29 @@ export const FoodCard = ({
   return (
     <dl className="food-card">
       <div>
-        <Link to={`/item/${id}/store/${store.id}`}>
+        <Link to={routes.itemStore(id, store.id)}>
           <dt className="nonvisual">Item</dt>
+
           <dl className="_identity">
             <dt className="nonvisual">Name</dt>
+
             <dd className="_name">{name}</dd>
+
             <dt className="nonvisual">Type</dt>
+
             <dd className="nonvisual">{type}</dd>
+
             {ingredients ? (
               <>
                 <dt className="nonvisual" aria-label="Description">
                   Ingredients
                 </dt>
-                <dd className="_ingredients">
-                  <ul>{ingredients}</ul>
-                </dd>
+
+                <dd className="_ingredients">{ingredients}</dd>
               </>
             ) : null}
           </dl>
+
           <img
             src={image ?? DEFAULT_IMG_PLACEHOLDER}
             alt=""
@@ -87,51 +98,72 @@ export const FoodCard = ({
           />
         </Link>
       </div>
+
       {prices!.map((item, index) => (
         <div className="_forms" key={index}>
           {item ? (
             <>
               <dt className="nonvisual">Price</dt>
+
               <dd>
                 <dl className="_price">
                   <dt className="nonvisual">Variation</dt>
+
                   <dd className="_variation">{item.variation}</dd>
+
                   <div>
                     {item.discountPercent ? (
                       <>
                         <dt className="nonvisual">Value</dt>
+
                         <dd aria-label="Before discount">
                           <del>{item.vaule}</del>
                         </dd>
+
                         <dt className="nonvisual" aria-label="After discount">
                           Value
                         </dt>
+
                         <dd>
-                          {(item.vaule * (100 - item.discountPercent)) / 100}
+                          {(
+                            (item.vaule * (100 - item.discountPercent)) /
+                            100
+                          ).toLocaleString("fa")}
                         </dd>
                       </>
                     ) : (
                       <>
                         <dt className="nonvisual">Value</dt>
-                        <dd>{item.vaule}</dd>
+
+                        <dd>{item.vaule.toLocaleString("fa") + " "}</dd>
                       </>
                     )}
+
                     <dt className="nonvisual">Currency</dt>
+
                     <dd>{item.currency}</dd>
                   </div>
                 </dl>
               </dd>
             </>
           ) : null}
+
           <dt className="nonvisual">Add</dt>
+
           <dd>
             {available && item.available ? (
               <>
                 <Form method="post">
-                  {count ? count : null}
+                  <span>
+                    {count ? count.toLocaleString("fa") + " × " : null}
+                  </span>
+
                   <input type="hidden" name="id" value={id} />
+
                   <input type="hidden" name="job" value="add" />
+
                   <input type="hidden" name="address" value={address} />
+
                   <Button
                     type="submit"
                     disabled={
@@ -149,11 +181,15 @@ export const FoodCard = ({
 
                 <Form method="post">
                   <input type="hidden" name="id" value={id} />
+
                   <input type="hidden" name="job" value="remove" />
+
                   <input type="hidden" name="address" value={address} />
 
-                  {!count || cityName != store.cityName ? undefined : (
-                    <Button type="submit"> - </Button>
+                  {!count || cityName !== store.cityName ? undefined : (
+                    <Button type="submit" aria-label="Remove">
+                      -
+                    </Button>
                   )}
                 </Form>
               </>
@@ -164,20 +200,3 @@ export const FoodCard = ({
     </dl>
   )
 }
-
-//   <Button
-//     variant="primary"
-//     rounding="full"
-//     aria-label={"Add" + name + item.variation}
-//   >
-//     افزودن
-//   </Button>
-// ) : (
-//   <Button
-//     disabled
-//     variant="primary"
-//     rounding="full"
-//     aria-label="Not available"
-//   >
-//     افزودن
-//   </Button>
