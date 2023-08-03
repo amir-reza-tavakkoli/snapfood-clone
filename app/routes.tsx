@@ -20,6 +20,8 @@ export const routes = {
     `/stores/${city}/all/${feature}`,
   storesKind: (city: string, kind: string) =>
     `/stores/${city}/all/kind/${kind}`,
+ storesCategory: (city: string, kind: string) =>
+    `/stores/${city}/all/category/${kind}`,
 
   orders: "/orders",
   ordersSummary: "/orders-summary",
@@ -27,7 +29,7 @@ export const routes = {
   bill: (id: string | number) => `/bill/${id}`,
   checkout: (id: string | number) => `/checkout/${id}`,
   cart: "/cart",
-  comment: (id: string | number) => `/comment/${id}`,
+  comment: (id: string | number) => `/add-comment/${id}`,
 
   itemStore: (itemId: string | number, storeId: string | number) =>
     `/item/${itemId}/store/${storeId}`,
