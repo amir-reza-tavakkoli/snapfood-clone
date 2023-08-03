@@ -11,11 +11,3 @@
 :where(.order-status *) {
   text-align: center;
 }
-
-:where(.order-status ._error) {
-  color: var(--color-error);
-}
-
-:where(.order-status ._success) {
-  color: var(--color-action);
-}
