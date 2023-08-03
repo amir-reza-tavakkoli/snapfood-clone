@@ -21,10 +21,10 @@
 }
 
 :where(.store-info > address img) {
-  inline-size: 64px;
-  block-size: 64px;
+  inline-size: 80px;
+  block-size: 80px;
   padding-inline: 8px;
-  margin-inline: 6px;
+  margin-inline: 12px;
   border-radius: 8px;
   border: var(--border-extra-thin) solid var(--color-faded-5);
 }
@@ -37,14 +37,17 @@
 
 :where(.store-info > address > div h1) {
   margin-inline: 6px;
+  margin-block: var(--length-6);
   font-size: var(--length-18);
   font-weight: 700;
+  font-style: normal;
 }
 
 :where(.store-info > address > div svg) {
   inline-size: 16px;
   block-size: 16px;
   margin-inline: 6px;
+  margin-block: var(--length-6);
 }
 
 :where(.store-info > address > div p) {
@@ -52,6 +55,7 @@
   margin-inline: 6px;
   color: var(--color-faded);
   font-size: var(--length-12);
+  font-style: normal;
 }
 
 :where(.store-info > address > div small) {
@@ -119,8 +123,8 @@
   justify-content: space-around;
   align-self: flex-start;
   inline-size: 100%;
+  padding-inline: 10px;
   margin-block: var(--length-8);
-  margin-inline: 16px;
   border-block: var(--border-extra-thin) solid var(--color-faded-5);
   font-weight: 400;
 }
@@ -169,6 +173,11 @@
   padding-block: var(--length-24);
   inline-size: 100%;
   color: var(--color-text-2);
+  border-block-end: var(--border-thin) solid var(--color-faded-5);
+}
+
+:where(.store-info > ul ._comment:last-of-type) {
+  border: none;
 }
 
 :where(.store-info > ul ._comment div:first-of-type) {
@@ -200,6 +209,7 @@
 :where(.store-info > ul ._comment div:last-of-type) {
   display: flex;
   flex-direction: column;
+  inline-size: 95%;
   margin-block: var(--length-8);
   margin-inline: 10px;
 }

@@ -25,6 +25,7 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 import { DEFAULT_IMG_PLACEHOLDER, StoreComment } from "../constants"
 
 import pageCss from "./styles/store-info-page.css"
+import { CommentComp } from "~/components/comment"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
 
@@ -176,6 +177,7 @@ export default function StoreInfoPage() {
       </div>
 
       <p>نظرات کاربران</p>
+
       <ul>
         {comments.map((comment, index) =>
           comment &&
@@ -183,43 +185,8 @@ export default function StoreInfoPage() {
           comment.comment.description &&
           comment.comment.isVisible &&
           comment.comment.isVerified &&
-          comment.order.billDate &&
           comment.comment.score ? (
-            <li key={index} className="_comment">
-              <div>
-                <span className="_name"> {comment?.user?.firstName}</span>
-
-                <span className="_score">
-                  {comment.comment?.score.toLocaleString("fa")}
-
-                  <Icon name="star"></Icon>
-                </span>
-
-                <time dateTime={comment.order.billDate.toString()}>
-                  {/* {comment.order.billDate
-                    ? getFormattedDate(comment?.order.billDate)
-                    : null} */}
-                </time>
-              </div>
-
-              <div>
-                <span className="_description">
-                  {comment.comment.description}
-                </span>
-
-                <ul>
-                  {comment && comment.items
-                    ? comment.items.map((item, index) =>
-                        item ? (
-                          <li className="_item" key={index}>
-                            {item?.name}
-                          </li>
-                        ) : null,
-                      )
-                    : null}
-                </ul>
-              </div>
-            </li>
+            <CommentComp comment={comment} index={index}></CommentComp>
           ) : null,
         )}
       </ul>
