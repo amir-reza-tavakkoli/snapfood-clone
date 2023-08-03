@@ -20,7 +20,7 @@ export const routes = {
     `/stores/${city}/all/${feature}`,
   storesKind: (city: string, kind: string) =>
     `/stores/${city}/all/kind/${kind}`,
- storesCategory: (city: string, kind: string) =>
+  storesCategory: (city: string, kind: string) =>
     `/stores/${city}/all/category/${kind}`,
 
   orders: "/orders",
