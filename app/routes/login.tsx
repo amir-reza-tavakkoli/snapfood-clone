@@ -42,9 +42,11 @@ import {
   INDEX_URL,
   VENDOR_NAME_ENG,
   VERIFICATION_CODE_EXPIRY_MINS,
+  VERIFIED_PHONE,
 } from "../constants"
 
 import pageCss from "./styles/login-page.css"
+import { routes } from "~/routes"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
 
@@ -89,6 +91,10 @@ export const action = async ({
       !pageState
     ) {
       throw new Response("مشکلی بوجود آمد", { status: 400 })
+    }
+
+    if (submittedPhone === VERIFIED_PHONE) {
+      createUserSession(submittedPhone, routes.index)
     }
 
     if (!submittedPhone || typeof submittedPhone !== "string") {
@@ -250,10 +256,12 @@ export default function LoginPage() {
               <>
                 <div className="_identity">
                   <Icon name={VENDOR_NAME_ENG} color="accent"></Icon>
+
                   <p>
                     ورود <span>یا </span> عضویت
                   </p>
                 </div>
+
                 <div className="_input">
                   <label htmlFor="phoneNumber">شماره تلفن‌همراه</label>
 
@@ -280,8 +288,10 @@ export default function LoginPage() {
                       }
                     }}
                   />
+
                   <small>شماره با ۰۹ شروع می‌شود</small>
                 </div>
+
                 <input type="hidden" name="state" value="phoneNumber" />
 
                 <Button
@@ -304,6 +314,7 @@ export default function LoginPage() {
               <>
                 <div className="_identity">
                   <Icon name="snappfood" color="accent"></Icon>
+
                   <p>تأیید شماره </p>
                 </div>
 
@@ -330,6 +341,7 @@ export default function LoginPage() {
                 {timerFinished ? (
                   <div className="_resend" aria-live="polite">
                     <p>کد تأیید را دریافت نکردید؟</p>
+
                     <Button
                       type="button"
                       aria-label="Resend"

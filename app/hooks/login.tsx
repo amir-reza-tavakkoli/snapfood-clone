@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import type { LoginActionData, LoginPageState } from "../routes/_home.login"
+import type { LoginActionData, LoginPageState } from "../routes/login"
 
 import { COOKIE_PHONE } from "../constants"
 
