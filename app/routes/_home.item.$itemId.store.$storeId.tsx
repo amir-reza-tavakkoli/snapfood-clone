@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react"
 import { useActionData, useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
-import type { LoaderArgs, LoaderFunction } from "@remix-run/server-runtime"
+import type {
+  LinksFunction,
+  LoaderArgs,
+  LoaderFunction,
+} from "@remix-run/server-runtime"
 
 import type { Order, Store, User, Comment } from "@prisma/client"
 
@@ -21,7 +25,15 @@ import { requireValidatedUser } from "../utils/validate.server"
 
 import { useCheckAddress } from "../hooks/checkAddress"
 
-import { FullOrderItem } from "../constants"
+import { JoinedOrderItem } from "../constants"
+
+import itemCss from "./../components/styles/item.css"
+import pageCss from "./styles/item-page.css"
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: itemCss },
+  { rel: "stylesheet", href: pageCss },
+]
 
 export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
   const { description, title } = data
@@ -39,7 +51,7 @@ export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
 }
 
 type LoaderType = {
-  foundItem: FullOrderItem
+  foundItem: JoinedOrderItem
   store: Store
   order: Order | undefined
   comments: (
@@ -58,7 +70,9 @@ export const loader: LoaderFunction = async ({
 }: LoaderArgs): Promise<LoaderType> => {
   try {
     const user = await requireValidatedUser(request)
+
     const itemId = Number(params.itemId)
+
     const storeId = Number(params.storeId)
 
     if (!itemId || !storeId) {
@@ -77,7 +91,7 @@ export const loader: LoaderFunction = async ({
       throw new Response("فروشگاهی با این مشخصات وجود ندارد")
     }
 
-    let items: FullOrderItem[] = []
+    let items: JoinedOrderItem[] = []
 
     let order = await getStoreOrderInCart({
       storeId: store.id,
@@ -116,13 +130,15 @@ export const loader: LoaderFunction = async ({
 
 export default function ItemPage() {
   const { foundItem, store, order, comments } = useLoaderData<typeof loader>()
+
   const actionData = useActionData()
+
   const [item, setItem] = useState(foundItem)
 
   useEffect(() => {
     if (actionData && actionData.newItems) {
-      const newItem: FullOrderItem = actionData.newItems.find(
-        (item: FullOrderItem) => item.id === foundItem.id,
+      const newItem: JoinedOrderItem = actionData.newItems.find(
+        (item: JoinedOrderItem) => item.id === foundItem.id,
       )
 
       if (actionData && newItem) setItem(newItem)
@@ -130,8 +146,11 @@ export default function ItemPage() {
   }, [actionData])
 
   const { addressState: address } = useCheckAddress()
+
   return (
-    <main>
+    <main className="item-container">
+      <h1 className="nonvisual">{foundItem.name}</h1>
+
       <ItemComp address={address} item={item} store={store}></ItemComp>
     </main>
   )

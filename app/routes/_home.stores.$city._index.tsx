@@ -13,15 +13,16 @@ import {
   getStoresWithFreeShipment,
 } from "../queries.server/store.query.server"
 
-import { validateCity } from "../utils/validate.server"
+import { checkCity } from "../utils/validate.server"
 
 import { GlobalErrorBoundary } from "../components/error-boundary"
-import storeCardCss from "./../components/styles/store-card.css"
 import { StoreContainer } from "../components/store-container"
 
 import { routes } from "../routes"
 
 import { type AllowedStoresFeatures, type StoreWithTags } from "../constants"
+
+import storeCardCss from "./../components/styles/store-card.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: storeCardCss },
@@ -59,7 +60,7 @@ export const loader = async ({
       return redirect(routes.addresses)
     }
 
-    await validateCity({ cityName: city })
+    await checkCity({ cityName: city })
 
     let stores = await getStoresByCity({
       cityName: city,

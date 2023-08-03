@@ -15,3 +15,9 @@
   flex-direction: row;
   flex-wrap: wrap;
 }
+
+:where(._stores-all-page ._no-store) {
+  margin-block: var(--length-18);
+  text-align: center;
+  font-size: var(--length-18);
+}

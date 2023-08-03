@@ -1,24 +1,26 @@
 import { json } from "@remix-run/node"
 
-import type { Store } from "@prisma/client"
+import type { Store, StoreHasItems } from "@prisma/client"
 
 import {
+  getStoresByCategory,
   getStoresByKind,
   getStoresKinds,
   getStoresWithDiscount,
   getStoresWithFreeShipment,
 } from "../queries.server/store.query.server"
 
-import { LoginFieldErrors } from "../routes/_home.login"
+import { LoginFieldErrors } from "../routes/login"
 
 import {
   AllowedStoresFeatures,
+  SCORE_ROUNDING,
   VERIFICATION_CODE_EXPIRY_MINS,
 } from "../constants"
 
 export const badRequest = <T>(data: T) => json<T>(data, { status: 400 })
 
-export function generateVerificationCode(figures: number) {
+export function generateRandomCode(figures: number) {
   const mins = [1] // leat signifcant possible figure
   const maxs = [9] // most signifcant possible figure
 
@@ -60,13 +62,7 @@ export function checkFieldsErrors(
 
 type Features = {
   name: AllowedStoresFeatures
-  getStores: ({
-    kind,
-    stores,
-  }: {
-    kind?: string
-    stores: Store[]
-  }) => Promise<Store[]>
+  getStores: ({ kind, stores }: any) => Promise<Store[]>
   title?: string
 }[]
 export const features: Features = [
@@ -75,7 +71,7 @@ export const features: Features = [
     getStores: async ({ kind, stores }: { kind?: string; stores: Store[] }) => {
       const kinds = await getStoresKinds()
 
-      if (!kind || kinds.find(storeKind => storeKind.name === kind))
+      if (!kind || !kinds.find(storeKind => storeKind.name === kind))
         throw new Response("این نوع وجود ندارد.", { status: 404 })
 
       const featureStores = await getStoresByKind({ kind })
@@ -93,6 +89,26 @@ export const features: Features = [
     title: "دارای تخفیف",
     getStores: async ({ stores }: { stores: Store[] }) => {
       const featureStores = await getStoresWithDiscount({ stores })
+
+      if (!featureStores) {
+        throw new Response("این نوع وجود ندارد.", { status: 404 })
+      }
+
+      return featureStores
+    },
+  },
+
+  {
+    name: "category",
+    title: "نوع خاص",
+    getStores: async ({
+      stores,
+      category,
+    }: {
+      stores: Store[]
+      category: string
+    }) => {
+      const featureStores = await getStoresByCategory({ stores, category })
 
       if (!featureStores) {
         throw new Response("این نوع وجود ندارد.", { status: 404 })
@@ -123,3 +139,28 @@ export const features: Features = [
     },
   },
 ]
+
+export function calculateScore({
+  newScore,
+  store,
+}: {
+  newScore: number
+  store: Store | StoreHasItems
+}) {
+  try {
+    const score = Number(
+      (
+        (store.score * store.scoreCount + newScore) /
+        (store.scoreCount + 1)
+      ).toFixed(SCORE_ROUNDING),
+    )
+
+    if (isNaN(score)) {
+      throw new Response("محاسبه امتیاز ممکن نیست", { status: 404 })
+    }
+
+    return score
+  } catch (error) {
+    throw error
+  }
+}

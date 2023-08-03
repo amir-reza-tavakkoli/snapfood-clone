@@ -9,7 +9,7 @@ import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
 
 import {
-  getFullOrderItems,
+  getJoinedOrderItems,
   getOrder,
 } from "../queries.server/order.query.server"
 
@@ -24,8 +24,8 @@ import {
   requireValidatedUser,
   validateItems,
   validateNumberParam,
-  validateOrder,
-  validateStore,
+  checkOrder,
+  checkStore,
 } from "../utils/validate.server"
 
 import { getComment } from "../queries.server/comment.query"
@@ -35,7 +35,7 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import { getStoreCurrentSchedule } from "../utils/utils"
 
-import type { FullOrderItem } from "../constants"
+import type { JoinedOrderItem } from "../constants"
 
 import orderCss from "../components/styles/order.css"
 import orderStatusCss from "./../components/styles/order-status.css"
@@ -66,7 +66,7 @@ export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
 
 type LoaderType = {
   order: Order
-  items: FullOrderItem[]
+  items: JoinedOrderItem[]
   store: Store
   comment: Comment | null
   address: Address
@@ -86,13 +86,13 @@ export const loader = async ({
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber: user.phoneNumber })
+    order = checkOrder({ order, phoneNumber: user.phoneNumber })
 
     let store = await getStore({ storeId: order.storeId })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
-    let items = await getFullOrderItems({ orderId })
+    let items = await getJoinedOrderItems({ orderId })
 
     items = validateItems({ items })
 

@@ -11,7 +11,7 @@ import {
   getStoresByCity,
 } from "../queries.server/store.query.server"
 
-import { validateCity } from "../utils/validate.server"
+import { checkCity } from "../utils/validate.server"
 import { features } from "../utils/utils.server"
 
 import { routes } from "../routes"
@@ -58,7 +58,7 @@ export const loader = async ({
       return redirect(routes.addresses)
     }
 
-    city = await validateCity({ cityName: city })
+    city = await checkCity({ cityName: city })
 
     let stores = await getStoresByCity({ cityName: city })
 

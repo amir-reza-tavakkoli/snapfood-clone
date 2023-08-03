@@ -4,7 +4,7 @@ import type { User } from "@prisma/client"
 
 import { evaluateUser } from "./evaluate.server"
 
-import { validateUser } from "../utils/validate.server"
+import { checkUser } from "../utils/validate.server"
 
 import { DEFAULT_USER_NAME } from "../constants"
 
@@ -100,7 +100,7 @@ export async function updateVerificationCode(
 
     const user = await getUserByPhone({ phoneNumber })
 
-    validateUser({ user })
+    checkUser({ user })
 
     return await db.user.update({
       where: {

@@ -17,7 +17,7 @@ import {
   calculateOrder,
   changeOrderItems,
   createOrder,
-  getFullOrderItems,
+  getJoinedOrderItems,
   shouldOrderCancel,
 } from "../queries.server/order.query.server"
 import { getStoreOrderInCart } from "../queries.server/cart.query.server"
@@ -45,7 +45,7 @@ import {
   COOKIE_ADDRESS,
   DEFAULT_CURRENCY,
   DEFAULT_IMG_PLACEHOLDER,
-  FullOrderItem,
+  JoinedOrderItem,
   INVALID_ADDRESS_RANGE,
 } from "../constants"
 
@@ -57,8 +57,8 @@ import {
 import {
   requireValidatedUser,
   validateNumberParam,
-  validateStore,
-  validateUser,
+  checkStore,
+  checkUser,
 } from "../utils/validate.server"
 
 import foodCardCss from "./../components/styles/food-card.css"
@@ -93,11 +93,11 @@ export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
 type ActionType = {
   categorizedItems: {
     name: string
-    value: FullOrderItem[]
+    value: JoinedOrderItem[]
   }[]
-  newItems: FullOrderItem[]
+  newItems: JoinedOrderItem[]
   newTotalPrice: number
-  orderItems: FullOrderItem[]
+  orderItems: JoinedOrderItem[]
   orderInCart: Order
 }
 
@@ -112,7 +112,7 @@ export const action = async ({
 
     const store = await getStore({ storeId })
 
-    validateStore({ store })
+    checkStore({ store })
 
     const form = await request.formData()
 
@@ -172,7 +172,7 @@ export const action = async ({
 
     const categorizedItems = categorizeItems({ items: newItems })
 
-    const orderItems = await getFullOrderItems({ orderId: orderInCart.id })
+    const orderItems = await getJoinedOrderItems({ orderId: orderInCart.id })
 
     return {
       categorizedItems,
@@ -189,14 +189,14 @@ export const action = async ({
 type LoaderType = {
   user: User
   store: Store
-  items: FullOrderItem[]
+  items: JoinedOrderItem[]
   order: Order | undefined
   totalPrice: number
   categorizedItems: {
     name: string
-    value: FullOrderItem[]
+    value: JoinedOrderItem[]
   }[]
-  orderItems: FullOrderItem[] | undefined
+  orderItems: JoinedOrderItem[] | undefined
   schedules: storeSchedule[]
   addresses: Address[]
   storeAddress: Address
@@ -213,9 +213,9 @@ export const loader: LoaderFunction = async ({
 
     let store = await getStore({ storeId })
 
-    validateUser({ user })
+    checkUser({ user })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
     let order = await getStoreOrderInCart({
       phoneNumber: user.phoneNumber,
@@ -226,7 +226,7 @@ export const loader: LoaderFunction = async ({
 
     let totalPrice: number = 0
 
-    let items: FullOrderItem[]
+    let items: JoinedOrderItem[]
     if (order) totalPrice = order.totalPrice
 
     if (!totalPrice && order) {
@@ -244,7 +244,7 @@ export const loader: LoaderFunction = async ({
     }
 
     const orderItems = order
-      ? await getFullOrderItems({ orderId: order.id })
+      ? await getJoinedOrderItems({ orderId: order.id })
       : undefined
 
     const categorizedItems = categorizeItems({ items })
@@ -294,7 +294,7 @@ export default function StorePage() {
   const [itemsState, setItemsState] = useState<
     {
       name: string
-      value: FullOrderItem[]
+      value: JoinedOrderItem[]
     }[]
   >(categorizedItems)
 
@@ -379,29 +379,31 @@ export default function StorePage() {
                 <p id={"__" + category.name}>{category.name}</p>
 
                 <div>
-                  {category.value.map((item: FullOrderItem, index: number) => (
-                    <FoodCard
-                      store={store}
-                      reRender={reRender}
-                      address={address ?? -1}
-                      count={item.count ?? 0}
-                      id={item.id ?? 0}
-                      remainingCount={item.remainingCount ?? 0}
-                      name={item.name ?? ""}
-                      image={item.avatarUrl ?? ""}
-                      ingredients={item.description ?? ""}
-                      type={item.itemCategoryName}
-                      available={item.isAvailible ?? false}
-                      prices={[
-                        {
-                          available: !!item.remainingCount ?? false,
-                          vaule: item.price ?? item.basePrice ?? 0,
-                          currency: DEFAULT_CURRENCY,
-                          discountPercent: item.discountPercent,
-                        },
-                      ]}
-                    ></FoodCard>
-                  ))}
+                  {category.value.map(
+                    (item: JoinedOrderItem, index: number) => (
+                      <FoodCard
+                        store={store}
+                        reRender={reRender}
+                        address={address ?? -1}
+                        count={item.count ?? 0}
+                        id={item.id ?? 0}
+                        remainingCount={item.remainingCount ?? 0}
+                        name={item.name ?? ""}
+                        image={item.avatarUrl ?? ""}
+                        ingredients={item.description ?? ""}
+                        type={item.itemCategoryName}
+                        available={item.isAvailible ?? false}
+                        prices={[
+                          {
+                            available: !!item.remainingCount ?? false,
+                            vaule: item.price ?? item.basePrice ?? 0,
+                            currency: DEFAULT_CURRENCY,
+                            discountPercent: item.discountPercent,
+                          },
+                        ]}
+                      ></FoodCard>
+                    ),
+                  )}
                 </div>
               </div>
             ))}

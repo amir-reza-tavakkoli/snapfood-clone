@@ -6,7 +6,7 @@ import {
   BASE_SHIPMENT_MULTIPLIER,
   COOKIE_ADDRESS,
   COOKIE_City,
-  FullOrderItem,
+  JoinedOrderItem,
   PER_UNIT_ADDED_TIME,
   READY_TIME_OFFSET,
 } from "../constants"
@@ -63,6 +63,10 @@ function getDistance({
 }
 
 export function getFormattedDate(date: Date) {
+  if (typeof date !== "object") {
+    return
+  }
+
   const persianDate = date.toLocaleDateString("fa").split("/")
 
   const p2e = (string: any) =>
@@ -70,7 +74,9 @@ export function getFormattedDate(date: Date) {
 
   return (
     persianDate[0] +
+    " " +
     toPersianMonth(Number(p2e(persianDate[1]))) +
+    " " +
     persianDate[2]
   )
 }
@@ -348,7 +354,7 @@ export function getRateDescription(rate: number) {
       return "عالی"
 
     default:
-      throw new Error("Wrong Number")
+      return ""
   }
 }
 
@@ -356,7 +362,7 @@ export function calculateItemsReadyTime({
   store,
   items,
 }: {
-  items: FullOrderItem[]
+  items: JoinedOrderItem[]
   store: Store
 }) {
   try {

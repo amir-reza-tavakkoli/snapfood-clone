@@ -4,51 +4,48 @@ import {
   LoaderArgs,
   redirect,
 } from "@remix-run/server-runtime"
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useRouteError,
-  V2_MetaFunction,
-} from "@remix-run/react"
 
-import { requirePhoneNumber } from "../utils/session.server"
-
-import { getUserByPhone } from "../queries.server/user.query.server"
-
-import orderCss from "./../components/styles/order.css"
-import pageCss from "./styles/checkout-page.css"
+import { Form, useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
 import {
   requireValidatedUser,
   validateNumberParam,
-  validateOrder,
-  validateStore,
-  validateUser,
+  checkOrder,
+  checkStore,
+  checkUser,
 } from "../utils/validate.server"
+
+import type { Address, Order, Store, storeSchedule } from "@prisma/client"
+
 import {
-  getFullOrderItems,
+  getJoinedOrderItems,
   getOrder,
   updateOrder,
 } from "../queries.server/order.query.server"
-import { Address, Order, Store, storeSchedule } from "@prisma/client"
 import {
   getStore,
   getStoreSchedule,
 } from "../queries.server/store.query.server"
+import { getAddressById } from "../queries.server/address.query.server"
+
 import { Button } from "../components/button"
 import { OrderComp } from "../components/order"
 import { GlobalErrorBoundary } from "../components/error-boundary"
-import { routes } from "../routes"
-import { getAddressById } from "../queries.server/address.query.server"
+
 import {
   calculateItemsReadyTime,
   calculateShipmentPrice,
   calculateShipmentTime,
   validateOrderPossibility,
 } from "../utils/utils"
-import { Response } from "@remix-run/web-fetch"
-import { FullOrderItem } from "../constants"
+
+import { routes } from "../routes"
+
+import { type JoinedOrderItem } from "../constants"
+
+import orderCss from "./../components/styles/order.css"
+import pageCss from "./styles/checkout-page.css"
+import { useState } from "react"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },
@@ -90,9 +87,31 @@ export const action = async ({ request, params }: ActionArgs) => {
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber: user.phoneNumber })
+    order = checkOrder({ order, phoneNumber: user.phoneNumber })
 
     const newOrder = await updateOrder({ id: orderId, description })
+
+    let store = await getStore({ storeId: order.storeId })
+
+    store = checkStore({ store })
+
+    const address = await getAddressById({ addressId: order.addressId })
+
+    const schedules = await getStoreSchedule({ store })
+
+    const storeAddress = await getAddressById({ addressId: store.id })
+
+    if (!storeAddress || !address) {
+      throw new Error("ادرس ها اشتباه هستند")
+    }
+
+    validateOrderPossibility({
+      address,
+      order,
+      schedules: schedules,
+      store,
+      storeAddress,
+    })
 
     if (newOrder) return redirect(routes.bill(orderId))
 
@@ -103,7 +122,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 }
 
 type LoaderType = {
-  items: FullOrderItem[]
+  items: JoinedOrderItem[]
   order: Order
   store: Store
   address: Address | null
@@ -123,13 +142,13 @@ export const loader = async ({
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber: user.phoneNumber })
+    order = checkOrder({ order, phoneNumber: user.phoneNumber })
 
     let store = await getStore({ storeId: order.storeId })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
-    const items = await getFullOrderItems({ orderId })
+    const items = await getJoinedOrderItems({ orderId })
 
     if (!items) {
       throw new Response("آیتمی وجود ندارد", { status: 404 })
@@ -188,6 +207,8 @@ export default function CheckoutPage() {
   const { items, order, store, address, schedules } =
     useLoaderData() as unknown as LoaderType
 
+  const [description, setDescription] = useState(store.description)
+
   return (
     <main className="checkout-page">
       <h1>بررسی و تایید سفارش</h1>
@@ -214,6 +235,10 @@ export default function CheckoutPage() {
               name="description"
               id="description"
               placeholder="توضیحات سفارش..."
+              value={description ?? undefined}
+              onChange={e => {
+                if (e.target.value) setDescription(e.target.value)
+              }}
             ></textarea>
 
             <Button variant="accent" type="submit">

@@ -77,7 +77,7 @@ export default function StoresPage() {
         {categories
           ? categories.map((category, index) => (
               <li key={index}>
-                <Link to={routes.storesKind(cityState, category.name)}>
+                <Link to={routes.storesCategory(cityState, category.name)}>
                   <ImageItem
                     image={category.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     title={category.name}
@@ -94,7 +94,9 @@ export default function StoresPage() {
   return (
     <>
       <nav className="stores-page">
-        <h1 aria-label="Categories">دسته بندی ها</h1>
+        <h1 aria-label="Categories" className="nonvisual">
+          دسته بندی ها
+        </h1>
 
         <MemoizedList></MemoizedList>
       </nav>

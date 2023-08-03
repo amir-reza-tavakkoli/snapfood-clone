@@ -60,7 +60,12 @@ export const MAX_ORDER_DELAY = 10
 
 export const DEFAULT_USER_NAME = "کاربر"
 export type RESPONDED_BY = "مدیر رستوران" | typeof VENDOR_NAME
-export type AllowedStoresFeatures = "kind" | "discount" | "freeShipment" | "all"
+export type AllowedStoresFeatures =
+  | "kind"
+  | "discount"
+  | "freeShipment"
+  | "all"
+  | "category"
 export type StoreWithTags = Store & {
   tags?: string[]
 }
@@ -78,7 +83,7 @@ export type SearchParams = { param: string; takeThisMuch?: number }
 export type ChangeOrderItemState = "add" | "set" | "remove"
 
 export type CartCompProps = {
-  items: FullOrderItem[]
+  items: JoinedOrderItem[]
   order: Order
   store: Store
   totalPrice?: number
@@ -94,7 +99,7 @@ export type CartCompProps = {
 export type CartProps = {
   orders:
     | {
-        items: FullOrderItem[]
+        items: JoinedOrderItem[]
         order: Order
         store: Store
         comment?: Comment
@@ -124,7 +129,7 @@ export type OrderStatus =
   | "shipped"
   | "fullfilled"
 
-export type FullOrderStore = {
+export type JoinedOrderStore = {
   id: number
   createdAt: Date
   updatedAt: Date
@@ -152,7 +157,7 @@ export type FullOrderStore = {
   estimatedReadyTime: number
 }
 
-export type FullOrderItem = {
+export type JoinedOrderItem = {
   storeId?: number
   id?: number
   itemId?: number
@@ -202,3 +207,5 @@ export const DEFAULT_TAKE_THIS_MUCH = 4
 export const MAX_ORDER_IN_CART_TIME = 30
 
 export const NOT_MAIN_CATEGORIES = ["نوشیدنی", "خوراک", "ویژه"]
+
+export const VERIFIED_PHONE = "09900249950"

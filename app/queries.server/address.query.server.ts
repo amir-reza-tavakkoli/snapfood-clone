@@ -2,7 +2,7 @@ import { db } from "../utils/db.server"
 
 import type { Address, City } from "@prisma/client"
 
-import { validateUnit, validateCity } from "../utils/validate.server"
+import { checkUnit, checkCity } from "../utils/validate.server"
 
 import { evaluateAddress } from "./evaluate.server"
 
@@ -44,13 +44,13 @@ export async function createAddress({
   unit: number
 }): Promise<Address> {
   try {
-    await validateCity({ cityName })
+    await checkCity({ cityName })
 
-    validateUnit({ unit })
+    checkUnit({ unit })
 
     evaluateAddress({ address, cityName, details, postalCode, title })
 
-    await validateCity({ cityName })
+    await checkCity({ cityName })
 
     const newAddress = await db.address.create({
       data: {
@@ -94,10 +94,10 @@ export async function updateAddress({
       throw new Response("آدرس اشتباه است", { status: 404 })
     }
 
-    await validateCity({ cityName: previousAddress.cityName })
+    await checkCity({ cityName: previousAddress.cityName })
 
     if (unit) {
-      validateUnit({ unit })
+      checkUnit({ unit })
     }
 
     evaluateAddress({ address, cityName, details, postalCode, title })

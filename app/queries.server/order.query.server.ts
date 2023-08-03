@@ -2,7 +2,7 @@ import { db } from "../utils/db.server"
 
 import type { Item, Order, OrderHasItems } from "@prisma/client"
 
-import { validateStore, validateUser } from "../utils/validate.server"
+import { checkStore, checkUser } from "../utils/validate.server"
 
 import { getAddressById } from "./address.query.server"
 import { getOrdersInCart } from "./cart.query.server"
@@ -14,10 +14,11 @@ import { getOrderStatus } from "./db.utils.query"
 
 import {
   type ChangeOrderItemState,
-  type FullOrderItem,
-  type FullOrderStore,
+  type JoinedOrderItem,
+  type JoinedOrderStore,
   MAX_ORDER_IN_CART_TIME,
 } from "../constants"
+import { generateRandomCode } from "~/utils/utils.server"
 export async function getOrder({
   orderId,
 }: {
@@ -96,7 +97,7 @@ export async function createOrder({
   try {
     let store = await getStore({ storeId })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
     const address = await getAddressById({ addressId })
 
@@ -110,7 +111,7 @@ export async function createOrder({
 
     let user = await getUserByPhone({ phoneNumber: userPhoneNumber })
 
-    user = validateUser({ user })
+    user = checkUser({ user })
 
     const ordersInCart = await getOrdersInCart({
       phoneNumber: user.phoneNumber,
@@ -245,7 +246,7 @@ export async function changeOrderItems({
 
     let store = await getStore({ storeId: order?.storeId })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
     const itemInStore = await db.storeHasItems.findUnique({
       where: {
@@ -275,11 +276,7 @@ export async function changeOrderItems({
     })
 
     if (!itemInOrder) {
-      if (
-        itemInStore.remainingCount < count ||
-        count === 0 ||
-        itemInStore.remainingCount < 0
-      ) {
+      if (itemInStore.remainingCount < count || count === 0) {
         throw new Response("تعداد ناکافی", { status: 404 })
       }
 
@@ -300,11 +297,12 @@ export async function changeOrderItems({
           throw new Response("آیتم وجود ندارد", { status: 404 })
         }
       }
+
       const newItemInOrder = await db.orderHasItems.create({
         data: {
           orderId,
           itemId,
-          count,
+          count: Math.abs(count),
         },
       })
 
@@ -322,25 +320,28 @@ export async function changeOrderItems({
           throw new Response("تعداد ناکافی", { status: 404 })
         }
 
-        const newItemInStore = await db.storeHasItems.update({
-          where: {
-            storeId_itemId: {
-              storeId: store.id,
-              itemId,
-            },
-          },
-          data: {
-            remainingCount: itemInStore.remainingCount - count,
-          },
-        })
-
-        if (!newItemInStore) {
-          throw new Response("چنین آیتمی وجود ندارد", { status: 404 })
-        }
-
         const newCount = itemInOrder.count + count
+
         if (newCount < 0) {
           throw new Response("تعداد ناکافی", { status: 404 })
+        }
+
+        if (!itemInStore.infiniteSupply) {
+          const newItemInStore = await db.storeHasItems.update({
+            where: {
+              storeId_itemId: {
+                storeId: store.id,
+                itemId,
+              },
+            },
+            data: {
+              remainingCount: itemInStore.remainingCount - count,
+            },
+          })
+
+          if (!newItemInStore) {
+            throw new Response("چنین آیتمی وجود ندارد", { status: 404 })
+          }
         }
 
         if (newCount === 0) {
@@ -352,6 +353,7 @@ export async function changeOrderItems({
               },
             },
           })
+
           return deleted
         }
 
@@ -373,7 +375,19 @@ export async function changeOrderItems({
 
         return newItemInOrder
       }
+
       case "set": {
+        if (
+          (count && itemInStore.remainingCount < itemInOrder.count + count) ||
+          count === 0
+        ) {
+          throw new Response("تعداد ناکافی", { status: 404 })
+        }
+
+        if (itemInStore.remainingCount + itemInOrder.count - count < 0) {
+          throw new Response("تعداد ناکافی", { status: 404 })
+        }
+
         if (count === 0) {
           const deleted = await db.orderHasItems.delete({
             where: {
@@ -387,29 +401,19 @@ export async function changeOrderItems({
           return deleted
         }
 
-        if (
-          (count && itemInStore.remainingCount < itemInOrder.count + count) ||
-          count === 0
-        ) {
-          throw new Response("تعداد ناکافی", { status: 404 })
-        }
-
-        if (itemInStore.remainingCount + itemInOrder.count - count < 0) {
-          throw new Response("تعداد ناکافی", { status: 404 })
-        }
-
-        await db.storeHasItems.update({
-          where: {
-            storeId_itemId: {
-              storeId: store.id,
-              itemId,
+        if (!itemInStore.infiniteSupply)
+          await db.storeHasItems.update({
+            where: {
+              storeId_itemId: {
+                storeId: store.id,
+                itemId,
+              },
             },
-          },
-          data: {
-            remainingCount:
-              itemInStore.remainingCount + itemInOrder.count - count,
-          },
-        })
+            data: {
+              remainingCount:
+                itemInStore.remainingCount + itemInOrder.count - count,
+            },
+          })
 
         const newItemInOrder = await db.orderHasItems.update({
           where: {
@@ -422,6 +426,7 @@ export async function changeOrderItems({
             count,
           },
         })
+
         return newItemInOrder
       }
     }
@@ -479,7 +484,7 @@ export async function billOrder({
 
     let user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
 
-    user = validateUser({ user })
+    user = checkUser({ user })
 
     if (user.credit < order.totalPrice || user.credit < 0) {
       throw new Response("کمبود وجه", { status: 404 })
@@ -501,6 +506,7 @@ export async function billOrder({
         data: {
           isBilled: true,
           billDate: new Date(Date.now()),
+          paymentNumber: generateRandomCode(10), // must come from bank
         },
       }),
     ])
@@ -527,7 +533,7 @@ export async function calculateOrder({
       throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
     }
 
-    const orderItems = await getFullOrderItems({ orderId })
+    const orderItems = await getJoinedOrderItems({ orderId })
 
     if (!orderItems) {
       throw new Response("سفارش خالی است", { status: 404 })
@@ -551,7 +557,7 @@ export async function calculateOrder({
 
     let store = await getStore({ storeId: order.storeId })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
     totalPrice +=
       order.shipmentPrice +=
@@ -577,11 +583,11 @@ export async function calculateOrder({
   }
 }
 
-export async function getFullOrderItems({
+export async function getJoinedOrderItems({
   orderId,
 }: {
   orderId: number
-}): Promise<FullOrderItem[]> {
+}): Promise<JoinedOrderItem[]> {
   try {
     const order = await getOrder({ orderId })
 
@@ -593,7 +599,7 @@ export async function getFullOrderItems({
 
     const orderHasItems = (await getOrderItems({ orderId })).itemsInOrder
 
-    const fullOrderItems = orderHasItems.map(itemInOrder => {
+    const JoinedOrderItems = orderHasItems.map(itemInOrder => {
       let itemInStore = storeHasItems.items.find(
         item => item?.id === itemInOrder.itemId,
       )
@@ -603,14 +609,14 @@ export async function getFullOrderItems({
           itemInStore => itemInStore.itemId === itemInOrder.itemId,
         ) ?? undefined
 
-      const fullMergedItems: FullOrderItem | undefined = mergedItems
+      const fullMergedItems: JoinedOrderItem | undefined = mergedItems
         ? { ...mergedItems, ...itemInOrder, ...itemInStore }
         : undefined
 
       return fullMergedItems
     })
 
-    return fullOrderItems as FullOrderItem[]
+    return JoinedOrderItems as JoinedOrderItem[]
   } catch (error) {
     throw error
   }
@@ -658,11 +664,11 @@ export async function getNewOrders({}): Promise<Order[] | null> {
   }
 }
 
-export async function getFullOrderStore({
+export async function getJoinedOrderStore({
   orderId,
 }: {
   orderId: number
-}): Promise<FullOrderStore> {
+}): Promise<JoinedOrderStore> {
   try {
     const order = await getOrder({ orderId })
 
@@ -686,11 +692,11 @@ export async function getFullOrderStore({
   }
 }
 
-export async function getFullOrdersStore({
+export async function getJoinedOrdersStore({
   phoneNumber,
 }: {
   phoneNumber: string
-}): Promise<FullOrderStore[]> {
+}): Promise<JoinedOrderStore[]> {
   try {
     const orders = await getOrders({ phoneNumber })
 
@@ -699,7 +705,7 @@ export async function getFullOrdersStore({
     }
 
     const fullOrder = await Promise.all(
-      orders.map(order => getFullOrderStore({ orderId: order.id })),
+      orders.map(order => getJoinedOrderStore({ orderId: order.id })),
     )
 
     return fullOrder
@@ -714,7 +720,7 @@ export async function cancelOrder({ order }: { order: Order }) {
       return
     }
 
-    const items = await getFullOrderItems({ orderId: order.id })
+    const items = await getJoinedOrderItems({ orderId: order.id })
 
     const store = await getStore({ storeId: order.storeId })
 
@@ -736,10 +742,11 @@ export async function cancelOrder({ order }: { order: Order }) {
           throw new Response("آیتم وجود ندارد", { status: 404 })
         }
 
-        await db.storeHasItems.update({
-          where: { storeId_itemId: { itemId: item.id, storeId: store.id } },
-          data: { remainingCount: itemInStore.remainingCount + item.count },
-        })
+        if (!itemInStore.infiniteSupply)
+          await db.storeHasItems.update({
+            where: { storeId_itemId: { itemId: item.id, storeId: store.id } },
+            data: { remainingCount: itemInStore.remainingCount + item.count },
+          })
       }),
     )
 

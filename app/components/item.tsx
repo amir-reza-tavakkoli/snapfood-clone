@@ -5,10 +5,14 @@ import type { Store } from "@prisma/client"
 import { Button } from "./button"
 import { routes } from "../routes"
 
-import { DEFAULT_IMG_PLACEHOLDER, type FullOrderItem } from "../constants"
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_IMG_PLACEHOLDER,
+  type JoinedOrderItem,
+} from "../constants"
 
 type ItemProps = {
-  item: FullOrderItem
+  item: JoinedOrderItem
   store: Store
   address: number | undefined
 }
@@ -36,7 +40,9 @@ export function ItemComp({ item, store, address }: ItemProps) {
 
       <dt className="nonvisual">Price</dt>
 
-      <dd className="_price">{item.price?.toLocaleString("fa")}</dd>
+      <dd className="_price">
+        {item.price?.toLocaleString("fa") + DEFAULT_CURRENCY}
+      </dd>
 
       {item.isAvailible ? (
         <>

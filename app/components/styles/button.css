@@ -9,8 +9,7 @@
   min-inline-size: max-content;
   padding-block-start: var(--length-16);
   padding-block-end: var(--length-16);
-  padding-inline-start: 30px;
-  padding-inline-end: min(var(--length-20), 30px);
+  padding-inline: 20px;
   font-size: var(--length-14);
   border-radius: 3px;
   border: none;
@@ -120,6 +119,10 @@
 :where(.button:disabled) {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+:where(.button:hover) {
+  box-shadow: var(--box-shadow-double);
 }
 
 @media (pointer: coarse) {

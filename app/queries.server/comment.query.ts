@@ -5,7 +5,7 @@ import { getUserByPhone } from "./user.query.server"
 import { getStore } from "./store.query.server"
 import { getOrderStatus } from "./db.utils.query"
 
-import { validateUser } from "../utils/validate.server"
+import { checkStore, checkUser } from "../utils/validate.server"
 
 import type { Comment, Order, Store, StoreHasItems } from "@prisma/client"
 
@@ -13,9 +13,11 @@ import { evaluateComment } from "./evaluate.server"
 
 import {
   MAX_COMMENT_SIZE,
+  RESPONDED_BY,
   SCORE_ROUNDING,
   type StoreComment,
 } from "../constants"
+import { calculateScore } from "~/utils/utils.server"
 
 export async function addComment({
   orderId,
@@ -30,17 +32,22 @@ export async function addComment({
   score: number
   wasPositive: boolean
   wasDeliveryPositive: boolean
+  responsedBy?: RESPONDED_BY
 }): Promise<Comment> {
   try {
     const order = await getOrder({ orderId })
 
-    if (!order || getOrderStatus({ order }).status !== "inProgress") {
+    if (!order) {
       throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
+    }
+
+    if (getOrderStatus({ order }).status !== "fullfilled") {
+      throw new Response("سفارش هنوز کامل نشده است", { status: 404 })
     }
 
     const user = await getUserByPhone({ phoneNumber: order.userPhoneNumber })
 
-    validateUser({ user })
+    checkUser({ user })
 
     const comment = await db.comment.findUnique({
       where: {
@@ -48,33 +55,33 @@ export async function addComment({
       },
     })
 
-    const store = await getStore({ storeId: order.storeId })
-
     if (comment) {
-      throw new Response("نظر به درستی وارد نشده", { status: 404 })
+      throw new Response("نظر قبلا وارد شده", { status: 404 })
     }
 
-    if (!score || score > 5 || score < 0) {
+    if (!score) {
       throw new Response("امتیاز معتبر نیست", { status: 404 })
     }
 
-    if (!wasPositive || !wasDeliveryPositive) {
-      throw new Response("نظر به درستی وارد نشده", { status: 404 })
+    if (!evaluateComment({ description, response, responsedBy, score })) {
+      throw new Response("نظر مورد تایید واقع نشد", { status: 404 })
     }
+
+    const store = await getStore({ storeId: order.storeId })
 
     if (!store) {
       throw new Response("فروشگاه نامعتبر است", { status: 404 })
     }
 
-    if (description && evaluateComment({ description })) {
-      throw new Response("نظر مورد تایید واقع نشد", { status: 404 })
-    }
+    checkStore({ store })
 
     const orderItems = await db.orderHasItems.findMany({
       where: { orderId: order.id },
     })
 
     if (description) description = description.slice(0, MAX_COMMENT_SIZE)
+
+    if (response) response = response.slice(0, MAX_COMMENT_SIZE)
 
     const newStoreScore = calculateScore({ newScore: score, store })
 
@@ -88,6 +95,7 @@ export async function addComment({
           orderId,
           response,
           responsedBy,
+          isVisible: true,
         },
       }),
       db.store.update({
@@ -98,6 +106,10 @@ export async function addComment({
         },
       }),
     ])
+
+    if (!newComment || !newStore) {
+      throw new Response("مشکلی پیش آمد", { status: 404 })
+    }
 
     Promise.all(
       orderItems.map(async orderItem => {
@@ -127,30 +139,6 @@ export async function addComment({
   }
 }
 
-export function calculateScore({
-  newScore,
-  store,
-}: {
-  newScore: number
-  store: Store | StoreHasItems
-}) {
-  try {
-    const score = Number(
-      (
-        (store.score * store.scoreCount + newScore) /
-        (store.scoreCount + 1)
-      ).toFixed(SCORE_ROUNDING),
-    )
-
-    if (isNaN(score)) {
-      throw new Response("محاسبه امتیاز ممکن نیست", { status: 404 })
-    }
-    return score
-  } catch (error) {
-    throw error
-  }
-}
-
 export async function changeComment({
   orderId,
   description,
@@ -173,7 +161,12 @@ export async function changeComment({
       throw new Response("چنین کامنتی وجود ندارد", { status: 404 })
     }
 
-    // need to evaluate comment
+    evaluateComment({
+      description,
+      response,
+      responsedBy: responsedBy as RESPONDED_BY,
+      score,
+    })
 
     const changedComment = await db.comment.update({
       data: {
@@ -201,32 +194,13 @@ export async function getComment({ orderId }: { orderId: number }) {
   try {
     const order = await getOrder({ orderId })
 
-    if (
-      !order ||
-      !order.isBilled ||
-      order.isCanceled ||
-      !order.isVerifiedByAdmin ||
-      !order.isVerifiedByStore
-    ) {
+    if (!order) {
       throw new Response("چنین سفارشی وجود ندارد", { status: 404 })
     }
 
     const comment = await db.comment.findUnique({ where: { orderId } })
 
     return comment
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function getStoreItemComments({
-  itemId,
-  storeId,
-}: {
-  itemId: number
-  storeId: number
-}) {
-  try {
   } catch (error) {
     throw error
   }
@@ -269,11 +243,7 @@ export async function getVerifiedItemComments({
           },
         })
 
-        if (
-          !order.userPhoneNumber ||
-          !comment
-          // filter unverified
-        ) {
+        if (!order.userPhoneNumber || !comment) {
           return
         }
 
@@ -312,6 +282,7 @@ export async function getStoreComments({
     let orders = await db.order.findMany({
       where: {
         storeId,
+        isBilled: true,
       },
       take: takeThisMuch,
     })
@@ -365,7 +336,7 @@ export async function getStoreComments({
       }),
     )
 
-    storecomments = storecomments.filter(item => item != undefined)
+    storecomments = storecomments.filter(item => item !== undefined)
 
     return storecomments as unknown as StoreComment[]
   } catch (error) {

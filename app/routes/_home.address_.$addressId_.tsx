@@ -9,7 +9,11 @@ import {
   V2_MetaFunction,
 } from "@remix-run/react"
 
-import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+import {
+  ActionArgs,
+  LinksFunction,
+  LoaderArgs,
+} from "@remix-run/server-runtime"
 
 import {
   createAddress,
@@ -20,9 +24,11 @@ import {
 
 import { requirePhoneNumber } from "../utils/session.server"
 
-import { requireValidatedUser, validateUser } from "../utils/validate.server"
+import { requireValidatedUser } from "../utils/validate.server"
 
-import type { LatLngTuple, Map } from "leaflet"
+import type { Map } from "leaflet"
+
+import { evaluateAddress } from "~/queries.server/evaluate.server"
 
 import { ClientOnly } from "../client.map"
 
@@ -66,20 +72,20 @@ type ActionType = {
   reason?: string
 }
 
-export const action = async ({ request }: any): Promise<ActionType> => {
+export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
     const form = await request.formData()
 
-    const addressId: string | undefined = form.get("addressId")
-    const cityName: string | undefined = form.get("city")
-    const address: string | undefined = form.get("address")
-    const title: string | undefined = form.get("title")
+    const addressId = form.get("addressId")
+    const cityName = form.get("city")
+    const address = form.get("address")
+    const title = form.get("title")
     const unit: number | undefined = Number(form.get("unit"))
     const xAxis: number | undefined = Number(form.get("xAxis"))
     const yAxis: number | undefined = Number(form.get("yAxis"))
-    const details: string | undefined = form.get("details")
+    const details = form.get("details")
 
     if (
       !address ||
@@ -89,13 +95,20 @@ export const action = async ({ request }: any): Promise<ActionType> => {
       !Number(addressId) ||
       !cityName ||
       isNaN(xAxis) ||
-      isNaN(yAxis)
+      isNaN(yAxis) ||
+      (details && typeof details !== "string") ||
+      (cityName && typeof cityName !== "string") ||
+      (address && typeof address !== "string") ||
+      (title && typeof title !== "string") ||
+      (addressId && typeof addressId !== "string")
     ) {
       return {
         isUnsuccessful: true,
         reason: "فیلد های ضروری را پر کنید",
       }
     }
+
+    evaluateAddress({ address, cityName, title, details })
 
     if (address.length < DEFAULT_MIN_ADDRESS_LENGTH || Number(unit) == 0) {
       return {
@@ -113,6 +126,7 @@ export const action = async ({ request }: any): Promise<ActionType> => {
         details,
         title,
       })
+
       return { isSuccessful: true }
     }
 
@@ -148,6 +162,7 @@ export const loader = async ({
     const user = await requireValidatedUser(request)
 
     let isNew = false
+
     if (params.addressId === "new") {
       isNew = true
     }
@@ -173,11 +188,11 @@ export const loader = async ({
         cityName: DEFAULT_CITY,
         unit: 0,
         id: -1,
-        xAxis: 0,
-        yAxis: 0,
+        xAxis: DEFAULT_COORDINATIONS.xAxis,
+        yAxis: DEFAULT_COORDINATIONS.yAxis,
         postalCode: null,
-        isAvailible: false,
-        isValid: false,
+        isAvailible: true,
+        isValid: true,
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
         userPhoneNumber: user.phoneNumber,
@@ -196,7 +211,11 @@ export const loader = async ({
       throw new Response("دسترسی ندارید")
     }
 
-    const cities = (await getCities()) ?? []
+    const cities = await getCities()
+
+    if (!cities) {
+      throw new Response("مشکلی پیش آمد", { status: 404 })
+    }
 
     return { address, cities }
   } catch (error) {
@@ -212,15 +231,18 @@ export default function AddressPage() {
   const result = useActionData() as unknown as ActionType | undefined
 
   const [addressState, setAddressState] = useState(address.address)
+
   const [title, setTitle] = useState(address.title)
+
   const [unit, setUnit] = useState(address.unit)
+
   const [details, setDetails] = useState(address.details)
 
   const [map, setMap] = useState<Map | null>(null)
 
   return (
     <main className="_address-page" dir={DEAFULT_DIRECTION}>
-      <p>جزییات آدرس</p>
+      <h1>جزییات آدرس</h1>
 
       <Form method="post">
         <p className="nonvisual">Map</p>
@@ -275,6 +297,7 @@ export default function AddressPage() {
 
         <div>
           <label htmlFor="title">عنوان</label>
+
           <input
             type="text"
             name="title"
@@ -291,6 +314,7 @@ export default function AddressPage() {
 
         <div>
           <label htmlFor="unit">واحد</label>
+
           <input
             autoComplete="unit"
             type="text"
@@ -310,6 +334,7 @@ export default function AddressPage() {
 
         <div>
           <label htmlFor="details">جزییات</label>
+
           <textarea
             placeholder="..."
             name="details"

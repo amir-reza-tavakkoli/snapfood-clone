@@ -78,12 +78,7 @@
 }
 
 :where(._address-page output ._success) {
-  color: var(--color-action);
   font-weight: 600;
-}
-
-:where(._address-page output ._error) {
-  color: var(--color-error);
 }
 
 :where(._address-page > form #__map) {

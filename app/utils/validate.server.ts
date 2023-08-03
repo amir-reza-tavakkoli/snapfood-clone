@@ -1,9 +1,6 @@
 import type { Order, Store, User } from "@prisma/client"
 
-import {
-  generateVerificationCode,
-  generateVerificationExpiry,
-} from "./utils.server"
+import { generateRandomCode, generateVerificationExpiry } from "./utils.server"
 
 import { requirePhoneNumber } from "./session.server"
 
@@ -17,10 +14,11 @@ import { routes } from "../routes"
 
 import {
   ALLOWED_PHONE_PREFIX,
-  FullOrderItem,
+  JoinedOrderItem,
   VERIFICATION_CODE_EXPIRY_MINS,
   VERIFICATION_CODE_FIGURES,
 } from "../constants"
+import { sendSMS } from "./sms.server"
 
 export function checkPhoneNumber(phoneNumber: string) {
   if (
@@ -40,7 +38,7 @@ export function validateUrl(url: string, urls: string[]) {
   return routes.index
 }
 
-export async function validateUnit({ unit }: { unit?: number }) {
+export async function checkUnit({ unit }: { unit?: number }) {
   if (unit && (typeof unit !== "number" || isNaN(unit))) {
     throw new Response(".شماره واحد تعیین نشده است", { status: 404 })
   }
@@ -48,7 +46,7 @@ export async function validateUnit({ unit }: { unit?: number }) {
   return { unit }
 }
 
-export async function validateCity({ cityName }: { cityName: string }) {
+export async function checkCity({ cityName }: { cityName: string }) {
   const cities = await getCities()
 
   if (!cities) {
@@ -62,7 +60,7 @@ export async function validateCity({ cityName }: { cityName: string }) {
   return cityName
 }
 
-export function validateUser({ user }: { user: User | null }) {
+export function checkUser({ user }: { user: User | null }) {
   if (!user) {
     throw new Response("کاربر وجود ندارد.", { status: 404 })
   }
@@ -78,7 +76,7 @@ export function validateUser({ user }: { user: User | null }) {
   return user
 }
 
-export function validateItems({ items }: { items: FullOrderItem[] | null }) {
+export function validateItems({ items }: { items: JoinedOrderItem[] | null }) {
   if (!items || items.length === 0) {
     throw new Response("آیتمی وجود ندارد", { status: 404 })
   }
@@ -86,7 +84,7 @@ export function validateItems({ items }: { items: FullOrderItem[] | null }) {
   return items
 }
 
-export function validateOrder({
+export function checkOrder({
   order,
   phoneNumber,
 }: {
@@ -104,7 +102,7 @@ export function validateOrder({
   return order
 }
 
-export function validateStore({ store }: { store: Store | null }): Store {
+export function checkStore({ store }: { store: Store | null }): Store {
   if (!store) {
     throw new Response("فروشگاه ناموجود است", { status: 404 })
   }
@@ -122,7 +120,7 @@ export function validateStore({ store }: { store: Store | null }): Store {
 
 export function validateNumberParam(param: number) {
   if (!param || isNaN(param)) {
-    throw new Response("خطا", { status: 422 })
+    throw new Response("پارامتر ورودی اشتباه است", { status: 422 })
   }
 
   return param
@@ -133,7 +131,7 @@ export async function sendVerification({
 }: {
   phoneNumber: string
 }) {
-  const verificationCode = generateVerificationCode(VERIFICATION_CODE_FIGURES)
+  const verificationCode = generateRandomCode(VERIFICATION_CODE_FIGURES)
 
   const verificationCodeExpiry = generateVerificationExpiry(
     VERIFICATION_CODE_EXPIRY_MINS,
@@ -149,7 +147,13 @@ export async function sendVerification({
     throw new Response("کاربر وجود ندارد", { status: 404 })
   }
 
-  // sending ver code by SMS goes here
+  const text = `${verificationCode}`
+
+  const messageId = await sendSMS({ to: phoneNumber, text })
+
+  if (messageId.StrRetStatus !== "Ok") {
+    throw new Response("امکان ارسال پیامک وجود ندارد", { status: 404 })
+  }
 
   return user
 }
@@ -159,7 +163,7 @@ export async function requireValidatedUser(request: Request) {
 
   let user = await getUserByPhone({ phoneNumber })
 
-  user = validateUser({ user })
+  user = checkUser({ user })
 
   return user
 }

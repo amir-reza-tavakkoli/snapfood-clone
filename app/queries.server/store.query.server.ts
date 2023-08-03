@@ -10,10 +10,14 @@ import type {
 
 import { getOrder, getOrderItems } from "./order.query.server"
 
-import { validateStore } from "../utils/validate.server"
-import { validateCity } from "../utils/validate.server"
+import { checkStore } from "../utils/validate.server"
+import { checkCity } from "../utils/validate.server"
 
-import { DEFAULT_TAKE_THIS_MUCH, FullOrderItem } from "../constants"
+import {
+  DEFAULT_TAKE_THIS_MUCH,
+  JoinedOrderItem,
+  NOT_MAIN_CATEGORIES,
+} from "../constants"
 
 export async function getStore({
   storeId,
@@ -51,7 +55,7 @@ export async function getStoresByCity({
   storeKindName?: string
 }): Promise<Store[] | null> {
   try {
-    await validateCity({ cityName })
+    await checkCity({ cityName })
 
     const stores = await db.store.findMany({
       where: {
@@ -100,7 +104,7 @@ export async function getFullStoreItems({
   storeId,
 }: {
   storeId: number
-}): Promise<FullOrderItem[]> {
+}): Promise<JoinedOrderItem[]> {
   try {
     const itemsInStore = await db.storeHasItems.findMany({
       where: { storeId },
@@ -145,7 +149,7 @@ export async function getStoreCategories({
   try {
     const store = await getStore({ storeId })
 
-    validateStore({ store })
+    checkStore({ store })
 
     const { items } = await getStoreItems({ storeId })
 
@@ -156,7 +160,8 @@ export async function getStoreCategories({
 
       item &&
       item.itemCategoryName &&
-      !storeCategories.includes(item.itemCategoryName)
+      !storeCategories.includes(item.itemCategoryName) &&
+      !NOT_MAIN_CATEGORIES.includes(item.itemCategoryName)
         ? storeCategories.push(item.itemCategoryName) && take--
         : undefined
     })
@@ -173,7 +178,7 @@ export async function getFullStoreOrdersItems({
 }: {
   storeId: number
   orderId: number
-}): Promise<FullOrderItem[]> {
+}): Promise<JoinedOrderItem[]> {
   try {
     const itemsInStore = await db.storeHasItems.findMany({
       where: { storeId },
@@ -329,6 +334,28 @@ export async function getStoresWithFreeShipment({
     })
 
     return withFreeShipment
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getStoresByCategory({
+  category,
+  stores,
+}: {
+  category: string
+  stores: Store[]
+}): Promise<Store[]> {
+  try {
+    const newStores = await Promise.all(
+      stores.filter(async store => {
+        const items = await getStoreItems({ storeId: store.id })
+
+        return items.items.find(item => item.itemCategoryName === category)
+      }),
+    )
+
+    return newStores
   } catch (error) {
     throw error
   }

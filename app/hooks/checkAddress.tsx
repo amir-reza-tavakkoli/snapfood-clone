@@ -4,7 +4,12 @@ import { useLocation, useNavigate } from "@remix-run/react"
 
 import { routes } from "../routes"
 
-import { COOKIE_City, DEFAULT_CITY } from "../constants"
+import {
+  ALLOWED_URLS,
+  COOKIE_ADDRESS,
+  COOKIE_City,
+  DEFAULT_CITY,
+} from "../constants"
 
 export function useCheckAddress() {
   const [addressState, setAddressState] = useState<number>()
@@ -22,11 +27,11 @@ export function useCheckAddress() {
   })
 
   useEffect(() => {
-    if (location.pathname === routes.addresses) {
+    if (ALLOWED_URLS.includes(location.pathname)) {
       return
     }
 
-    const choosedAddressId = Number(localStorage.getItem(COOKIE_City))
+    const choosedAddressId = Number(localStorage.getItem(COOKIE_ADDRESS))
 
     if (!choosedAddressId) {
       const redirectDelay = 2000 // ms

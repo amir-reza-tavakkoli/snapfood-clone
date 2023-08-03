@@ -20,7 +20,7 @@ export function GlobalErrorBoundary() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    document ? (document.title = "Error Snappfood Clone" + errorMessage) : null
+    document ? (document.title = "Error Snappfood Clone " + errorMessage) : null
   }, [])
 
   return (

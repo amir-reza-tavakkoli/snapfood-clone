@@ -1,0 +1,5 @@
+:where(.item-container) {
+  inline-size: 70%;
+  margin-inline: auto;
+  margin-block: var(--length-18);
+}

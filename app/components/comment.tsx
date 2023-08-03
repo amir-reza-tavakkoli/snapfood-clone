@@ -11,7 +11,7 @@ type CommentProps = {
 
 export function CommentComp({ index, comment }: CommentProps) {
   return comment ? (
-    <li key={index} className="_comment">
+    <li key={index} className="comment">
       <div>
         <span className="_name"> {comment.user?.firstName}</span>
 

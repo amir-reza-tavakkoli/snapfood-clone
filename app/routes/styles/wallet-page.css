@@ -77,14 +77,12 @@
 :where(.wallet-page p._success) {
   align-items: center;
   margin-block: var(--length-12);
-  color: var(--color-action);
   text-align: center;
 }
 
 :where(.wallet-page p._error) {
   align-items: center;
   margin-block: var(--length-12);
-  color: var(--color-error);
   text-align: center;
 }
 

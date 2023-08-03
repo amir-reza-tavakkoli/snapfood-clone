@@ -21,13 +21,17 @@ import {
 
 import { Icon } from "../components/icon"
 import { GlobalErrorBoundary } from "../components/error-boundary"
+import { CommentComp } from "~/components/comment"
 
 import { DEFAULT_IMG_PLACEHOLDER, StoreComment } from "../constants"
 
+import commentCss from "./../components/styles/comment.css"
 import pageCss from "./styles/store-info-page.css"
-import { CommentComp } from "~/components/comment"
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: pageCss },
+  { rel: "stylesheet", href: commentCss },
+]
 
 export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
   const { description, title } = data

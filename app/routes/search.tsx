@@ -10,6 +10,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<SearchType> => {
   const count = new URL(request.url).searchParams.get("count")
 
   const defaultTake = 4
+
   const takeThisMuch =
     count && Number(count) && !isNaN(Number(count))
       ? Number(count)

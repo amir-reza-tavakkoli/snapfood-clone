@@ -3,13 +3,13 @@ import type { Order } from "@prisma/client"
 import { updateOrder } from "./order.query.server"
 
 import {
-  type FullOrderItem,
+  type JoinedOrderItem,
   MAX_ORDER_IN_CART_TIME,
   OrderStatus,
 } from "../constants"
 
-export function categorizeItems({ items }: { items: FullOrderItem[] }) {
-  const itemsInCategory = new Map<string, FullOrderItem[]>()
+export function categorizeItems({ items }: { items: JoinedOrderItem[] }) {
+  const itemsInCategory = new Map<string, JoinedOrderItem[]>()
 
   items.forEach(item => {
     if (itemsInCategory.has(item.itemCategoryName)) {

@@ -28,7 +28,7 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 import {
   checkPhoneNumber,
   requireValidatedUser,
-  validateUser,
+  checkUser,
 } from "../utils/validate.server"
 
 import {
@@ -95,7 +95,7 @@ export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
 
     const oldUser = await getUserByPhone({ phoneNumber })
 
-    validateUser({ user: oldUser })
+    checkUser({ user: oldUser })
 
     if (email) {
       const userByEmail = await getUserByEmail({ email })

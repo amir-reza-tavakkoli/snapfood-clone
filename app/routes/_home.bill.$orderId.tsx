@@ -23,7 +23,7 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 import {
   billOrder,
   calculateOrder,
-  getFullOrderItems,
+  getJoinedOrderItems,
   getOrder,
   updateOrder,
 } from "../queries.server/order.query.server"
@@ -36,15 +36,15 @@ import { getAddressById } from "../queries.server/address.query.server"
 import {
   requireValidatedUser,
   validateNumberParam,
-  validateOrder,
-  validateStore,
+  checkOrder,
+  checkStore,
 } from "../utils/validate.server"
 
 import { validateOrderPossibility } from "../utils/utils"
 
 import { routes } from "../routes"
 
-import { DEFAULT_CURRENCY, type FullOrderItem } from "../constants"
+import { DEFAULT_CURRENCY, type JoinedOrderItem } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-page.css"
@@ -97,7 +97,7 @@ export const action = async ({
 
     let store = await getStore({ storeId: order.storeId })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
     const form = await request.formData()
 
@@ -117,10 +117,11 @@ export const action = async ({
 
     const isSuccessful = !isOffline
       ? !!(await billOrder({ orderId }))
-      : updateOrder({
+      : await updateOrder({
           id: order.id,
           isBilled: true,
           billDate: new Date(Date.now()),
+          isOrderOffline: true,
         })
 
     if (isSuccessful) return redirect(routes.order(orderId))
@@ -141,7 +142,7 @@ type LoaderType = {
   order: Order
   price: number
   store: Store
-  items: FullOrderItem[]
+  items: JoinedOrderItem[]
 }
 
 export const loader = async ({
@@ -157,7 +158,7 @@ export const loader = async ({
 
     let order = await getOrder({ orderId })
 
-    order = validateOrder({ order, phoneNumber: user.phoneNumber })
+    order = checkOrder({ order, phoneNumber: user.phoneNumber })
 
     let price: number = order.totalPrice
 
@@ -171,9 +172,9 @@ export const loader = async ({
 
     let store = await getStore({ storeId: order.storeId })
 
-    store = validateStore({ store })
+    store = checkStore({ store })
 
-    const items = await getFullOrderItems({ orderId })
+    const items = await getJoinedOrderItems({ orderId })
 
     if (!items || items.length === 0) {
       throw new Response("مشکلی پیش آمد")

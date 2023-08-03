@@ -1,7 +1,7 @@
 import type { Order } from "@prisma/client"
 
 import { getComment } from "./comment.query"
-import { getFullOrderItems, getOrders } from "./order.query.server"
+import { getJoinedOrderItems, getOrders } from "./order.query.server"
 import { getStore } from "./store.query.server"
 
 import type { CartProps } from "../constants"
@@ -36,7 +36,7 @@ export async function getCart({
     })
 
     const items = await Promise.all(
-      orders.map(order => getFullOrderItems({ orderId: order.id })),
+      orders.map(order => getJoinedOrderItems({ orderId: order.id })),
     )
 
     items.forEach(item => {

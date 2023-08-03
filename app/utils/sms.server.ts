@@ -13,7 +13,7 @@ export async function sendSMS({ to, text }: { to: string; text: string }) {
 
   const isflash = false
 
-  const id = await sms.send(to, from, text,isflash)
+  const id = await sms.send(to, from, text, isflash)
 
   return id
 }

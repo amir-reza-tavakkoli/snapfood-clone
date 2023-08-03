@@ -210,7 +210,7 @@ export const OrderComp = ({
           <li className="_order-button">
             <Link to={routes.checkout(order.id)}>
               <Button variant="accent" type="button" aria-label="Order">
-                ثبت سفارش{" "}
+                ثبت سفارش
               </Button>
             </Link>
           </li>

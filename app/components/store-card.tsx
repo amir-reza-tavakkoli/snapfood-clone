@@ -148,7 +148,7 @@ export const VendorCard = ({
                       <span>
                         {deliveryPrice
                           ? deliveryPrice.toLocaleString("fa")
-                          : "رایگان"}{" "}
+                          : "رایگان"}
                       </span>
 
                       <span>{deliveryCurrency ?? null}</span>

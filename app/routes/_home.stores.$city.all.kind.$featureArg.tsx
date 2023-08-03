@@ -11,7 +11,7 @@ import {
   getStoresByCity,
 } from "../queries.server/store.query.server"
 
-import { requireValidatedUser, validateCity } from "../utils/validate.server"
+import { requireValidatedUser, checkCity } from "../utils/validate.server"
 
 import { features } from "../utils/utils.server"
 
@@ -61,12 +61,14 @@ export const loader = async ({
       return redirect(routes.addresses)
     }
 
-    city = await validateCity({ cityName: city })
+    city = await checkCity({ cityName: city })
 
     let stores = await getStoresByCity({ cityName: city })
 
     if (!stores || stores.length === 0) {
-      throw new Response("فروشگاهی وجود ندارد", { status: 404 })
+      throw new Response("فروشگاهی در شهر انتخاب شده وجود ندارد", {
+        status: 404,
+      })
     }
 
     const featureObject = features.find(feat => feat.name === "kind")
@@ -75,7 +77,7 @@ export const loader = async ({
       throw new Response("این صفحه وجود ندارد", { status: 404 })
     }
 
-    let kindType = params.featureArgs
+    let kindType = params.featureArg
 
     let featureStores = await featureObject.getStores({
       kind: kindType,
@@ -106,13 +108,13 @@ export default function KindStores() {
     <main className="_stores-all-page">
       <h1 className="nonvisual">لیست فرشگاه ها</h1>
 
-      {stores ? (
+      {stores && stores.length > 0 ? (
         <StoreContainer
           title={title ?? ""}
           stores={stores as StoreWithTags[] | null}
         ></StoreContainer>
       ) : (
-        <p>فروشگاهی وجود ندارد</p>
+        <p className="_no-store">فروشگاهی وجود ندارد</p>
       )}
     </main>
   )
