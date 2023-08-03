@@ -231,6 +231,18 @@ input[type="radio"]:hover {
   white-space: nowrap !important;
 }
 
+:where(._error) {
+  color: var(--color-error);
+}
+
+:where(._success) {
+  color: var(--color-action);
+}
+
+:where(p, h1, textarea, input, small, span, ) {
+  direction: ltr;
+}
+
 @media (max-width: 34.5rem) {
   html {
     font-size: 14px;
