@@ -443,9 +443,13 @@ async function seedFirstDataChunk() {
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5af96b9e32823.jpg",
       minOrderPrice: 20000,
       storeKindName: "رستوران",
-
       takesOfflineOrder: true,
       baseShipmentPrice: 5000,
+      score: 4,
+      scoreCount: 300,
+      packagingPrice: 0,
+      baseShipmentTime: 10,
+      perUnitShipmentPrice: 1000,
       shipmentRadius: DEFAULT_SHIPMENT_RADIUS,
       cityName: storeAddress.cityName,
       addressId: storeAddress.id,
@@ -460,6 +464,9 @@ async function seedFirstDataChunk() {
           storeId: store.id,
           itemId: item.id,
           price: item.basePrice!,
+          discountPercent: 10,
+          score: 3,
+          scoreCount: 300,
           remainingCount: 100,
           estimatedReadyTime: item.estimatedReadyTime,
         },
@@ -475,6 +482,10 @@ async function seedFirstDataChunk() {
       estimatedReadyTime: 90,
       shipmentPrice: 0,
       totalPrice: 0,
+      billDate: new Date(Date.now()),
+      isBilled: true,
+      isDelivered: true,
+      isShipped: true,
       estimatedShipmentTime: DEFAULT_SHIPMENT_TIME,
     },
   })
@@ -513,6 +524,7 @@ async function seedSecondDataChunk() {
     data: {
       phoneNumber: "09173196544",
       firstName: "رضا",
+      email: "rrr@gmail.com",
       lastName: "حبیبی",
       credit: 1000000,
     },
@@ -611,6 +623,7 @@ async function seedSecondDataChunk() {
     data: {
       takesOfflineOrder: true,
       name: "ایران برگر",
+      baseShipmentTime: 5,
       avatarUrl:
         "https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/5eb257c8f0766.jpg",
       minOrderPrice: 80000,
@@ -622,7 +635,7 @@ async function seedSecondDataChunk() {
     },
   })
 
-  const startTime = 18
+  const startTime = 12
   const endTime = 24
   const daysNumber = [0, 1, 2, 3, 4, 5, 6]
 
@@ -641,6 +654,8 @@ async function seedSecondDataChunk() {
           storeId: store.id,
           itemId: item.id,
           price: item.basePrice!,
+          score: 4,
+          scoreCount: 70,
           remainingCount: 100,
           estimatedReadyTime: item.estimatedReadyTime,
         },
@@ -655,6 +670,10 @@ async function seedSecondDataChunk() {
       userPhoneNumber: user.phoneNumber,
       addressId: userAddress.id,
       estimatedReadyTime: 50,
+      billDate: new Date(Date.now()),
+      isBilled: true,
+      isDelivered: true,
+      isShipped: true,
       shipmentPrice: 3000,
       totalPrice: 0,
     },
@@ -834,6 +853,7 @@ async function seedThirdDataChunk() {
       storeKindName: "رستوران",
       cityName: storeAddress.cityName,
       addressId: storeAddress.id,
+      packagingPrice: 20000,
       userPhoneNumber: storeOwner.phoneNumber,
     },
   })
@@ -846,6 +866,8 @@ async function seedThirdDataChunk() {
           itemId: item.id,
           price: item.basePrice!,
           remainingCount: 500,
+          score: 2,
+          scoreCount: 3,
           infiniteSupply: true,
           estimatedReadyTime: item.estimatedReadyTime,
         },
@@ -860,6 +882,10 @@ async function seedThirdDataChunk() {
       userPhoneNumber: user.phoneNumber,
       addressId: userAddress.id,
       estimatedReadyTime: 55,
+      billDate: new Date(Date.now()),
+      isBilled: true,
+      isDelivered: true,
+      isShipped: true,
       shipmentPrice: 0,
       totalPrice: 0,
     },
