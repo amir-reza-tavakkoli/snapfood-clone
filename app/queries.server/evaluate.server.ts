@@ -2,7 +2,8 @@
 
 import { checkPhoneNumber } from "../utils/validate.server"
 
-import { Address, Comment, Item, User } from "@prisma/client"
+import type { Address, Comment, Item, User } from "@prisma/client"
+
 import {
   DEFAULT_MIN_ADDRESS_LENGTH,
   MAX_DESCRIPTION_LENGTH,
@@ -15,13 +16,48 @@ import {
   MIN_NAME_LENGTH,
   MIN_READY_TIME,
   MIN_VALID_DATE_YEAR,
+  type RESPONDED_BY,
 } from "../constants"
 
-export function evaluateComment({ description }: Partial<Comment>) {
+export function evaluateComment({
+  description,
+  response,
+  responsedBy,
+  score,
+}: Partial<Comment> & { responsedBy?: RESPONDED_BY }) {
   try {
-    // need to be implemented
+    if (
+      description &&
+      (description.length > MAX_DESCRIPTION_LENGTH ||
+        description.length < MIN_DESCRIPTION_LENGTH)
+    ) {
+      throw new Response("طول توضیحات صحیح نیست", { status: 404 })
+    }
+
+    if (
+      response &&
+      (response.length > MAX_DESCRIPTION_LENGTH ||
+        response.length < MIN_DESCRIPTION_LENGTH)
+    ) {
+      throw new Response("طول توضیحات پاسخ صحیح نیست", { status: 404 })
+    }
+
+    if (
+      responsedBy &&
+      responsedBy !== "اسنپ فود" &&
+      responsedBy !== "مدیر رستوران"
+    ) {
+      throw new Response("پاسخ دهنده صحیح نیست", { status: 404 })
+    }
+
+    if (score && (score > 5 || score < 0)) {
+      throw new Response("امتیاز صحیح نیست", { status: 404 })
+    }
+
     return true
-  } catch (error) {}
+  } catch (error) {
+    throw error
+  }
 }
 
 export function evaluateUser({
@@ -79,7 +115,9 @@ export function evaluateUser({
     }
 
     return true
-  } catch (error) {}
+  } catch (error) {
+    throw error
+  }
 }
 
 export function evaluateItem({
@@ -167,5 +205,7 @@ export function evaluateAddress({
     }
 
     return true
-  } catch (error) {}
+  } catch (error) {
+    throw error
+  }
 }
