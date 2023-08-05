@@ -33,7 +33,7 @@ model Address {
   details    String?
   postalCode String?
 
-  xAxis Float @default(35.7152)
+  xAxis Float @default(35.7152) // coords of DEFAULT_CITY in constants.ts
   yAxis Float @default(51.4043)
 
   isAvailible Boolean @default(true)
@@ -153,8 +153,9 @@ model StoreHasItems {
   remainingCount     Int
   estimatedReadyTime Int     @default(15)
   infiniteSupply     Boolean @default(false)
-  score              Float   @default(0) // denormalization
-  scoreCount         Float   @default(0) // denormalization
+
+  score      Float @default(0) // denormalization
+  scoreCount Float @default(0) // denormalization
 
   isAvailible Boolean @default(true)
   isVerified  Boolean @default(true)

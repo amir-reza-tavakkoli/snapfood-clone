@@ -457,6 +457,18 @@ async function seedFirstDataChunk() {
     },
   })
 
+  const startTime = 12
+  const endTime = 24
+  const daysNumber = [0, 1, 2, 3, 4, 5, 6]
+
+  await Promise.all(
+    daysNumber.map(day =>
+      prisma.storeSchedule.create({
+        data: { dayNumber: day, endTime, startTime, storeId: store.id },
+      }),
+    ),
+  )
+
   const itemsInStore = await Promise.all(
     items.map(item =>
       prisma.storeHasItems.create({
@@ -503,6 +515,11 @@ async function seedFirstDataChunk() {
   )
 
   const totalPrice = await calculateOrder({ orderId: order.id })
+
+  const newOrder = await prisma.order.update({
+    where: { id: order.id },
+    data: { totalPrice },
+  })
 
   const commentRespondedBy: RESPONDED_BY = "مدیر رستوران"
 
@@ -693,6 +710,11 @@ async function seedSecondDataChunk() {
 
   const totalPrice = await calculateOrder({ orderId: order.id })
 
+  const newOrder = await prisma.order.update({
+    where: { id: order.id },
+    data: { totalPrice },
+  })
+
   const comment = await prisma.comment.create({
     data: {
       orderId: order.id,
@@ -858,6 +880,18 @@ async function seedThirdDataChunk() {
     },
   })
 
+  const startTime = 12
+  const endTime = 24
+  const daysNumber = [0, 1, 2, 3, 4, 5, 6]
+
+  await Promise.all(
+    daysNumber.map(day =>
+      prisma.storeSchedule.create({
+        data: { dayNumber: day, endTime, startTime, storeId: store.id },
+      }),
+    ),
+  )
+
   const itemsInStore = await Promise.all(
     items.map(item =>
       prisma.storeHasItems.create({
@@ -905,6 +939,11 @@ async function seedThirdDataChunk() {
 
   const totalPrice = await calculateOrder({ orderId: order.id })
 
+  const newOrder = await prisma.order.update({
+    where: { id: order.id },
+    data: { totalPrice },
+  })
+
   const comment = await prisma.comment.create({
     data: {
       orderId: order.id,
@@ -919,34 +958,46 @@ async function seedThirdDataChunk() {
 async function seedData() {
   await seedFirstDataChunk()
     .then(async () => {
+      console.log("Seeded first chunk successfully")
+
       await prisma.$disconnect()
     })
 
     .catch(async e => {
       console.error(e)
+
       await prisma.$disconnect()
+
       process.exit(1)
     })
 
   await seedSecondDataChunk()
     .then(async () => {
+      console.log("Seeded second chunk successfully")
+
       await prisma.$disconnect()
     })
 
     .catch(async e => {
       console.error(e)
+
       await prisma.$disconnect()
+
       process.exit(1)
     })
 
   await seedThirdDataChunk()
     .then(async () => {
+      console.log("Seeded third chunk successfully")
+
       await prisma.$disconnect()
     })
 
     .catch(async e => {
       console.error(e)
+
       await prisma.$disconnect()
+
       process.exit(1)
     })
 }
@@ -954,11 +1005,16 @@ async function seedData() {
 seedConstants()
   .then(async () => {
     await seedData()
+
+    console.log("Seed compelete")
+
     await prisma.$disconnect()
   })
 
   .catch(async e => {
     console.error(e)
+
     await prisma.$disconnect()
+
     process.exit(1)
   })
