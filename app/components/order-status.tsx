@@ -1,12 +1,12 @@
 import type { Order } from "@prisma/client"
 
-import { getDiffInMinutes, getFormattedDate } from "~/utils/utils"
+import { getDiffInMinutes, getFormattedDate } from "../utils/utils"
 
 import { getOrderStatus } from "../queries.server/db.utils.query"
 
 import { Timer } from "./timer"
 
-import { MAX_ORDER_DELAY } from "~/constants"
+import { MAX_ORDER_DELAY } from "../constants"
 
 type ComponentProps = { order: Order }
 

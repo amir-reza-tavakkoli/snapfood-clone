@@ -17,7 +17,7 @@ import {
   SCORE_ROUNDING,
   type StoreComment,
 } from "../constants"
-import { calculateScore } from "~/utils/utils.server"
+import { calculateScore } from "../utils/utils.server"
 
 export async function addComment({
   orderId,

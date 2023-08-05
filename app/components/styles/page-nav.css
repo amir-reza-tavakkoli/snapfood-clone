@@ -7,6 +7,7 @@
     position: fixed;
     inset-block-end: 0px;
     inset-inline-start: 0px;
+    z-index: 2;
     display: flex;
     inline-size: 100vw;
     margin-block-start: var(--length-6);

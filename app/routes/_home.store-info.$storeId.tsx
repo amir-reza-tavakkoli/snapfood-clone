@@ -21,7 +21,7 @@ import {
 
 import { Icon } from "../components/icon"
 import { GlobalErrorBoundary } from "../components/error-boundary"
-import { CommentComp } from "~/components/comment"
+import { CommentComp } from "../components/comment"
 
 import { DEFAULT_IMG_PLACEHOLDER, StoreComment } from "../constants"
 

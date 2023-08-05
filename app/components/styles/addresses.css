@@ -12,6 +12,7 @@
   flex-direction: row;
   justify-content: center;
   margin-block-end: var(--length-8);
+  direction: ltr;
 }
 
 :where(.addresses > div:first-of-type > p) {

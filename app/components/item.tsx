@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react"
+import { Form, Link } from "@remix-run/react"
 
 import type { Store } from "@prisma/client"
 
@@ -20,14 +20,6 @@ type ItemProps = {
 export function ItemComp({ item, store, address }: ItemProps) {
   return (
     <dl className="item-card">
-      <dt className="nonvisual">Name</dt>
-
-      <dd>{item.name}</dd>
-
-      <dt className="nonvisual">Description</dt>
-
-      <dd className="_description">{item.description}</dd>
-
       <dt className="nonvisual">Image</dt>
 
       <dd>
@@ -38,46 +30,30 @@ export function ItemComp({ item, store, address }: ItemProps) {
         />
       </dd>
 
-      <dt className="nonvisual">Price</dt>
+      <div>
+        <dt className="nonvisual">Name</dt>
 
-      <dd className="_price">
-        {item.price?.toLocaleString("fa") + DEFAULT_CURRENCY}
-      </dd>
+        <dd className="_name">{item.name}</dd>
 
-      {item.isAvailible ? (
-        <>
-          <Form
-            method="post"
-            action={routes.store(store.id)}
-            reloadDocument={false}
-          >
-            {item.count ? item.count.toLocaleString("fa") : null}
+        <dt className="nonvisual">Description</dt>
 
-            <input type="hidden" name="id" value={item.id} />
+        <dd className="_description">{item.description}</dd>
 
-            <input type="hidden" name="job" value="add" />
+        <dt className="nonvisual">Price</dt>
 
-            <input type="hidden" name="address" value={address} />
+        <dd className="_price">
+          {item.price?.toLocaleString("fa") + DEFAULT_CURRENCY}
+        </dd>
 
-            <Button
-              type="submit"
-              disabled={item.remainingCount === 0 || !address}
-            >
-              +
-            </Button>
-          </Form>
-
-          <Form method="post" reloadDocument={false}>
-            <input type="hidden" name="id" value={item.id} />
-
-            <input type="hidden" name="job" value="remove" />
-
-            <input type="hidden" name="address" value={address} />
-
-            {!item.count ? undefined : <Button type="submit"> - </Button>}
-          </Form>
-        </>
-      ) : null}
+        <Link
+          type="submit"
+          className="button"
+          data-variant="primary"
+          to={routes.store(store.id)}
+        >
+          افزودن
+        </Link>
+      </div>
     </dl>
   )
 }

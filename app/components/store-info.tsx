@@ -1,9 +1,16 @@
 import { Icon } from "./icon"
 import { Button } from "./button"
 
+import type { Store } from "@prisma/client"
+
+import { Link } from "@remix-run/react"
+
+import { routes } from "~/routes"
+
 import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
 type StoreCardProps = {
+  store: Store
   name: string
   logo?: string
   type?: string
@@ -22,6 +29,7 @@ export const StoreInfo = ({
   logo,
   type,
   rating,
+  store,
   dir,
   categories,
   isOpen = true,
@@ -120,7 +128,7 @@ export const StoreInfo = ({
             rounding="full"
             icon={{ name: "info", color: "action" }}
           >
-            اطلاعات و نظرات
+            <Link to={routes.storeInfo(store.id)}>اطلاعات و نظرات</Link>
           </Button>
         </dd>
 

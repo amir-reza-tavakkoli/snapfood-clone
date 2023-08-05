@@ -39,11 +39,17 @@ export default function AboutPage() {
       </picture>
       <h2>Overview</h2>
       <p>
-        <a href="https://github.com/amir-reza-tavakkoli/snappfood-clone">
+        <a
+          href="https://github.com/amir-reza-tavakkoli/snappfood-clone"
+          rel="me external"
+        >
           Snapfood Clone
         </a>
         is a student-developed project by
-        <a href="(https://github.com/amir-reza-tavakkoli)">
+        <a
+          href="(https://github.com/amir-reza-tavakkoli)"
+          rel="author external"
+        >
           Amir Reza Tavakoli
         </a>
         , trying to mock one of the biggest food delivery services in Iran with

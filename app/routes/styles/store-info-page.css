@@ -138,6 +138,12 @@
   font-weight: 700;
 }
 
+:where(.store-info time) {
+  font-size: var(--length-10);
+  font-weight: 700;
+  word-break: keep-all;
+}
+
 :where(.store-info > div span ._store-score) {
   display: block;
   font-weight: 700;

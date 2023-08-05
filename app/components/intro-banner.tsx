@@ -24,7 +24,10 @@ export function IntroBanner({ storesKind, city = "" }: IntroBannerProps) {
             <Icon name="store" color="text" className="_store-owner"></Icon>
           </Link>
 
-          <Link to={routes.login}> ورود یا عضویت</Link>
+          <Link to={routes.login} className="_login">
+            {" "}
+            ورود یا عضویت
+          </Link>
         </span>
 
         <Link to={routes.index} className="_logo">
@@ -35,11 +38,7 @@ export function IntroBanner({ storesKind, city = "" }: IntroBannerProps) {
       <div aria-label="About">
         <h1>سفارش آنلاین </h1>
 
-        <p aria-label="Services">
-          سفارش آنلاین غذا ، میوه، نان، شیرینی و
-          <br />
-          ...
-        </p>
+        <p aria-label="Services">سفارش آنلاین غذا ، میوه، نان، شیرینی و ...</p>
       </div>
 
       <img

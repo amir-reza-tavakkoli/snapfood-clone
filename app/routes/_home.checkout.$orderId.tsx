@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import {
   ActionArgs,
   LinksFunction,
@@ -12,7 +14,6 @@ import {
   validateNumberParam,
   checkOrder,
   checkStore,
-  checkUser,
 } from "../utils/validate.server"
 
 import type { Address, Order, Store, storeSchedule } from "@prisma/client"
@@ -45,7 +46,6 @@ import { type JoinedOrderItem } from "../constants"
 
 import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/checkout-page.css"
-import { useState } from "react"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: orderCss },

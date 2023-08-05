@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react"
 import { Icon } from "./icon"
 import { VendorCard } from "./store-card"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import {
   DEFAULT_CURRENCY,

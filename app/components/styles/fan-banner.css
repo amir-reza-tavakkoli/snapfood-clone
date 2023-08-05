@@ -6,7 +6,7 @@
   margin-inline: auto;
   background-color: var(--color-faded-2);
   border-end-end-radius: 100px;
-  border-radius: 6px;
+  border-radius: 12px;
 }
 
 :where(.fan-banner > div) {
@@ -56,11 +56,13 @@
   background-color: var(--color-primary);
   box-shadow: var(--box-shadow-double);
   border-radius: 6px;
+  direction: ltr;
   overflow: hidden;
 }
 
 :where(.fan-banner ._input input) {
   border: none;
+  direction: ltr;
 }
 
 :where(.fan-banner ._input button) {

@@ -31,12 +31,12 @@ import {
 
 import { requirePhoneNumber } from "../utils/session.server"
 
-import { getFormattedDate, getRateDescription } from "~/utils/utils"
+import { getFormattedDate, getRateDescription } from "../utils/utils"
 
 import { Button } from "../components/button"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "~/constants"
+import { MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "../constants"
 
 import pageCss from "./styles/add-comment-page.css"
 

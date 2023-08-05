@@ -23,11 +23,26 @@
 @media (max-width: 68.75rem) {
   :where(.stores-page > ul) {
     justify-content: center;
+    inline-size: 85%;
+    margin-inline: auto;
   }
 
-  :where(.stores-page > ul > li) {
-    inline-size: 270px;
-    max-inline-size: 290px;
-    min-inline-size: 180px;
+  :where(.stores-page > ul li) {
+    max-inline-size: 170px;
+    margin-inline: 6px;
+  }
+}
+
+@media (max-width: 38.5rem) {
+  :where(.stores-page > ul) {
+    max-block-size: 700px;
+    inline-size: 95%;
+    margin-inline: auto;
+    overflow-y: auto;
+  }
+
+  :where(.stores-page > ul li) {
+    max-inline-size: 140px;
+    margin-inline: 6px;
   }
 }

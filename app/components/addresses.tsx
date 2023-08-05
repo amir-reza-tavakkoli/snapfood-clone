@@ -6,7 +6,7 @@ import { getFullAddress } from "../utils/utils"
 
 import { Icon } from "./icon"
 
-import { useSetAddress } from "~/hooks/setAddress"
+import { useSetAddress } from "../hooks/setAddress"
 
 import { routes } from "../routes"
 

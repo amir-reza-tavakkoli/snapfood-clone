@@ -1,4 +1,4 @@
-import { Address, Order, Store, storeSchedule, User } from "@prisma/client"
+import type { Address, Order, Store, storeSchedule, User } from "@prisma/client"
 
 import { getOrderStatus } from "../queries.server/db.utils.query"
 
@@ -73,11 +73,11 @@ export function getFormattedDate(date: Date) {
     string.replace(/[۰-۹]/g, (digit: any) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
 
   return (
-    persianDate[0] +
+    persianDate[2] +
     " " +
     toPersianMonth(Number(p2e(persianDate[1]))) +
     " " +
-    persianDate[2]
+    persianDate[0]
   )
 }
 
@@ -275,21 +275,21 @@ export function validateStorePossibility({
   schedules: storeSchedule[]
 }) {
   if (!address || store.cityName !== address.cityName) {
-    return "آدرس صحیح نیست"
+    return { reason: "آدرس صحیح نیست", status: 1 }
   }
 
   if (!schedules || !getStoreCurrentSchedule(schedules)) {
-    return "فروشگاه بسته است"
+    return { reason: "فروشگاه بسته است", status: 2 }
   }
 
   if (
     !storeAddress ||
     !isAddressInRange({ destinationAddress: address, store, storeAddress })
   ) {
-    return "فروشگاه در رنج نیست"
+    return { reason: "فروشگاه در رنج نیست", status: 3 }
   }
 
-  return false
+  return { status: 0 }
 }
 
 // In tooman

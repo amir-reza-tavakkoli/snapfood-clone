@@ -45,6 +45,9 @@ import userMenuCss from "./../components/styles/user-menu.css"
 import ownerBannerCss from "./../components/styles/owner-banner.css"
 import fanBannerCss from "./../components/styles/fan-banner.css"
 import introBannerCss from "./../components/styles/intro-banner.css"
+import logoCss from "./../components/styles/logo.css"
+import { Logo } from "~/components/logo"
+import { useSplash } from "~/hooks/splash"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: ratingsCss },
@@ -61,6 +64,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: pageNavCss },
   { rel: "stylesheet", href: userMenuCss },
   { rel: "stylesheet", href: addressesCss },
+  { rel: "stylesheet", href: logoCss },
   { rel: "stylesheet", href: pageCss },
 ]
 
@@ -111,6 +115,8 @@ export default function HomePage() {
   const { addressState, setAddressState, cityState, setCityState } =
     useForceAddress({ addresses })
 
+  const { splash } = useSplash()
+
   useEffect(() => {
     if (user && cityState && location.pathname === routes.index) {
       navigate(routes.storesCity(cityState))
@@ -149,6 +155,8 @@ export default function HomePage() {
             setShowing={setUserMenuShowing}
           ></UserMenu>
 
+          <PageNav></PageNav>
+
           <Outlet context={[addressState, setAddressState]}></Outlet>
         </>
       ) : (
@@ -166,7 +174,7 @@ export default function HomePage() {
         </>
       )}
 
-      <PageNav></PageNav>
+      {splash ? <Logo></Logo> : null}
 
       {cities ? (
         <CityListMemo

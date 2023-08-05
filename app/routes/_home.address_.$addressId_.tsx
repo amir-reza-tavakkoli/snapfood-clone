@@ -28,7 +28,7 @@ import { requireValidatedUser } from "../utils/validate.server"
 
 import type { Map } from "leaflet"
 
-import { evaluateAddress } from "~/queries.server/evaluate.server"
+import { evaluateAddress } from "../queries.server/evaluate.server"
 
 import { ClientOnly } from "../client.map"
 

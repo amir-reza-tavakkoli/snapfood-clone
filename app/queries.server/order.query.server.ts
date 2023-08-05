@@ -18,7 +18,7 @@ import {
   type JoinedOrderStore,
   MAX_ORDER_IN_CART_TIME,
 } from "../constants"
-import { generateRandomCode } from "~/utils/utils.server"
+import { generateRandomCode } from "../utils/utils.server"
 export async function getOrder({
   orderId,
 }: {

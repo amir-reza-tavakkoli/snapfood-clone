@@ -52,7 +52,7 @@
 
 @media (max-width: 68.75rem) {
   :where(.owner-banner) {
-    margin-block: var(--length-24);
+    margin-block: var(--length-48);
     inline-size: 85%;
     justify-content: center;
     align-items: center;

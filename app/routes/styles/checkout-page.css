@@ -28,10 +28,13 @@
 }
 
 :where(.checkout-page > form textarea) {
-  inline-size: 100%;
-  block-size: var(--length-64);
-  margin-block: var(--length-12);
-  border: solid var(--color-faded-4) var(--border-thin);
+  inline-size: 80%;
+  block-size: 120px;
+  padding-inline: 10px;
+  padding-block: var(--length-12);
+  margin-block: var(--length-24);
+  border: solid var(--color-faded-5) var(--border-extra-thin);
+  border-radius: 12px;
 }
 
 :where(.checkout-page ._no-order) {

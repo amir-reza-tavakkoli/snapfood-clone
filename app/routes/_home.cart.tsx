@@ -10,7 +10,7 @@ import { CartComp } from "../components/cart"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { Icon } from "../components/icon"
 
-import { type CartProps } from "~/constants"
+import { type CartProps } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"

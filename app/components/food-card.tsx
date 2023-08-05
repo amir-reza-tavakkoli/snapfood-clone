@@ -117,7 +117,7 @@ export const FoodCard = ({
                         <dt className="nonvisual">Value</dt>
 
                         <dd aria-label="Before discount">
-                          <del>{item.vaule}</del>
+                          <del>{item.vaule.toLocaleString("fa")}</del>
                         </dd>
 
                         <dt className="nonvisual" aria-label="After discount">

@@ -38,7 +38,22 @@ import type { Address, Order, Store, storeSchedule, User } from "@prisma/client"
 import { StoreInfo } from "../components/store-info"
 import { FoodCard } from "../components/food-card"
 import { OrderComp } from "../components/order"
+import { Icon } from "~/components/icon"
 import { GlobalErrorBoundary } from "../components/error-boundary"
+
+import { routes } from "../routes"
+
+import {
+  getStoreCurrentSchedule,
+  validateStorePossibility,
+} from "../utils/utils"
+
+import {
+  requireValidatedUser,
+  validateNumberParam,
+  checkStore,
+  checkUser,
+} from "../utils/validate.server"
 
 import {
   ChangeOrderItemState,
@@ -48,18 +63,6 @@ import {
   JoinedOrderItem,
   INVALID_ADDRESS_RANGE,
 } from "../constants"
-
-import { routes } from "../routes"
-import {
-  getStoreCurrentSchedule,
-  validateStorePossibility,
-} from "../utils/utils"
-import {
-  requireValidatedUser,
-  validateNumberParam,
-  checkStore,
-  checkUser,
-} from "../utils/validate.server"
 
 import foodCardCss from "./../components/styles/food-card.css"
 import storeInfoCss from "./../components/styles/store-info.css"
@@ -299,7 +302,9 @@ export default function StorePage() {
   >(categorizedItems)
 
   const [orderState, setOrderState] = useState(order)
+
   const [address, setAddress] = useState<number>(0)
+
   const [orderItemsState, setorderItems] = useState(orderItems)
 
   const [totalPriceState, setTotalPriceState] = useState<number>(totalPrice)
@@ -351,11 +356,18 @@ export default function StorePage() {
 
   const currentAddress = addresses.find(a => a.id === address)
 
+  const storePossibility = validateStorePossibility({
+    address: currentAddress,
+    schedules,
+    store,
+    storeAddress,
+  })
   return (
     <>
       {!address || address <= INVALID_ADDRESS_RANGE ? (
         <Link to={routes.addresses} className="_no-address">
           یک آدرس جدید ایجاد کنید
+          <Icon name="flash" color="action"></Icon>
         </Link>
       ) : (
         <main
@@ -366,6 +378,7 @@ export default function StorePage() {
           <h1 className="nonvisual">{store.name}</h1>
 
           <StoreInfo
+            store={store}
             name={store.name}
             logo={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
             type={store.storeKindName}
@@ -409,15 +422,24 @@ export default function StorePage() {
             ))}
           </div>
 
-          {storeAddress &&
-          validateStorePossibility({
-            address: currentAddress,
-            schedules,
-            store,
-            storeAddress,
-          }) ? (
-            <output className="_close-popup">
+          {storeAddress && storePossibility.status === 2 ? (
+            <output className="_close-popup" aria-live="polite">
               <p>فروشگاه بسته است</p>
+            </output>
+          ) : storeAddress && storePossibility.status === 3 ? (
+            <output className="_close-popup" aria-live="polite">
+              <p>
+                فروشگاه در محدوده نیست
+                <br />
+                <Link to={routes.addresses}>
+                  انتخاب آدرسی دیگر
+                  <Icon name="flash" color="text"></Icon>
+                </Link>
+              </p>
+            </output>
+          ) : !store.isVerified || !store.isAvailible ? (
+            <output className="_close-popup" aria-live="polite">
+              <p>فروشگاه خارج از دسترس است</p>
             </output>
           ) : null}
 

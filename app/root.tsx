@@ -15,6 +15,7 @@ import { GlobalErrorBoundary } from "./components/error-boundary"
 
 import baseCss from "./index.css"
 import errorBoundaryCss from "./components/styles/error-boundary.css"
+import { DEAFULT_DIRECTION } from "./constants"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: baseCss },
@@ -38,7 +39,7 @@ export default function App({
   title,
 }: PropsWithChildren<{ title?: string }>) {
   return (
-    <html lang="fa">
+    <html lang="fa" dir={DEAFULT_DIRECTION}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />

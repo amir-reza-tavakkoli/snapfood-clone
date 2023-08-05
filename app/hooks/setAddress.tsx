@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import type { Address } from "@prisma/client"
 
-import { COOKIE_ADDRESS, COOKIE_City } from "~/constants"
+import { COOKIE_ADDRESS, COOKIE_City } from "../constants"
 
 export function useSetAddress({
   addresses,

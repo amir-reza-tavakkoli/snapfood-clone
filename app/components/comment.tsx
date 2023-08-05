@@ -1,8 +1,8 @@
 import { Icon } from "./icon"
 
-import { getFormattedDate } from "~/utils/utils"
+import { getFormattedDate } from "../utils/utils"
 
-import { StoreComment } from "~/constants"
+import { StoreComment } from "../constants"
 
 type CommentProps = {
   comment: StoreComment
