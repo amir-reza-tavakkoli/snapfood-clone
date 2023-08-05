@@ -239,8 +239,25 @@ input[type="radio"]:hover {
   color: var(--color-action);
 }
 
-:where(p, h1, textarea, input, small, span, ) {
+:where(button:hover, button:active) {
+  transform: translateY(1px) scale(1.01);
+  transition: transform 0.01s linear;
+}
+
+:where(p, h1) {
+  color: var(--color-text-2);
+}
+
+:where(p, h1, textarea, small, span, ) {
+  direction: rtl;
+}
+
+:where(input) {
   direction: ltr;
+}
+
+:where(*:disabled) {
+  cursor: not-allowed;
 }
 
 @media (max-width: 34.5rem) {
