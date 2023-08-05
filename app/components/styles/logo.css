@@ -1,0 +1,43 @@
+:where(.logo) {
+  position: fixed;
+  inset-block-start: 0px;
+  inset-inline-start: 0px;
+  z-index: 3;
+  inline-size: 100vw;
+  block-size: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-accent);
+  opacity: 1;
+  animation: fade-out 0.7s linear 0.3s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fade-out {
+  99% {
+    opacity: 0;
+  }
+
+  90% {
+    opacity: 0;
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+:where(.logo img) {
+  animation: fade-out 0.3s linear 2s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@media (max-width: 34.5rem) {
+  :where(.logo img) {
+    inline-size: 360px;
+  }
+}

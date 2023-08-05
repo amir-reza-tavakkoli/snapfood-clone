@@ -46,7 +46,7 @@ import {
 } from "../constants"
 
 import pageCss from "./styles/login-page.css"
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
 
