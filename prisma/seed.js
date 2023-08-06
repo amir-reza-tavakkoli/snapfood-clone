@@ -1,4 +1,4 @@
-const PrismaClient = require("C:/Users/Foli/Desktop/snappfood-clone/node_modules/@prisma/client/index")
+const PrismaClient = require("./../node_modules/prisma/prisma-client/index")
 const prisma = new PrismaClient()
 
 const DEFAULT_COORDINATIONS = {
