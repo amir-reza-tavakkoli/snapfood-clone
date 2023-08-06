@@ -1,4 +1,5 @@
-const PrismaClient = require("@prisma/client")
+const PrismaClient = require("C:/Users/Foli/Desktop/snappfood-clone/node_modules/@prisma/client/index")
+const prisma = new PrismaClient()
 
 const DEFAULT_COORDINATIONS = {
   xAxis: 35.7152,
@@ -6,7 +7,6 @@ const DEFAULT_COORDINATIONS = {
 } // tehran
 const DEFAULT_SHIPMENT_RADIUS = 10
 const DEFAULT_SHIPMENT_TIME = 15
-const prisma = new PrismaClient()
 
 async function seedConstants() {
   await prisma.storeKind.createMany({
