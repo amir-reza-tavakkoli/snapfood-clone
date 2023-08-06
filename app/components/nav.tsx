@@ -24,6 +24,7 @@ export const CategoryNav = ({ items, type, dir }: NavProps) => {
             <Link to={item.href}>
               <span>
                 <img
+                  loading="lazy"
                   role="presentation"
                   src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                   alt=""

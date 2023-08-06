@@ -144,6 +144,7 @@ export const Header = ({
                   src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                   alt=""
                   role="presentation"
+                  loading="lazy"
                 />
               </Link>
             </li>
@@ -161,6 +162,7 @@ export const Header = ({
                 src={itemInStore.item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                 alt=""
                 role="presentation"
+                loading="lazy"
               />
 
               <ul>
@@ -174,6 +176,7 @@ export const Header = ({
                           src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                           alt=""
                           role="presentation"
+                          loading="lazy"
                         />
                       </Link>
                     </li>

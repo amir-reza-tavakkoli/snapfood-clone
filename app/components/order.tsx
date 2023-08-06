@@ -77,6 +77,7 @@ export const OrderComp = ({
             alt=""
             role="presentation"
             className="_store-img"
+            loading="lazy"
           />
 
           <time
@@ -123,6 +124,7 @@ export const OrderComp = ({
                     src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
                     role="presentation"
+                    loading="lazy"
                   ></img>
 
                   <span className="_item-name">{item.name}</span>

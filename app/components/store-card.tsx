@@ -71,7 +71,7 @@ export const VendorCard = ({
 
           {logo ? (
             <span className="_logo" role="presentation">
-              <img src={logo} alt="" role="presentation" />
+              <img src={logo} alt="" role="presentation" loading="lazy" />
             </span>
           ) : null}
         </dd>

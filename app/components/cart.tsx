@@ -24,6 +24,7 @@ export const CartComp = ({ orders, dir }: CartProps) => {
                     src={order.store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
                     role="presentation"
+                    loading="lazy"
                   />
 
                   <span>
@@ -59,6 +60,7 @@ export const CartComp = ({ orders, dir }: CartProps) => {
                         src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                         alt=""
                         role="presentation"
+                        loading="lazy"
                       ></img>
 
                       <span className="nonvisual">{item.name}</span>

@@ -92,6 +92,7 @@ export const FoodCard = ({
           </dl>
 
           <img
+            loading="lazy"
             src={image ?? DEFAULT_IMG_PLACEHOLDER}
             alt=""
             role="presentation"

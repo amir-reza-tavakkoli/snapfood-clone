@@ -34,6 +34,7 @@ export default function AboutPage() {
         <img
           src="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
           alt=""
+          loading="lazy"
           role="presentation"
         />
       </picture>

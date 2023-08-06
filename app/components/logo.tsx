@@ -5,6 +5,7 @@ export function Logo() {
         src="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
         alt=""
         role="presentation"
+        loading="lazy"
       />
     </div>
   )

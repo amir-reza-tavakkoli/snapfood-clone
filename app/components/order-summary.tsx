@@ -26,6 +26,7 @@ export const Orders = ({ orders, dir }: OrderProps) => {
                     src={order.store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
                     role="presentation"
+                    loading="lazy"
                   />
 
                   <p className="nonvisual">{order.store.name}</p>

@@ -26,6 +26,7 @@ export function ItemComp({ item, store, address }: ItemProps) {
         <img
           src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
           alt=""
+          loading="lazy"
           role="presentation"
         />
       </dd>

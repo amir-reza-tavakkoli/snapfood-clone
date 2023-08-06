@@ -21,6 +21,7 @@ export function OwnerBanner() {
       <img
         src="https://snappfood.ir/static/images/vendor_pic.png"
         alt=""
+        loading="lazy"
         role="presentation"
       />
     </article>

@@ -111,7 +111,7 @@ export const Footer = ({
         {credentials.map((item, index) => (
           <li key={index}>
             <a href={item.href} rel="external license" aria-label={item.name}>
-              <img src={item.logo} role="presentation" alt="" />
+              <img src={item.logo} role="presentation" alt="" loading="lazy" />
             </a>
           </li>
         ))}

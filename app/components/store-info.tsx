@@ -110,6 +110,7 @@ export const StoreInfo = ({
             <dd>
               <img
                 alt=""
+                loading="lazy"
                 role="presentation"
                 src={logo ?? DEFAULT_IMG_PLACEHOLDER}
               ></img>

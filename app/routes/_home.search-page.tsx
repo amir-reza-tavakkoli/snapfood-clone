@@ -92,6 +92,7 @@ export default function SearchPage() {
                   src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                   alt=""
                   role="presentation"
+                  loading="lazy"
                 />
               </Link>
             </li>
@@ -109,6 +110,7 @@ export default function SearchPage() {
                 src={itemInStore.item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                 alt=""
                 role="presentation"
+                loading="lazy"
               />
 
               <ul>
@@ -122,6 +124,7 @@ export default function SearchPage() {
                           src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                           alt=""
                           role="presentation"
+                          loading="lazy"
                         />
                       </Link>
                     </li>

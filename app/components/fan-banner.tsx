@@ -75,6 +75,7 @@ export function FanBanner() {
         src="https://snappfood.ir/static/images/img_app_mockup@2x.png"
         alt=""
         role="presentation"
+        loading="lazy"
       />
     </article>
   )
