@@ -1,7 +1,5 @@
 const PrismaClient = require("@prisma/client")
 
-const calculateOrder = require("../app/queries.server/order.query.server")
-
 const DEFAULT_COORDINATIONS = {
   xAxis: 35.7152,
   yAxis: 51.4043,
@@ -494,6 +492,7 @@ async function seedFirstDataChunk() {
       billDate: new Date(Date.now()),
       isBilled: true,
       isDelivered: true,
+      totalPrice: 60000,
       isShipped: true,
       estimatedShipmentTime: DEFAULT_SHIPMENT_TIME,
     },
@@ -510,13 +509,6 @@ async function seedFirstDataChunk() {
       }),
     ),
   )
-
-  const totalPrice = await calculateOrder({ orderId: order.id })
-
-  const newOrder = await prisma.order.update({
-    where: { id: order.id },
-    data: { totalPrice },
-  })
 
   const commentRespondedBy = "مدیر رستوران"
 
@@ -689,6 +681,7 @@ async function seedSecondDataChunk() {
       isDelivered: true,
       isShipped: true,
       shipmentPrice: 3000,
+      totalPrice: 120000,
       totalPrice: 0,
     },
   })
@@ -704,13 +697,6 @@ async function seedSecondDataChunk() {
       }),
     ),
   )
-
-  const totalPrice = await calculateOrder({ orderId: order.id })
-
-  const newOrder = await prisma.order.update({
-    where: { id: order.id },
-    data: { totalPrice },
-  })
 
   const comment = await prisma.comment.create({
     data: {
@@ -918,6 +904,7 @@ async function seedThirdDataChunk() {
       isDelivered: true,
       isShipped: true,
       shipmentPrice: 0,
+      totalPrice: 950000,
       totalPrice: 0,
     },
   })
@@ -933,13 +920,6 @@ async function seedThirdDataChunk() {
       }),
     ),
   )
-
-  const totalPrice = await calculateOrder({ orderId: order.id })
-
-  const newOrder = await prisma.order.update({
-    where: { id: order.id },
-    data: { totalPrice },
-  })
 
   const comment = await prisma.comment.create({
     data: {
