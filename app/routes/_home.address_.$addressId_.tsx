@@ -82,10 +82,10 @@ export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
     const cityName = form.get("city")
     const address = form.get("address")
     const title = form.get("title")
+    const details = form.get("details")
     const unit: number | undefined = Number(form.get("unit"))
     const xAxis: number | undefined = Number(form.get("xAxis"))
     const yAxis: number | undefined = Number(form.get("yAxis"))
-    const details = form.get("details")
 
     if (
       !address ||
@@ -324,9 +324,9 @@ export default function AddressPage() {
             value={unit}
             onChange={e => {
               e.preventDefault()
-              // if (isNaN(Number(e.target.value))) {
-              //   return undefined
-              // }
+              if (isNaN(Number(e.target.value))) {
+                return undefined
+              }
               setUnit(Number(e.target.value))
             }}
           />

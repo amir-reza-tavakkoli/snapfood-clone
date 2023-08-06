@@ -9,7 +9,7 @@ export const routes = {
   about: "/about",
 
   addresses: "/addresses",
-  newAddress: "/addresses/new",
+  newAddress: "/address/new",
   address: (id: string | number) => `/address/${id}`,
 
   stores: "/stores",
