@@ -31,7 +31,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
-    "sanitize.css": "^13.0.0"
+    "sanitize.css": "^13.0.0",
+    "tsx": "^3.12.7"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.16.1",
