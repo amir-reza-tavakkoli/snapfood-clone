@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react"
+
 import { Icon } from "./icon"
-import "./option-notes.css"
 
 type OptionNotesProps = {
   options: {
@@ -9,29 +9,37 @@ type OptionNotesProps = {
     interactive: boolean
     icon: ComponentProps<typeof Icon>
   }[]
+  dir?: "rtl" | "lrt"
 }
 
-export const OptionNotes = ({ options }: OptionNotesProps) => {
+export const OptionNotes = ({ options, dir }: OptionNotesProps) => {
   return (
-    <dl className="options-card">
+    <dl className="options-card" dir={dir}>
       <dt className="nonvisual">Options</dt>
+
       <dd>
         <dl>
           {options.map((item, index) =>
             item.interactive ? (
               <div key={index} data-interactive aria-label="Option">
                 {<Icon name={item.icon.name} color={item.icon.color} />}
+
                 <dt>{item.name}</dt>
+
                 <dd>{item.value}</dd>
+
                 <button type="button">
-                  {<Icon name="flash" color="action" />}{" "}
+                  {<Icon name="flash" color="action" />}
+
                   <span className="nonvisual">Change</span>
                 </button>
               </div>
             ) : (
               <div key={index} aria-label="Note">
                 {<Icon name={item.icon.name} color={item.icon.color} />}
+
                 <dt>{item.name}</dt>
+
                 <dd>{item.value}</dd>
               </div>
             ),

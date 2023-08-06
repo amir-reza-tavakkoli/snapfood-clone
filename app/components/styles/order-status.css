@@ -1,0 +1,13 @@
+:where(.order-status) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  inline-size: 100%;
+  margin-inline: 12px;
+  text-align: center;
+}
+
+:where(.order-status *) {
+  text-align: center;
+}

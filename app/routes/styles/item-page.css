@@ -1,0 +1,17 @@
+:where(.item-container) {
+  inline-size: 70%;
+  margin-inline: auto;
+  margin-block: var(--length-18);
+}
+
+@media (max-width: 68.75rem) {
+  :where(.item-container) {
+    inline-size: 80%;
+  }
+}
+
+@media (max-width: 34.5rem) {
+  :where(.item-container) {
+    inline-size: 90%;
+  }
+}

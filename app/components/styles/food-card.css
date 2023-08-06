@@ -1,0 +1,143 @@
+:where(.food-card) {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  padding-block: var(--length-16);
+  margin-inline: var(--length-16);
+  overflow-x: auto;
+}
+
+:where(.food-card > div) {
+  display: flex;
+  flex-grow: 2;
+  padding-inline: var(--length-8);
+}
+
+:where(.food-card > div:first-of-type) {
+  justify-content: space-between;
+}
+
+:where(.food-card ._identity) {
+  display: flex;
+  align-self: flex-start;
+  flex-direction: column;
+  padding-block-start: var(--length-8);
+}
+
+:where(.food-card > div:nth-child(1) > a) {
+  display: inherit;
+}
+
+:where(.food-card > div:nth-child(1)) {
+  margin-block-start: var(--length-8);
+}
+
+:where(.food-card > div:nth-child(n + 1)) {
+  justify-content: space-between;
+  align-items: center;
+  padding-block: var(--length-8);
+}
+
+:where(.food-card > div:nth-of-type(n + 2):hover) {
+  background-color: var(--color-faded-4);
+}
+
+:where(.food-card div:nth-child(n + 1) button) {
+  padding-block: var(--length-6);
+  padding-inline: var(--length-32);
+  transition: all 150ms ease-out 0s;
+  color: var(--color-accent);
+  border: var(--border-thick) solid var(--color-accent-4);
+  box-shadow: var(--box-shadow-double);
+}
+
+:where(.food-card img:only-of-type) {
+  flex-grow: 0;
+  align-self: flex-start;
+  inline-size: 45%;
+  max-inline-size: 32rem;
+  margin-inline-end: var(--length-4);
+  aspect-ratio: 1/1;
+  border-radius: var(--length-8);
+}
+
+:where(.food-card ._ingredients) {
+  display: block;
+  max-inline-size: max-content;
+  min-inline-size: 100px;
+  padding-block: var(--length-16);
+  padding-inline-end: var(--length-16);
+  margin-inline: 0px;
+  margin-block: 0px;
+  text-align: start;
+  line-height: var(--length-16);
+  font-size: var(--length-12);
+  font-weight: 400;
+  color: var(--color-faded);
+  word-break: normal;
+}
+
+:where(.food-card ._name) {
+  display: inline-block;
+  text-align: initial;
+  font-size: var(--length-16);
+  font-weight: 700;
+  line-height: var(--length-24);
+  color: var(--color-text);
+}
+
+:where(.food-card ._price) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  inline-size: max-content;
+}
+
+:where(.food-card ._forms dd) {
+  display: flex;
+}
+
+:where(.food-card form button) {
+  display: inline-flex;
+  inline-size: 32px;
+  block-size: 32px;
+  padding-inline: 0px;
+  padding-block: 0px;
+  margin-inline: 4px;
+  border-radius: 100%;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+:where(.food-card ._price div) {
+  display: flex;
+}
+
+:where(.food-card ._variation) {
+  font-size: var(--length-12);
+}
+
+:where(.food-card ._price dd) {
+  padding-inline: var(--length-2);
+  padding-block: var(--length-2);
+  text-align: center;
+  font-size: var(--length-12);
+  font-weight: 700;
+  line-height: var(--length-20);
+  color: var(--color-text);
+}
+
+:where(.food-card div:nth-child(n + 1) button:hover) {
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  border-color: var(--color-accent-4);
+  box-shadow: var(--box-shadow-thick);
+}
+
+@media (max-width: 68.75rem) {
+  :where(.food-card img:only-of-type) {
+    max-inline-size: 16rem;
+    inline-size: 6rem;
+  }
+}

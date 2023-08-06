@@ -1,0 +1,50 @@
+:where(.boundary-error) {
+  display: flex;
+  align-self: center;
+  inline-size: 66%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-block: var(--length-32);
+  padding-inline: var(--length-16);
+  margin-inline: auto;
+  margin-block: var(--length-32);
+  text-align: center;
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+}
+
+:where(.boundary-error button) {
+  inline-size: 60%;
+  padding-block: var(--length-12);
+  margin-block: var(--length-32);
+  background-color: transparent;
+  border: var(--color-faded-2) solid var(--border-thin);
+  color: var(--color-text);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+:where(.boundary-error button:hover, .boundary-error button:active) {
+  background-color: var(--color-error-4);
+}
+
+:where(.boundary-error > h1) {
+  color: var(--color-error);
+}
+
+:where(.boundary-error > a svg) {
+  margin-inline: 6px;
+  margin-block-start: 2px;
+  /* optical alignment */
+}
+
+:where(.boundary-error > p) {
+  margin-block: var(--length-32);
+  color: var(--color-error);
+}
+
+@media (max-width: 34.5rem) {
+  :where(.boundary-error) {
+    inline-size: 90%;
+  }
+}

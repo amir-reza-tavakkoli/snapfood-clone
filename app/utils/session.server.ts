@@ -1,19 +1,26 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node"
-import { getUserByPhone } from "./user.query.server"
+
+import { routes } from "../routes"
 
 const sessionSecret = process.env.SESSION_SECRET
+
 if (!sessionSecret) {
-  throw new Error("SESSION_SECRET must be set")
+  throw new Response("SESSION_SECRET must be set")
 }
+
+const authCookieName = "SF_SESSION"
+const phoneCookieName = "phoneNumber"
+
+const oneMonth = 60 * 60 * 24 * 30
 
 const storage = createCookieSessionStorage({
   cookie: {
-    name: "SF_SESSION",
+    name: authCookieName,
     secure: process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
+    path: routes.index,
+    maxAge: oneMonth,
     httpOnly: true,
   },
 })
@@ -24,7 +31,8 @@ function getUserSession(request: Request) {
 
 export async function getPhoneNumber(request: Request) {
   const session = await getUserSession(request)
-  const phoneNumber = session.get("phoneNumber")
+
+  const phoneNumber = session.get(phoneCookieName)
 
   if (!phoneNumber || typeof phoneNumber !== "string") {
     return null
@@ -38,11 +46,13 @@ export async function requirePhoneNumber(
   redirectTo: string = new URL(request.url).pathname,
 ) {
   const session = await getUserSession(request)
-  const phoneNumber = session.get("phoneNumber")
+
+  const phoneNumber = session.get(phoneCookieName)
 
   if (!phoneNumber || typeof phoneNumber !== "string") {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]])
-    throw redirect(`/login?${searchParams}`)
+
+    throw redirect(routes.login + `?${searchParams}`)
   }
 
   return phoneNumber
@@ -53,7 +63,8 @@ export async function createUserSession(
   redirectTo: string,
 ) {
   const session = await storage.getSession()
-  session.set("phoneNumber", phoneNumber)
+
+  session.set(phoneCookieName, phoneNumber)
 
   return redirect(redirectTo, {
     headers: {
@@ -65,27 +76,12 @@ export async function createUserSession(
 export async function logout(request: Request) {
   const session = await getUserSession(request)
 
-  session.unset("phoneNumber")
-  session.unset("SF_SESSION")
+  session.unset(phoneCookieName)
+  session.unset(authCookieName)
 
-  return redirect("/login", {
+  return redirect(routes.login, {
     headers: {
       "Set-Cookie": await storage.destroySession(session),
     },
   })
-}
-
-export async function getUser(request: Request) {
-  const phoneNumber = await getPhoneNumber(request)
-
-  if (typeof phoneNumber !== "string" || !phoneNumber) {
-    return null
-  }
-
-  const user = await getUserByPhone({ phoneNumber })
-  if (!user) {
-    throw logout(request)
-  }
-
-  return user
 }

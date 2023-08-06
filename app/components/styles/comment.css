@@ -1,0 +1,85 @@
+:where(.comment) {
+  display: flex;
+  margin-block: var(--length-8);
+  padding-block: var(--length-24);
+  inline-size: 100%;
+  color: var(--color-text-2);
+  border-block-end: var(--border-thin) solid var(--color-faded-5);
+}
+
+:where(.comment:last-of-type) {
+  border: none;
+}
+
+:where(.store-info > ul ._comment div:first-of-type) {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 20%;
+  margin-block: var(--length-4);
+  margin-inline: 10px;
+}
+
+:where(.comment div:first-of-type ._name) {
+  margin-inline: 6px;
+  font-size: var(--length-14);
+  font-weight: 700;
+  color: var(--color-text-2);
+}
+
+:where(.comment div:first-of-type ._score) {
+  inline-size: max-content;
+  padding-inline: 6px;
+  padding-block: var(--length-4);
+  margin-inline-end: 10px;
+  margin-block: var(--length-8);
+  border-radius: 6px;
+  border: var(--border-thin) solid var(--color-faded-5);
+  font-size: var(--length-12);
+}
+
+:where(.comment div:last-of-type) {
+  display: flex;
+  flex-direction: column;
+  inline-size: 95%;
+  margin-block: var(--length-8);
+  margin-inline: 10px;
+}
+
+:where(.comment div:last-of-type ._description) {
+  margin-block: var(--length-12);
+  margin-inline: 10px;
+  font-size: var(--length-14);
+}
+
+:where(.comment div:last-of-type ul) {
+  display: flex;
+  flex-wrap: wrap;
+  margin-block: var(--length-12);
+  margin-inline: 10px;
+}
+
+:where(.comment div:last-of-type ul ._item) {
+  padding-inline: 10px;
+  padding-block: var(--length-8);
+  margin-block: var(--length-8);
+  margin-inline: 10px;
+  background-color: var(--color-faded);
+  border-radius: 8px;
+  font-size: var(--length-10);
+  background-color: var(--color-faded-2);
+  opacity: 0.85;
+}
+
+:where(.comment span) {
+  display: block;
+  font-weight: 700;
+  /* font-size: var(--length-20); */
+}
+
+@media (max-width: 34.5rem) {
+  :where(.comment) {
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+  }
+}

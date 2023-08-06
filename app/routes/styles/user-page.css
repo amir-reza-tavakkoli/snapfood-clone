@@ -1,0 +1,115 @@
+:where(._user-page) {
+  inline-size: 50%;
+  padding-inline: 12px;
+  margin-block: var(--length-24);
+  margin-inline: auto;
+  border: solid var(--color-faded-2) var(--border-thick);
+  color: var(--color-text-2);
+}
+
+:where(._user-page > h1) {
+  margin-block: var(--length-12);
+  font-size: var(--length-18);
+}
+
+:where(._user-page > form) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+:where(._user-page > form > p) {
+  margin-block-start: var(--length-12);
+  font-weight: 600;
+}
+
+:where(._user-page > form > button) {
+  inline-size: 36px;
+  align-self: center;
+}
+
+:where(
+    ._user-page > form input,
+    ._user-page > form select,
+    ._user-page > form textarea
+  ) {
+  inline-size: 100%;
+  padding-inline: 24px;
+  padding-block: var(--length-6);
+  margin-inline: 12px;
+  margin-inline-end: 0px;
+  margin-block: var(--length-6);
+  text-align: end;
+  background-color: var(--color-primary);
+  border-radius: 6px;
+  border: none;
+}
+
+:where(._user-page > form > div:focus-within) {
+  background-color: var(--color-faded-4);
+  outline: solid var(--border-thin) var(--color-faded);
+  outline-offset: 0px;
+}
+
+:where(
+    ._user-page > form input,
+    ._user-page form select,
+    ._user-page form textarea
+  ) {
+  margin-inline: 8px;
+}
+
+:where(
+    ._user-page > form input:focus,
+    ._user-page form select:focus,
+    ._user-page form textarea:focus
+  ) {
+  outline: none;
+  background-color: transparent;
+}
+
+:where(._user-page > form > div) {
+  display: flex;
+  inline-size: 100%;
+  padding-block: var(--length-4);
+  margin-inline: 16px;
+  margin-block: var(--length-14);
+  border: solid var(--color-faded-2) var(--border-thick);
+  border-radius: 6px;
+  box-shadow: var(--box-shadow-double);
+}
+
+:where(._user-page > form > div label) {
+  display: inline-block;
+  align-self: center;
+  margin-inline: 12px;
+  inline-size: 25%;
+  font-size: var(--length-12);
+  font-weight: 600;
+  text-align: start;
+}
+
+:where(._user-page > form output ._success) {
+  color: var(--color-action);
+  font-weight: 600;
+}
+
+:where(._user-page > form output ._error) {
+  color: var(--color-error);
+}
+
+:where(._user-page ._register) {
+  margin-block: var(--length-12);
+}
+
+@media (max-width: 68.75rem) {
+  :where(._user-page) {
+    inline-size: 70%;
+  }
+}
+
+@media (max-width: 37.5rem) {
+  :where(._user-page) {
+    inline-size: 90%;
+  }
+}

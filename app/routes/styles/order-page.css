@@ -1,0 +1,14 @@
+:where(.order-page) {
+  padding-block: var(--length-16);
+  padding-inline: var(--length-12);
+  margin-block: var(--length-16);
+  margin-inline: var(--length-12);
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+}
+
+:where(.order-page > h1) {
+  margin-inline: var(--length-6);
+  margin-block: var(--length-14);
+  text-align: center;
+  font-size: var(--length-18);
+}

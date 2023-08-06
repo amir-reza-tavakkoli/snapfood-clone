@@ -1,0 +1,45 @@
+:where(.bill-page) {
+  display: flex;
+  flex-direction: column;
+  inline-size: 75%;
+  align-items: center;
+  margin-inline: auto;
+  margin-block: var(--length-10);
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+}
+
+:where(.bill-page > h1) {
+  font-size: var(--length-24);
+  font-weight: 500;
+}
+
+:where(.bill-page > *) {
+  margin-block: var(--length-10);
+}
+
+:where(.bill-page > div p) {
+  font-weight: 600;
+  font-size: var(--length-14);
+}
+
+:where(.bill-page > div form) {
+  display: flex;
+  flex-direction: column;
+}
+
+:where(.bill-page > div form > button) {
+  align-self: center;
+  inline-size: 44px;
+  margin-block: var(--length-16);
+  text-align: center;
+}
+
+:where(.bill-page output ._success) {
+  font-weight: 600;
+}
+
+@media (max-width: 68.75rem) {
+  :where(.bill-page) {
+    inline-size: 90%;
+  }
+}

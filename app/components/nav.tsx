@@ -1,30 +1,37 @@
-import "./nav.css"
+import { Link } from "@remix-run/react"
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
-export type item = {
+type item = {
   name: string
-  image?: string
+  avatarUrl?: string
   href: string
 }
 
-type VendorNavProps = {
+type NavProps = {
   type?: string
   items: item[]
+  dir?: "lrt" | "rtl"
 }
 
-export const Nav = ({ items, type }: VendorNavProps) => {
+export const CategoryNav = ({ items, type, dir }: NavProps) => {
   return (
-    <nav className="nav">
+    <nav className="nav" dir={dir}>
+      <h1 className="nonvisual">Kinds</h1>
+
       <ul aria-label={type}>
         {items.map((item, index) => (
           <li key={index}>
-            <a href={item.href}>
+            <Link to={item.href}>
               <span>
-                {item.image ? (
-                  <img role="presentation" src={item.image} alt="" />
-                ) : null}
+                <img
+                  role="presentation"
+                  src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
+                  alt=""
+                />
+
                 <span className="_name">{item.name}</span>
               </span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

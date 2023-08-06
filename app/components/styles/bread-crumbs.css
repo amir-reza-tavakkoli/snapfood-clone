@@ -1,0 +1,55 @@
+:where(.bread-crumbs) {
+  inline-size: 100%;
+  padding-inline-start: 28px;
+  margin-block-start: var(--length-24);
+}
+
+:where(.bread-crumbs a) {
+  margin-inline-start: 16px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+:where(.bread-crumbs li) {
+  text-align: center;
+  font-weight: 400;
+  font-size: var(--length-12);
+  line-height: var(--length-12);
+  color: var(--color-faded);
+  white-space: nowrap;
+}
+
+:where(.bread-crumbs li:last-of-type) {
+  color: var(--color-text-2);
+}
+
+:where(.bread-crumbs svg) {
+  inline-size: var(--length-6);
+  block-size: var(--length-12);
+  aspect-ratio: 1/2;
+  margin-inline-start: var(--length-6);
+  margin-block-end: -2px;
+  fill: var(--color-faded);
+  transform: rotate(180deg);
+}
+
+:where(html[dir="rtl"] .bread-crumbs svg) {
+  transform: none;
+}
+
+@media (prefers-contrast: more) {
+  :where(.bread-crumbs li) {
+    color: var(--color-text-2);
+  }
+}
+
+@media (pointer: coarse) {
+  :where(.bread-crumbs a) {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-block-size: var(--length-coarse-min);
+    min-inline-size: var(--length-coarse-min);
+  }
+}

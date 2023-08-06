@@ -1,0 +1,202 @@
+:where(.store-info) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  inline-size: 100%;
+  min-inline-size: min-content;
+}
+
+:where(.store-info > div:first-child) {
+  display: flex;
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+:where(.store-info > div:last-child) {
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin-block-start: min(var(--length-16), 32px);
+}
+
+:where(.store-info ._identity) {
+  display: flex;
+  align-self: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+  order: 1;
+}
+
+:where(.store-info ._identity dl) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  block-size: 100%;
+  align-self: stretch;
+}
+
+:where(.store-info ._identity > *) {
+  order: 2;
+}
+
+:where(.store-info ._name) {
+  order: 3;
+  padding-inline-start: 16px;
+  margin-block-end: var(--length-10);
+  font-size: var(--length-14);
+  font-weight: 700;
+  overflow-wrap: normal;
+}
+
+:where(.store-info ._image) {
+  align-self: flex-start;
+  inline-size: 25%;
+  min-inline-size: min-content;
+}
+
+:where(.store-info ._image img) {
+  flex-shrink: 0;
+  align-self: flex-start;
+  inline-size: 100%;
+  min-inline-size: 80px;
+  margin-inline-end: 20px;
+  padding-inline: 1px;
+  padding-block: var(--length-1);
+  aspect-ratio: 1/1;
+  border: var(--border-extra-thick) solid var(--color-faded-4);
+  border-radius: 12px;
+}
+
+:where(.store-info ._rating) {
+  order: 1;
+  padding-inline-start: 16px;
+  margin-block-start: var(--length-10);
+  margin-inline-start: calc(var(--length-6) * -1);
+  white-space: nowrap;
+}
+
+:where(.store-info ._rating > dl) {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  margin-block-end: calc(var(--length-4) * -1);
+}
+
+:where(.store-info ._rating > dl > dd) {
+  font-size: var(--length-12);
+}
+
+:where(.store-info ._rating > dl > dd:first-of-type) {
+  font-weight: 700;
+}
+
+:where(.store-info ._rating ._rating-count) {
+  margin-block: (--length-6);
+  margin-inline: 6px;
+  color: var(--color-faded);
+}
+
+:where(.store-info ._rating ._star-icon svg) {
+  inline-size: 12px;
+  block-size: 12px;
+  aspect-ratio: 1/1;
+  margin-block-start: var(--length-1);
+  margin-block-end: var(--length-4);
+  margin-inline: 4px;
+}
+
+:where(.store-info button) {
+  margin-block-start: var(--length-8);
+  padding-block: var(--length-4);
+  color: var(--color-action);
+  border: var(--border-thick) solid var(--color-action-4);
+  box-shadow: var(--box-shadow-thick);
+}
+
+:where(.store-info button svg) {
+  margin-block-start: var(--length-4);
+}
+
+:where(.store-info button:hover) {
+  color: var(--color-action-2);
+  border-color: var(--color-action-4);
+}
+
+:where(.store-info button:active) {
+  color: var(--color-action-2);
+  background-color: var(--color-action-4);
+  border-color: var(--color-action-4);
+}
+
+:where(.store-info ._status-open) {
+  font-size: var(--length-12);
+  color: var(--color-action);
+  text-align: center;
+  font-weight: 700;
+}
+
+:where(.store-info ._status-closed) {
+  font-size: var(--length-12);
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-error);
+}
+
+:where(.store-info ._categories) {
+  display: flex;
+  flex-direction: column;
+  margin-block-start: var(--length-12);
+  color: var(--color-text-2);
+  font-size: var(--length-14);
+  font-weight: 600;
+}
+
+:where(.store-info ._categories > li) {
+  padding-block: var(--length-6);
+  align-self: flex-end;
+}
+
+:where(.store-info ._categories > li > a) {
+  color: var(--color-text-2);
+}
+
+@media (max-width: 68.75rem) {
+  :where(.store-info ._status-open) {
+    position: relative;
+    inset-block-start: var(--length-12);
+  }
+
+  :where(.store-info ._status-closed) {
+    position: relative;
+    inset-block-start: var(--length-12);
+  }
+
+  :where(.store-info ._categories) {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :where(.store-info ._rating-count) {
+    color: var(--color-text);
+  }
+
+  :where(.store-info button) {
+    color: var(--color-action-2);
+    opacity: 0.98;
+  }
+}
+
+:where(.store-info ._choosed-link) {
+  padding-inline: 8px;
+  border-radius: 16px;
+  background-color: var(--color-accent);
+}
+
+:where(.store-info ._choosed-link a) {
+  color: var(--color-primary);
+}

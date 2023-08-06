@@ -1,5 +1,4 @@
 import { type IconProps, Icon } from "./icon"
-import "./button.css"
 
 type DefaultButtonProps = JSX.IntrinsicElements["button"]
 
@@ -26,7 +25,8 @@ export const Button = ({
       data-variant={variant}
       {...otherProps}
     >
-      <span>{children}</span>{" "}
+      <span>{children}</span>
+
       {icon ? (
         <span>
           <Icon {...icon} />

@@ -1,4 +1,3 @@
-import "./bread-crumbs.css"
 import { Icon } from "./icon"
 
 type Item = {
@@ -8,11 +7,14 @@ type Item = {
 
 type BreadCrumbsProps = {
   items: Item[]
+  dir?: "rtl" | "lrt"
 }
 
-export const BreadCrumbs = ({ items }: BreadCrumbsProps) => {
+export const BreadCrumbs = ({ items, dir }: BreadCrumbsProps) => {
   return (
-    <nav aria-label="Breadcrumb" className="bread-crumbs">
+    <nav aria-label="Breadcrumb" className="bread-crumbs" dir={dir}>
+      <h1 className="nonvisual">Breadcrumb</h1>
+
       <ol>
         {items.map((item, index) => (
           <li key={index}>
@@ -22,6 +24,7 @@ export const BreadCrumbs = ({ items }: BreadCrumbsProps) => {
             >
               {item.name}
             </a>
+
             {index !== items.length - 1 ? (
               <Icon name="flash" color="faded" role="presentation" />
             ) : null}

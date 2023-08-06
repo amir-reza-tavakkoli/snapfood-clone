@@ -1,0 +1,126 @@
+:where(.fan-banner) {
+  display: flex;
+  inline-size: 85%;
+  padding-inline: 64px;
+  margin-block: var(--length-48);
+  margin-inline: auto;
+  background-color: var(--color-faded-2);
+  border-end-end-radius: 100px;
+  border-radius: 12px;
+}
+
+:where(.fan-banner > div) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin-block: var(--length-16);
+}
+
+:where(.fan-banner p) {
+  inline-size: 75%;
+  line-height: 1.85;
+  color: var(--color-text-2);
+  font-size: var(--length-14);
+}
+
+:where(.fan-banner ul) {
+  display: flex;
+  flex-wrap: wrap;
+  margin-block: var(--length-16);
+}
+
+:where(.fan-banner ul li) {
+  margin-inline: 6px;
+  margin-block: var(--length-6);
+}
+
+:where(.fan-banner form) {
+  margin-block: var(--length-16);
+}
+
+:where(.fan-banner form label) {
+  display: block;
+  margin-block-end: 6px;
+  padding-inline-start: 4px;
+  font-size: var(--length-10);
+  text-align: start;
+  font-weight: 700;
+}
+
+:where(.fan-banner ._input) {
+  display: inline-block;
+  padding-block: var(--length-10);
+  padding-inline: 12px;
+  margin-block-end: var(--length-24);
+  border: var(--border-extra-thin) solid var(--color-faded-5);
+  background-color: var(--color-primary);
+  box-shadow: var(--box-shadow-double);
+  border-radius: 6px;
+  direction: ltr;
+  overflow: hidden;
+}
+
+:where(.fan-banner ._input input) {
+  border: none;
+  direction: ltr;
+}
+
+:where(.fan-banner ._input button) {
+  padding-block: var(--length-8);
+  padding-inline: 6px;
+  margin-inline: 10px;
+  background-color: var(--color-accent);
+  border: none;
+  color: var(--color-primary);
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: var(--length-12);
+}
+
+:where(.fan-banner > img) {
+  position: relative;
+  inset-block-start: -120px;
+  inline-size: 400px;
+  aspect-ratio: 2/3;
+}
+
+@media (max-width: 68.75rem) {
+  :where(.fan-banner) {
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  :where(.fan-banner > div) {
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  :where(.fan-banner form label) {
+    text-align: center;
+  }
+
+  :where(.fan-banner > div > *) {
+    margin-block: var(--length-14);
+  }
+
+  :where(.fan-banner ul) {
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  :where(.fan-banner > img) {
+    display: none;
+  }
+}
+
+@media (max-width: 34.5rem) {
+  :where(.fan-banner) {
+    inline-size: 90%;
+  }
+}

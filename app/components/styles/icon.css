@@ -1,0 +1,27 @@
+:where(svg[data-color="accent"], svg[data-color="accent"] path) {
+  fill: var(--color-accent);
+}
+
+:where(svg[data-color="text"], svg[data-color="text"] path) {
+  fill: var(--color-text-2);
+}
+
+:where(svg[data-color="primary"], svg[data-color="primary"] path) {
+  fill: var(--color-primary);
+}
+
+:where(svg[data-color="faded"], svg[data-color="faded"] path) {
+  fill: var(--color-faded);
+}
+
+:where(svg[data-color="action"], svg[data-color="action"] path) {
+  fill: var(--color-action);
+}
+
+:where(svg[data-color="warning"], svg[data-color="warning"] path) {
+  fill: var(--color-warning);
+}
+
+:where(svg[data-color="error"], svg[data-color="error"] path) {
+  fill: var(--color-error);
+}

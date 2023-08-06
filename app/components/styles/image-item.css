@@ -1,0 +1,75 @@
+:where(.image-item) {
+  display: block;
+  position: relative;
+  inline-size: 100%;
+  padding-inline: 3px;
+  padding-block: var(--length-3);
+  border: var(--border-normal) solid var(--color-primary);
+  border-radius: 12px;
+  background-color: var(--color-primary);
+  box-shadow: var(--box-shadow-normal);
+  overflow-x: hidden;
+}
+
+:where(.image-item img) {
+  display: inline-block;
+  inline-size: 100%;
+  aspect-ratio: 2/1;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+:where(.image-item p) {
+  position: absolute;
+  inset-inline-start: 0px;
+  inset-block-end: 0px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  max-inline-size: 75%;
+  padding-block: var(--length-4);
+  padding-inline-end: 8px;
+  padding-inline-start: 14px;
+  border-start-end-radius: 12px;
+  font-size: var(--length-16);
+  font-weight: 400;
+  color: var(--color-text);
+  background-color: var(--color-primary);
+  line-height: var(--length-24);
+}
+
+:where(.image-item p span) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  inline-size: 16px;
+  padding-inline-end: 12px;
+  margin-block-end: 0px;
+  margin-block-start: var(--length-2);
+  aspect-ratio: 1/1;
+  transition: all 200ms ease-in-out 0s;
+  transform: rotate(180deg);
+}
+
+:where(.image-item svg) {
+  display: inline-block;
+  inline-size: min(var(--length-10), 20px);
+  block-size: min(var(--length-10), 20px);
+  aspect-ratio: 1/1;
+}
+
+:where(.image-item p span:hover) {
+  transform: rotate(180deg) translateX(calc(var(--length-2) * -1));
+}
+
+:where(html[dir="rtl"] .image-item p) {
+  gap: var(--length-4);
+}
+
+:where(html[dir="rtl"] .image-item p span) {
+  transform: none;
+}
+
+:where(html[dir="rtl"] .image-item p span:hover) {
+  transform: translateX(calc(var(--length-2) * -1));
+}

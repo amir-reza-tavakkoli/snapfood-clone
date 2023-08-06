@@ -1,6 +1,12 @@
 import type { ComponentProps } from "react"
-import "./footer.css"
+
+import { routes } from "../routes"
+
 import { Icon } from "./icon"
+
+import { Link } from "@remix-run/react"
+
+import { VENDOR_NAME, VENDOR_NAME_ENG } from "../constants"
 
 type Reference = {
   name?: string
@@ -8,39 +14,73 @@ type Reference = {
 }
 
 type WithImage = Reference & { logo: string }
+
 type WithIcon = Reference & { logo: ComponentProps<typeof Icon> }
 
 type FooterProps = {
-  name: string
-  logo: ComponentProps<typeof Icon>
-  homepage: string
+  name?: string
+  logo?: ComponentProps<typeof Icon>
+  homepage?: string
   description?: string
-  links: Reference[]
-  contacts: WithIcon[]
-  credentials: WithImage[]
+  links?: Reference[]
+  contacts?: WithIcon[]
+  credentials?: WithImage[]
+  dir?: "rtl" | "lrt"
 }
 
 export const Footer = ({
-  logo,
-  name,
-  homepage,
-  description,
-  links,
-  credentials,
-  contacts,
+  logo = { name: VENDOR_NAME_ENG },
+  name = VENDOR_NAME,
+  homepage = routes.index,
+  description = "تجربه سفارش غذا، از زودفود تا اسنپ‌ فود",
+  links = [
+    { name: "درباره اسنپ فود", href: routes.notImplemented },
+    { name: "وبلاگ", href: routes.notImplemented },
+    { name: "قوانین سایت", href: routes.notImplemented },
+    { name: "حریم شخصی", href: routes.notImplemented },
+    { name: "ثبت نام فروشندگان", href: routes.notImplemented },
+    { name: "ثبت نام فروشندگان", href: routes.notImplemented },
+    { name: "تماس با اسنپ فود", href: routes.notImplemented },
+    { name: "ٍثبت شکایات", href: routes.notImplemented },
+    { name: "پرسش های متداول", href: routes.notImplemented },
+  ],
+  credentials = [
+    {
+      name: "E-Trust",
+      href: routes.notImplemented,
+      logo: "https://snappfood.ir/static/images/senf.png",
+    },
+    {
+      name: "E-Namad",
+      href: routes.notImplemented,
+      logo: "https://snappfood.ir/static/images/senf.png",
+    },
+  ],
+  contacts = [
+    { href: routes.notImplemented, logo: { name: "twitter" } },
+    { href: routes.notImplemented, logo: { name: "telegram" } },
+    { href: routes.notImplemented, logo: { name: "linkedin" } },
+    { href: routes.notImplemented, logo: { name: "instagram" } },
+    { href: routes.notImplemented, logo: { name: "aparat" } },
+  ],
+  dir,
 }: FooterProps) => {
   return (
-    <footer className="footer">
+    <footer className="footer" dir={dir}>
+      <h1 className="nonvisual">{name}</h1>
+
       <div>
-        <p className="_vendor">
-          <a href={homepage} aria-label="Homepage" rel="canonical">
+        <address className="_vendor">
+          <Link to={homepage} aria-label="Homepage" rel="canonical">
             <Icon name={logo.name} role="presentation" />
-          </a>
+          </Link>
+
           <span>
             <span>{name}</span>
+
             <span>{description}</span>
           </span>
-        </p>
+        </address>
 
         <address aria-label="Contacts">
           <ul className="_contacts">
@@ -62,7 +102,7 @@ export const Footer = ({
       <ul aria-label="Sitemap" className="_sitemap">
         {links.map((item, index) => (
           <li key={index}>
-            <a href={item.href}>{item.name}</a>
+            <Link to={item.href}>{item.name}</Link>
           </li>
         ))}
       </ul>

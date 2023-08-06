@@ -1,0 +1,48 @@
+:where(.stores-page > ul) {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: 24px;
+  margin-block-end: var(--length-24);
+  margin-block-start: var(--length-12);
+}
+
+:where(.stores-page > h1) {
+  margin-block-start: var(--length-12);
+  margin-inline-start: 12px;
+  font-size: var(--length-20);
+}
+
+:where(.stores-page > ul > li) {
+  display: inline-block;
+  inline-size: 220px;
+  max-inline-size: 250px;
+  margin-inline: 18px;
+  margin-block: var(--length-16);
+}
+
+@media (max-width: 68.75rem) {
+  :where(.stores-page > ul) {
+    justify-content: center;
+    inline-size: 85%;
+    margin-inline: auto;
+  }
+
+  :where(.stores-page > ul li) {
+    max-inline-size: 170px;
+    margin-inline: 6px;
+  }
+}
+
+@media (max-width: 38.5rem) {
+  :where(.stores-page > ul) {
+    max-block-size: 700px;
+    inline-size: 95%;
+    margin-inline: auto;
+    overflow-y: auto;
+  }
+
+  :where(.stores-page > ul li) {
+    max-inline-size: 140px;
+    margin-inline: 6px;
+  }
+}

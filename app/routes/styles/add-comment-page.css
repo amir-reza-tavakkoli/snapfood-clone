@@ -1,0 +1,71 @@
+:where(.add-comment-page) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  inline-size: 70%;
+  padding-block: var(--length-18);
+  padding-inline: var(--length-10);
+  margin-inline: auto;
+  margin-block: var(--length-18);
+  border: var(--border-thin) solid var(--color-faded-5);
+  border-radius: 12px;
+}
+
+:where(.add-comment-page p) {
+  font-size: var(--length-14);
+  padding-block: var(--length-18);
+  margin-inline: var(--length-10);
+  text-align: center;
+}
+
+:where(.add-comment-page h1) {
+  font-size: var(--length-18);
+  padding-block: var(--length-18);
+  margin-inline: var(--length-10);
+  text-align: center;
+}
+
+:where(.add-comment-page ._help-us) {
+  font-size: var(--length-12);
+}
+
+:where(.add-comment-page button) {
+  inline-size: 150px;
+  margin-block: var(--length-18);
+}
+
+:where(.add-comment-page form) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:where(.add-comment-page textarea) {
+  padding-inline: var(--length-10);
+  padding-block: var(--length-10);
+  border-radius: 8px;
+  border: var(--border-thin) solid var(--color-faded-5);
+  resize: none;
+}
+
+:where(.add-comment-page h1) {
+  font-size: var(--length-16);
+}
+
+:where(.add-comment-page p) {
+  font-size: var(--length-12);
+}
+
+:where(.add-comment-page ._rate) {
+  font-weight: 700;
+  font-size: var(--length-10);
+  margin-block: var(--length-4);
+}
+
+@media (max-width: 34.5rem) {
+  :where(.add-comment-page) {
+    inline-size: 90%;
+  }
+}

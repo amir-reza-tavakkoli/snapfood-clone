@@ -1,0 +1,23 @@
+:where(._stores-all-page > ul) {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  padding-inline: 32px;
+  padding-block: var(--length-24);
+}
+
+:where(._stores-all-page > ul > div:first-child) {
+  align-self: center;
+}
+
+:where(._stores-all-page > ul > div:last-child) {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+:where(._stores-all-page ._no-store) {
+  margin-block: var(--length-18);
+  text-align: center;
+  font-size: var(--length-18);
+}

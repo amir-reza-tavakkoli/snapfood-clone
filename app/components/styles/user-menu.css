@@ -1,0 +1,112 @@
+:where(.user-menu) {
+  position: fixed;
+  z-index: 2;
+  inset-block-start: var(--length-64);
+  inset-inline-start: 30px;
+  inline-size: 350px;
+  background-color: var(--color-primary);
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: var(--box-shadow-extra-thick);
+}
+
+:where(.user-menu > ul) {
+  display: flex;
+  flex-direction: column;
+}
+
+:where(.user-menu > ul > li) {
+  display: flex;
+  inline-size: 100%;
+  flex-direction: row;
+  padding-block: var(--length-16);
+  padding-inline: 12px;
+  color: var(--color-text-2);
+  font-weight: 400;
+}
+
+:where(.user-menu > ul > li:hover, .user-menu > ul > li:active) {
+  background-color: var(--color-faded-5);
+}
+
+:where(.user-menu > ul > li > a) {
+  display: flex;
+  inline-size: 100%;
+  padding-block-start: 2px;
+  color: var(--color-text-2);
+  font-size: var(--length-12);
+}
+
+:where(.user-menu > ul > li svg) {
+  inline-size: 24px;
+  aspect-ratio: 1/1;
+  margin-inline: 8px;
+}
+
+:where(.user-menu > ul > li > a span) {
+  color: var(--color-text-2);
+  font-size: var(--length-12);
+}
+
+:where(.user-menu > ul > li > a > *:nth-child(2)) {
+  margin-inline-end: auto;
+}
+
+:where(.user-menu > ul > li button) {
+  display: inline;
+  padding-inline: 0px;
+  padding-block-start: 0px;
+  padding-block-end: var(--length-8);
+  background-color: transparent;
+  border: none;
+  font-size: var(--length-12);
+  color: var(--color-text-2);
+}
+
+:where(.user-menu > ul > li > a ._user) {
+  display: flex;
+  flex-direction: column;
+}
+
+:where(.user-menu > ul li ._user span:first-of-type) {
+  font-size: var(--length-14);
+  font-weight: 700;
+}
+
+:where(.user-menu > ul > li > a ._user span:last-of-type) {
+  color: var(--color-action);
+  font-size: var(--length-10);
+}
+
+:where(.user-menu > ul > li:first-of-type svg) {
+  margin-block-start: var(--length-8);
+}
+
+:where(.user-menu > ul > li:last-of-type svg) {
+  margin-block-start: var(--length-4);
+}
+
+:where(.user-menu ._credit) {
+  font-weight: 700;
+}
+
+:where(.user-menu ._close-popup) {
+  padding-inline-start: 10px;
+  padding-block: var(--length-6);
+  margin-block-start: 6px;
+  /* optical alignment */
+  cursor: pointer;
+}
+
+:where(.user-menu ._close-popup svg) {
+  inline-size: 16px;
+  block-size: 16px;
+  fill: var(--color-text);
+}
+
+@media (max-width: 34.375rem) {
+  :where(.user-menu) {
+    inset-inline-start: 5%;
+    inline-size: 90%;
+  }
+}

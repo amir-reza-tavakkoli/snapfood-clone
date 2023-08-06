@@ -1,0 +1,65 @@
+:where(.nav ul) {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 1;
+  inline-size: 100%;
+  padding-block-start: var(--length-16);
+  margin-block: var(--length-4);
+  font-size: var(--length-12);
+  overflow-x: auto;
+  box-shadow: var(--box-shadow-light);
+}
+
+:where(.nav li) {
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-inline-size: var(--length-80);
+}
+
+:where(.nav a) {
+  text-decoration: none;
+}
+
+:where(.nav ._name) {
+  max-inline-size: 75%;
+  color: var(--color-text-2);
+  line-height: var(--length-16);
+  font-weight: 400;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+:where(.nav a span:first-child) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-block-end: var(--length-16);
+  text-align: center;
+}
+
+:where(.nav a img) {
+  display: inline-block;
+  inline-size: var(--length-40);
+  max-inline-size: var(--length-40);
+  margin-block-end: var(--length-16);
+  aspect-ratio: 1/1;
+}
+
+@media (pointer: coarse) {
+  :where(.nav a) {
+    min-block-size: var(--length-coarse-min);
+  }
+}
+
+.nav ul::-webkit-scrollbar {
+  inline-size: 0;
+  background: transparent;
+}
+
+.nav ul::-webkit-scrollbar-thumb {
+  inline-size: 0;
+  background: transparent;
+}

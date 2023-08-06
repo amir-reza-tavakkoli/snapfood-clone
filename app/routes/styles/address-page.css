@@ -1,0 +1,98 @@
+:where(._address-page) {
+  inline-size: 50%;
+  margin-inline: auto;
+  border: solid var(--color-faded-2) var(--border-normal);
+}
+
+:where(._address-page > p) {
+  margin-inline: 16px;
+  margin-block: var(--length-16);
+  font-size: var(--length-20);
+  font-weight: 600;
+}
+
+:where(._address-page > form) {
+  display: flex;
+  flex-direction: column;
+}
+
+:where(._address-page > form > div > label) {
+  align-self: center;
+  margin-block: var(--length-6);
+  font-size: var(--length-14);
+  font-weight: 500;
+}
+
+:where(._address-page > form > div) {
+  display: flex;
+  padding-inline: 12px;
+  margin-inline: 16px;
+  margin-block: var(--length-12);
+  border: solid var(--color-faded-2) var(--border-thick);
+  border-radius: 6px;
+  box-shadow: var(--box-shadow-double);
+}
+
+:where(._address-page > form > div:focus-within) {
+  background-color: var(--color-faded-4);
+  outline: solid var(--border-thin) var(--color-faded);
+  outline-offset: 0px;
+}
+
+:where(._address-page > form button) {
+  align-self: center;
+  inline-size: 36px;
+  margin-block: var(--length-8);
+}
+
+:where(
+    ._address-page form input,
+    ._address-page form select,
+    ._address-page form textarea
+  ) {
+  inline-size: 100%;
+  padding-inline: 12px;
+  padding-block: var(--length-6);
+  margin-inline-start: 12px;
+  margin-inline-end: 0px;
+  margin-block: var(--length-6);
+  background-color: var(--color-primary);
+  text-align: end;
+  border-radius: 6px;
+  border: none;
+}
+
+:where(
+    ._address-page form input:focus,
+    ._address-page form select:focus,
+    ._address-page form textarea:focus
+  ) {
+  outline: none;
+  background-color: transparent;
+}
+
+:where(._address-page output) {
+  align-self: center;
+  text-align: center;
+  margin-block: var(--length-6);
+}
+
+:where(._address-page output ._success) {
+  font-weight: 600;
+}
+
+:where(._address-page > form #__map) {
+  inline-size: 100%;
+}
+
+@media (max-width: 37.5rem) {
+  :where(._address-page) {
+    inline-size: 90%;
+  }
+}
+
+@media (max-width: 68.75rem) {
+  :where(._address-page) {
+    inline-size: 75%;
+  }
+}

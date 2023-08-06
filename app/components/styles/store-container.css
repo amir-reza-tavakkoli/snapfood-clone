@@ -1,0 +1,76 @@
+:where(.store-container) {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  padding-inline: 24px;
+  margin-block: var(--length-20);
+  margin-inline: 8px;
+  overflow-x: auto;
+}
+
+:where(.store-container > div:first-of-type) {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  flex-grow: 0;
+  overflow-y: auto;
+}
+
+:where(.store-container > :first-of-type > a > svg) {
+  margin-inline: 10px;
+  transform: rotate(180deg);
+}
+
+:where(.store-container > :first-of-type > a) {
+  display: flex;
+  align-items: center;
+  font-size: var(--length-20);
+  color: var(--color-action);
+  text-decoration: none;
+}
+
+:where(.store-container > div:first-of-type > p) {
+  margin-inline-start: 10px;
+  margin-block-end: var(--length-2);
+  font-weight: bold;
+  font-size: var(--length-20);
+  color: var(--color-text);
+}
+
+:where(.store-container > div:last-of-type > a) {
+  display: inline-flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-wrap: nowrap;
+  inline-size: 300px;
+  margin-inline: 6px;
+  margin-block: var(--length-8);
+  flex-basis: 280px;
+  text-decoration: none;
+}
+
+:where(.store-container > div:last-of-type > a > li) {
+  inline-size: 100%;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+@media (max-width: 68.75rem) {
+  :where(.store-container) {
+    overflow-x: hidden;
+  }
+
+  :where(.store-container > div:last-of-type > a) {
+    flex-basis: 240px;
+    margin-block: var(--length-12);
+  }
+}
+
+@media (max-width: 34.5rem) {
+  :where(.store-container > div:last-of-type > a) {
+    flex-basis: 200px;
+  }
+}

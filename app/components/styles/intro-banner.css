@@ -1,0 +1,204 @@
+:where(.intro-banner) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  flex-grow: 0;
+  justify-content: space-between;
+  inline-size: 85%;
+  block-size: 36rem;
+  min-block-size: 50rem;
+  padding-inline: 24px;
+  padding-block-start: var(--length-48);
+  margin-inline: auto;
+  margin-block-start: var(--length-48);
+  margin-block-end: var(--length-80);
+  background-color: var(--color-faded-8);
+  border-radius: 8px;
+  border-end-end-radius: 110px;
+  direction: ltr;
+}
+
+:where(.intro-banner > div) {
+  inline-size: 100%;
+}
+:where(.intro-banner a) {
+  text-align: center;
+}
+
+:where(.intro-banner > div:first-of-type) {
+  display: flex;
+  justify-content: space-between;
+}
+
+:where(.intro-banner > div:first-of-type > a svg) {
+  inline-size: 100px;
+  block-size: 80px;
+}
+
+:where(.intro-banner > div:first-of-type a:first-of-type) {
+  padding-block: var(--length-14);
+  padding-inline: 4px;
+  margin-inline: 6px;
+  color: var(--color-text);
+  border-radius: 6px;
+  font-size: var(--length-12);
+}
+
+:where(.intro-banner > div:first-of-type a:last-of-type:not(._logo)) {
+  display: inline-block;
+  block-size: max-content;
+  padding-block: var(--length-14);
+  padding-inline: 6px;
+  color: var(--color-primary);
+  border-radius: 6px;
+  background-color: var(--color-accent);
+  font-weight: 700;
+  font-size: var(--length-14);
+  text-align: center;
+}
+
+:where(.intro-banner > div:first-of-type ._store-owner) {
+  inline-size: 22px;
+  block-size: 22px;
+  margin-inline: 6px;
+  margin-block-start: 4px;
+  /* optical alignment */
+  fill: var(--color-text);
+}
+
+:where(.intro-banner > div:last-of-type) {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  align-items: flex-end;
+}
+
+:where(.intro-banner > div:last-of-type p) {
+  text-align: end;
+  font-weight: 400;
+}
+
+:where(.intro-banner > img) {
+  position: absolute;
+  margin-inline-start: -24px;
+  margin-block-start: 7.5rem;
+  margin-block-end: -10px;
+  /* optical alignment */
+}
+
+:where(.intro-banner > nav) {
+  position: relative;
+  inset-block-end: 80px;
+  display: flex;
+  backdrop-filter: blur(2.5rem);
+  margin-inline: 32px;
+  border-radius: 12px;
+}
+
+.intro-banner h1::after {
+  content: "میوه";
+  inline-size: 40px;
+  block-size: 50px;
+  color: var(--color-accent);
+  font-size: var(--length-32);
+  animation: changeLetter 3s linear infinite alternate;
+}
+
+@keyframes changeLetter {
+  0% {
+    content: "میوه";
+    opacity: 1;
+  }
+
+  25% {
+    opacity: 0;
+  }
+
+  50% {
+    content: "پیتزا";
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0;
+  }
+
+  100% {
+    content: "غذا";
+    opacity: 1;
+  }
+}
+
+:where(.intro-banner a:hover, .intro-banner a:active) {
+  transform: translateY(0.4px) scale(1.01);
+  transition: transform 0.01s linear;
+}
+
+:where(.intro-banner ._login:hover) {
+  background-color: var(--color-accent-2);
+  border-color: var(--color-accent-2);
+}
+
+:where(.intro-banner ._login:active) {
+  background-color: var(--color-accent-3);
+  border-color: var(--color-accent-3);
+}
+
+@media (max-width: 68.75rem) {
+  :where(.intro-banner > img) {
+    display: none;
+    inline-size: 90%;
+    margin-inline: 10px;
+  }
+}
+
+@media (max-width: 34.5rem) {
+  :where(.intro-banner) {
+    justify-content: space-evenly;
+    min-block-size: initial;
+    block-size: max-content;
+    inline-size: 95%;
+    padding-block: var(--length-32);
+    margin-inline: 24px;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  :where(.intro-banner > div:first-of-type) {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  :where(.intro-banner > div:first-of-type > span) {
+    display: flex;
+    inline-size: 100%;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    margin-block: var(--length-14);
+  }
+
+  :where(.intro-banner h1) {
+    text-align: center;
+    font-size: var(--length-20);
+  }
+
+  :where(.intro-banner > div:last-of-type) {
+    padding-block-end: var(--length-32);
+    align-items: center;
+  }
+
+  :where(.intro-banner > div:last-of-type p) {
+    text-align: center;
+    font-size: var(--length-16);
+  }
+
+  :where(.intro-banner > .nav) {
+    display: none;
+  }
+
+  :where(.intro-banner ._store-owner) {
+    display: none;
+  }
+}

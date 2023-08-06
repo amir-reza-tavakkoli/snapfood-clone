@@ -1,0 +1,125 @@
+:where(.cart) {
+  display: flex;
+  inline-size: 100%;
+  flex-direction: column;
+  justify-content: center;
+  border-start-start-radius: 8px;
+  border-start-end-radius: 8px;
+}
+
+:where(.cart > a) {
+  color: var(--color-text);
+}
+
+:where(.cart ._order) {
+  display: flex;
+  flex-direction: column;
+  margin-inline: 12px;
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+}
+
+:where(.cart ._order > div) {
+  display: flex;
+  margin-block-end: var(--length-8);
+}
+
+:where(.cart ._order > div > img) {
+  inline-size: 48px;
+  aspect-ratio: 1/1;
+  margin-inline: 16px;
+  margin-block: var(--length-16);
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+  border-radius: 6px;
+}
+
+:where(.cart ._order > div > span) {
+  align-self: center;
+}
+
+:where(.cart ._order > div > span > p:first-of-type) {
+  margin-block-end: var(--length-12);
+  font-size: var(--length-14);
+  font-weight: 700;
+}
+
+:where(.cart ._order svg) {
+  inline-size: 14px;
+  block-size: 14px;
+  margin-inline: 4px;
+  aspect-ratio: 1/1;
+}
+
+:where(.cart ._order > div > span > time) {
+  display: block;
+  color: vat(--color-faded);
+  font-size: var(--length-10);
+}
+
+:where(.cart ._order > div > p:last-of-type) {
+  align-self: flex-end;
+  font-weight: 700;
+  font-size: var(--length-12);
+  margin-inline-start: auto;
+  margin-inline-end: 12px;
+}
+
+:where(.cart ul) {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline-start: 54px;
+  margin-block-end: var(--length-16);
+  max-inline-size: 70%;
+}
+
+:where(.cart ul img) {
+  margin-inline: 6px;
+  inline-size: 42px;
+  aspect-ratio: 1/1;
+  margin-block: var(--length-2);
+  margin-inline: 2px;
+  border: solid var(--color-faded-4) var(--border-extra-thin);
+  border-radius: 4px;
+}
+
+:where(.cart ul ._item span) {
+  position: relative;
+  inset-inline-start: -16px;
+  inset-block-end: -6px;
+  display: inline-block;
+  inline-size: 14px;
+  block-size: 14px;
+  text-align: center;
+  font-size: var(--length-10);
+  color: var(--color-primary);
+  background-color: var(--color-accent);
+  border-radius: 10000px;
+}
+
+@media (max-width: 34.5rem) {
+  :where(.cart ._order > div) {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+  }
+
+  :where(.cart ._order > div > *) {
+    margin-block: var(--length-10);
+  }
+
+  :where(.cart ._order > a) {
+    margin-block: var(--length-10);
+    align-items: center;
+    align-self: center;
+  }
+
+  :where(.cart ._order ul) {
+    margin-inline: auto;
+    margin-block: var(--length-10);
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-block-size: 300px;
+    align-items: center;
+    align-self: center;
+  }
+}
