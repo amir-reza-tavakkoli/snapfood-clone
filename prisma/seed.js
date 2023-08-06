@@ -1,14 +1,13 @@
-import { PrismaClient } from "@prisma/client"
+const PrismaClient = require("@prisma/client")
 
-import { calculateOrder } from "../app/queries.server/order.query.server"
+const calculateOrder = require("../app/queries.server/order.query.server")
 
-import {
-  DEFAULT_COORDINATIONS,
-  DEFAULT_SHIPMENT_RADIUS,
-  DEFAULT_SHIPMENT_TIME,
-  RESPONDED_BY,
-} from "../app/constants"
-
+const DEFAULT_COORDINATIONS = {
+  xAxis: 35.7152,
+  yAxis: 51.4043,
+} // tehran
+const DEFAULT_SHIPMENT_RADIUS = 10
+const DEFAULT_SHIPMENT_TIME = 15
 const prisma = new PrismaClient()
 
 async function seedConstants() {

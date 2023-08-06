@@ -65,7 +65,7 @@ export const loader = async ({
 
     let stores = await getStoresByCity({ cityName: city })
 
-    if (!stores || stores.length === 0) {
+    if (!stores) {
       throw new Response("فروشگاهی در شهر انتخاب شده وجود ندارد", {
         status: 404,
       })
