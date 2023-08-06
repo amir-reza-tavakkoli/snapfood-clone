@@ -1,7 +1,6 @@
 {
   "private": true,
   "name": "snappfood-clone",
-  "type": "module",
   "sideEffects": false,
   "scripts": {
     "build": "remix build",
