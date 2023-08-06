@@ -1,6 +1,5 @@
 {
   "private": true,
-  "type": "module",
   "name": "snappfood-clone",
   "sideEffects": false,
   "scripts": {
