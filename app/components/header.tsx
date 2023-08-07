@@ -145,6 +145,8 @@ export const Header = ({
                   alt=""
                   role="presentation"
                   loading="lazy"
+                  width={40}
+                  height={40}
                 />
               </Link>
             </li>
@@ -163,6 +165,8 @@ export const Header = ({
                 alt=""
                 role="presentation"
                 loading="lazy"
+                width={40}
+                height={40}
               />
 
               <ul>
@@ -177,6 +181,8 @@ export const Header = ({
                           alt=""
                           role="presentation"
                           loading="lazy"
+                          width={40}
+                          height={40}
                         />
                       </Link>
                     </li>

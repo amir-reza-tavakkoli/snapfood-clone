@@ -24,6 +24,8 @@ export function ItemComp({ item, store, address }: ItemProps) {
 
       <dd>
         <img
+          width={40}
+          height={40}
           src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
           alt=""
           loading="lazy"

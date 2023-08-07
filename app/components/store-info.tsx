@@ -109,6 +109,8 @@ export const StoreInfo = ({
 
             <dd>
               <img
+                width={50}
+                height={50}
                 alt=""
                 loading="lazy"
                 role="presentation"

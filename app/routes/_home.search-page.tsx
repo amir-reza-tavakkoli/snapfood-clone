@@ -89,6 +89,8 @@ export default function SearchPage() {
                 {store.name}
 
                 <img
+                  width={40}
+                  height={40}
                   src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                   alt=""
                   role="presentation"
@@ -107,6 +109,8 @@ export default function SearchPage() {
               {itemInStore.item.name}
 
               <img
+                width={40}
+                height={40}
                 src={itemInStore.item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                 alt=""
                 role="presentation"
@@ -121,6 +125,8 @@ export default function SearchPage() {
                         {store.name}
 
                         <img
+                          width={40}
+                          height={40}
                           src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                           alt=""
                           role="presentation"

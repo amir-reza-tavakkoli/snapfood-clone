@@ -6,6 +6,8 @@ export function Logo() {
         alt=""
         role="presentation"
         loading="lazy"
+        width={975}
+        height={576}
       />
     </div>
   )

@@ -15,7 +15,14 @@ export const ImageItem = ({
 }: ImageItemProps) => {
   return (
     <div className="image-item" aria-label={type ?? undefined} dir={dir}>
-      <img src={image} alt="" role="presentation" loading="lazy" />
+      <img
+        src={image}
+        alt=""
+        role="presentation"
+        loading="lazy"
+        width={160}
+        height={80}
+      />
 
       <p>
         {title}

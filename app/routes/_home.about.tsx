@@ -25,17 +25,23 @@ export default function AboutPage() {
       <picture>
         <source
           media="(max-width: 799px)"
+          width={950}
+          height={550}
           srcSet="https://i.postimg.cc/HxJjbpGz/vendor-img-small.png"
         />
         <source
           media="(min-width: 800px)"
           srcSet="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
+          width={950}
+          height={550}
         />
         <img
           src="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
           alt=""
           loading="lazy"
           role="presentation"
+          width={950}
+          height={550}
         />
       </picture>
       <h2>Overview</h2>

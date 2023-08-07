@@ -102,9 +102,12 @@ export default function StoreInfoPage() {
     <main className="store-info">
       <address aria-label="Info">
         <img
+          width={40}
+          height={40}
           src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
           alt=""
           role="presentation"
+          loading="lazy"
         />
 
         <div>

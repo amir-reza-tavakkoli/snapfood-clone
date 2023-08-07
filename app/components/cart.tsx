@@ -21,6 +21,8 @@ export const CartComp = ({ orders, dir }: CartProps) => {
               <li className="_order">
                 <div>
                   <img
+                    width={40}
+                    height={40}
                     src={order.store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
                     role="presentation"
@@ -57,6 +59,8 @@ export const CartComp = ({ orders, dir }: CartProps) => {
                   {order.items.map((item, index) => (
                     <li key={index} className="_item">
                       <img
+                        width={40}
+                        height={40}
                         src={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                         alt=""
                         role="presentation"

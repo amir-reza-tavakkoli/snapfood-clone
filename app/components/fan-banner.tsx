@@ -72,6 +72,8 @@ export function FanBanner() {
       </div>
 
       <img
+        width={615}
+        height={922}
         src="https://snappfood.ir/static/images/img_app_mockup@2x.png"
         alt=""
         role="presentation"

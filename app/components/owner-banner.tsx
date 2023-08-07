@@ -23,6 +23,8 @@ export function OwnerBanner() {
         alt=""
         loading="lazy"
         role="presentation"
+        width={350}
+        height={330}
       />
     </article>
   )

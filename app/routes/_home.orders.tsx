@@ -1,4 +1,4 @@
-import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
 
 import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
@@ -34,13 +34,19 @@ export const meta: V2_MetaFunction = () => {
 
 type LoaderType = CartProps | undefined
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
     const cart = await getCart({ phoneNumber: user.phoneNumber, all: true })
 
-    return cart
+    return json(cart, {
+      headers: {
+        "Cache-Control": "public, s-maxage=3600",
+      },
+    })
   } catch (error) {
     throw error
   }

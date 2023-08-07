@@ -67,11 +67,26 @@ export const VendorCard = ({
         <dt className="nonvisual">Image</dt>
 
         <dd className="_image">
-          {<img src={image} alt={`${name}  ${type}`} /> ?? null}
+          {(
+            <img
+              src={image}
+              alt={`${name}  ${type}`}
+              width={60}
+              height={60}
+              loading="lazy"
+            />
+          ) ?? null}
 
           {logo ? (
             <span className="_logo" role="presentation">
-              <img src={logo} alt="" role="presentation" loading="lazy" />
+              <img
+                src={logo}
+                alt=""
+                role="presentation"
+                loading="lazy"
+                width={40}
+                height={40}
+              />
             </span>
           ) : null}
         </dd>

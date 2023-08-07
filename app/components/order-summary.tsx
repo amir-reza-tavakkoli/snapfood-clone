@@ -23,6 +23,8 @@ export const Orders = ({ orders, dir }: OrderProps) => {
               <div>
                 <Link to={routes.store(order.store.id)}>
                   <img
+                    width={40}
+                    height={40}
                     src={order.store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                     alt=""
                     role="presentation"

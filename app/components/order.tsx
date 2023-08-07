@@ -78,6 +78,8 @@ export const OrderComp = ({
             role="presentation"
             className="_store-img"
             loading="lazy"
+            width={40}
+            height={40}
           />
 
           <time
@@ -125,6 +127,8 @@ export const OrderComp = ({
                     alt=""
                     role="presentation"
                     loading="lazy"
+                    width={40}
+                    height={40}
                   ></img>
 
                   <span className="_item-name">{item.name}</span>

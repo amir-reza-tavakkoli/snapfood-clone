@@ -498,6 +498,8 @@ const Googleplay = ({ name, color, ...props }: IconProps) => (
 
 const Cart = ({ name, color, ...props }: IconProps) => (
   <svg
+    width={20}
+    height={20}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 32 32"
     className={SVG_ICON_PREFIX + name}
@@ -519,8 +521,8 @@ const Cart = ({ name, color, ...props }: IconProps) => (
 )
 const Sibapps = ({ name, color, ...props }: IconProps) => (
   <svg
-    width={8.4375}
-    height={2.5625}
+    width={8}
+    height={2.5}
     viewBox="0 0 135 41"
     fill="none"
     className={SVG_ICON_PREFIX + name}
@@ -802,6 +804,8 @@ const Support = ({ name, color, ...props }: IconProps) => (
     style={{
       flex: 1,
     }}
+    width={68}
+    height={34}
     xmlns="http://www.w3.org/2000/svg"
     className={SVG_ICON_PREFIX + name}
     data-color={color}
@@ -1102,6 +1106,8 @@ const Iapps = ({ name, color, ...props }: IconProps) => (
 
 const Home = ({ name, color, ...props }: IconProps) => (
   <svg
+    width={20}
+    height={20}
     className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}
@@ -1156,6 +1162,8 @@ const Helmet = ({ name, color, ...props }: IconProps) => (
 
 const Multiply = ({ name, color, ...props }: IconProps) => (
   <svg
+    width={16}
+    height={16}
     xmlns="http://www.w3.org/2000/svg"
     style={{
       verticalAlign: "middle",
