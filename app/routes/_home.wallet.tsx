@@ -7,10 +7,12 @@ import {
   V2_MetaFunction,
 } from "@remix-run/react"
 
-import type {
+import {
   ActionArgs,
+  json,
   LinksFunction,
   LoaderArgs,
+  TypedResponse,
 } from "@remix-run/server-runtime"
 
 import { createOrUpdateUser } from "../queries.server/user.query.server"
@@ -24,7 +26,7 @@ import type { User } from "@prisma/client"
 import { Button } from "../components/button"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { DEFAULT_CURRENCY } from "../constants"
+import { CLIENT_CACHE_DURATION, DEFAULT_CURRENCY } from "../constants"
 
 import pageCss from "./styles/wallet-page.css"
 
@@ -74,11 +76,17 @@ export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
 
 type LoaderType = User
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
-    return user
+    return json(user, {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
   } catch (error) {
     throw error
   }

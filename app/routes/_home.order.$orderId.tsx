@@ -8,7 +8,7 @@ import type {
 
 import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
-import { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
 
 import {
   getJoinedOrderItems,
@@ -37,7 +37,7 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import { getStoreCurrentSchedule } from "../utils/utils"
 
-import type { JoinedOrderItem } from "../constants"
+import { CLIENT_CACHE_DURATION, JoinedOrderItem } from "../constants"
 
 import orderCss from "../components/styles/order.css"
 import orderStatusCss from "./../components/styles/order-status.css"
@@ -78,7 +78,7 @@ type LoaderType = {
 export const loader = async ({
   request,
   params,
-}: LoaderArgs): Promise<LoaderType> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -112,7 +112,12 @@ export const loader = async ({
       throw new Response("فروشگاه در دسترس نیست", { status: 404 })
     }
 
-    return { items, order, store, comment, address, schedule }
+    return json({ items, order, store, comment, address, schedule },
+    {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
   } catch (error) {
     throw error
   }

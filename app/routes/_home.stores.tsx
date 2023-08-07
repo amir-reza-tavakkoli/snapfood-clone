@@ -2,9 +2,11 @@ import React from "react"
 
 import { Link, Outlet, useLoaderData } from "@remix-run/react"
 
-import type {
+import {
+  json,
   LinksFunction,
   LoaderArgs,
+  TypedResponse,
   V2_MetaFunction,
 } from "@remix-run/node"
 
@@ -22,7 +24,7 @@ import { requireValidatedUser } from "../utils/validate.server"
 
 import { routes } from "../routes"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
+import { CLIENT_CACHE_DURATION, DEFAULT_IMG_PLACEHOLDER } from "../constants"
 
 import imageItemCss from "./../components/styles/image-item.css"
 import pageCss from "./styles/stores-page.css"
@@ -50,7 +52,9 @@ type LoaderType = {
   addresses: Address[]
 }
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -58,7 +62,14 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
 
     const addresses = await getUserAddresses({ phoneNumber: user.phoneNumber })
 
-    return { categories, addresses }
+    return json(
+      { categories, addresses },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
+      },
+    )
   } catch (error) {
     throw error
   }

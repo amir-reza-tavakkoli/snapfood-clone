@@ -7,10 +7,12 @@ import {
   V2_MetaFunction,
 } from "@remix-run/react"
 
-import type {
+import {
   ActionArgs,
+  json,
   LinksFunction,
   LoaderArgs,
+  TypedResponse,
 } from "@remix-run/server-runtime"
 
 import type { Comment, Order, Store } from "@prisma/client"
@@ -36,7 +38,7 @@ import { getFormattedDate, getRateDescription } from "../utils/utils"
 import { Button } from "../components/button"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "../constants"
+import { CLIENT_CACHE_DURATION, MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "../constants"
 
 import pageCss from "./styles/add-comment-page.css"
 
@@ -119,7 +121,7 @@ type LoaderType = {
 export const loader = async ({
   request,
   params,
-}: LoaderArgs): Promise<LoaderType> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -141,7 +143,14 @@ export const loader = async ({
 
     const comment = await getComment({ orderId })
 
-    return { order, store, comment }
+    return json(
+      { order, store, comment },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
+      },
+    )
   } catch (error) {
     throw error
   }

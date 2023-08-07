@@ -1,6 +1,6 @@
 import { useLoaderData } from "@remix-run/react"
 
-import { redirect, V2_MetaFunction } from "@remix-run/node"
+import { json, redirect, V2_MetaFunction } from "@remix-run/node"
 
 import type { LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/node"
 
@@ -17,7 +17,7 @@ import { features } from "../utils/utils.server"
 
 import { routes } from "../routes"
 
-import { type AllowedStoresFeatures, type StoreWithTags } from "../constants"
+import { CLIENT_CACHE_DURATION, type AllowedStoresFeatures, type StoreWithTags } from "../constants"
 
 import storeCardCss from "./../components/styles/store-card.css"
 import pageCss from "./styles/stores-all-page.css"
@@ -51,7 +51,7 @@ export const meta: V2_MetaFunction<LoaderType> = ({ data }) => {
 export const loader = async ({
   params,
   request,
-}: LoaderArgs): Promise<LoaderType | TypedResponse<never>> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType | TypedResponse<never>>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -91,11 +91,18 @@ export const loader = async ({
       }),
     )
 
-    return {
-      name: featureObject.name,
-      title: featureObject.title,
-      stores: featureStores,
-    }
+    return json(
+      {
+        name: featureObject.name,
+        title: featureObject.title,
+        stores: featureStores,
+      },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
+      },
+    )
   } catch (error) {
     throw error
   }

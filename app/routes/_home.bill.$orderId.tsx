@@ -8,6 +8,7 @@ import {
 
 import {
   ActionArgs,
+  json,
   LinksFunction,
   LoaderArgs,
   redirect,
@@ -44,7 +45,7 @@ import { validateOrderPossibility } from "../utils/utils"
 
 import { routes } from "../routes"
 
-import { DEFAULT_CURRENCY, type JoinedOrderItem } from "../constants"
+import { CLIENT_CACHE_DURATION, DEFAULT_CURRENCY, type JoinedOrderItem } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-page.css"
@@ -148,7 +149,7 @@ type LoaderType = {
 export const loader = async ({
   request,
   params,
-}: LoaderArgs): Promise<LoaderType> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -188,7 +189,14 @@ export const loader = async ({
 
     validateOrderPossibility({ address, order, schedules, store, storeAddress })
 
-    return { user, order, price, store, items }
+    return json(
+      { user, order, price, store, items },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
+      },
+    )
   } catch (error) {
     throw error
   }

@@ -4,7 +4,7 @@ import {
   V2_MetaFunction,
 } from "@remix-run/react"
 
-import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
 
 import type { Address } from "@prisma/client"
 
@@ -14,6 +14,8 @@ import { requireValidatedUser } from "../utils/validate.server"
 
 import { Addresses } from "../components/addresses"
 import { GlobalErrorBoundary } from "../components/error-boundary"
+
+import { CLIENT_CACHE_DURATION } from "~/constants"
 
 import pageCss from "./../components/styles/addresses.css"
 
@@ -34,13 +36,19 @@ export const meta: V2_MetaFunction = () => {
 
 type LoaderType = Address[] | null
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
     const addresses = await getUserAddresses({ phoneNumber: user.phoneNumber })
 
-    return addresses
+    return json(addresses, {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
   } catch (error) {
     throw error
   }

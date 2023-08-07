@@ -1,10 +1,12 @@
-import type { LoaderArgs } from "@remix-run/server-runtime"
+import { json, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
 
 import { searchItem, searchStore } from "../queries.server/search.server"
 
-import type { SearchType } from "../constants"
+import { CLIENT_CACHE_DURATION, SearchType } from "../constants"
 
-export const loader = async ({ request }: LoaderArgs): Promise<SearchType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<SearchType | null>> => {
   const search = new URL(request.url).searchParams.get("search")
 
   const count = new URL(request.url).searchParams.get("count")
@@ -17,7 +19,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<SearchType> => {
       : defaultTake
 
   if (!search || typeof search !== "string" || search === "") {
-    return null
+    return json(null)
   }
 
   const stores = await searchStore({
@@ -30,5 +32,12 @@ export const loader = async ({ request }: LoaderArgs): Promise<SearchType> => {
     takeThisMuch: takeThisMuch,
   })
 
-  return { stores, itemsAndStores }
+  return json(
+    { stores, itemsAndStores },
+    {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    },
+  )
 }

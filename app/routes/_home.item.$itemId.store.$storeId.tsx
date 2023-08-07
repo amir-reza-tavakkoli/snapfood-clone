@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
 import { useActionData, useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
-import type {
+import {
+  json,
   LinksFunction,
   LoaderArgs,
   LoaderFunction,
+  TypedResponse,
 } from "@remix-run/server-runtime"
 
 import type { Order, Store, User, Comment } from "@prisma/client"
@@ -25,7 +27,7 @@ import { requireValidatedUser } from "../utils/validate.server"
 
 import { useCheckAddress } from "../hooks/checkAddress"
 
-import { JoinedOrderItem } from "../constants"
+import { CLIENT_CACHE_DURATION, JoinedOrderItem } from "../constants"
 
 import itemCss from "./../components/styles/item.css"
 import pageCss from "./styles/item-page.css"
@@ -67,7 +69,7 @@ type LoaderType = {
 export const loader: LoaderFunction = async ({
   params,
   request,
-}: LoaderArgs): Promise<LoaderType> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -122,7 +124,13 @@ export const loader: LoaderFunction = async ({
       itemId: foundItem.id,
       storeId,
     })
-    return { foundItem, store, order, comments }
+    
+    return json({ foundItem, store, order, comments },
+    {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
   } catch (error) {
     throw error
   }

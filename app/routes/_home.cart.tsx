@@ -1,4 +1,4 @@
-import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
 
 import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
@@ -10,7 +10,7 @@ import { CartComp } from "../components/cart"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { Icon } from "../components/icon"
 
-import { type CartProps } from "../constants"
+import { CLIENT_CACHE_DURATION, type CartProps } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
@@ -33,15 +33,21 @@ export const meta: V2_MetaFunction = () => {
   ]
 }
 
-type LoaderType = CartProps | null
+type LoaderType = CartProps | undefined
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
     const cart = await getCart({ phoneNumber: user.phoneNumber })
 
-    return cart ?? null
+    return json(cart, {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
   } catch (error) {
     throw error
   }

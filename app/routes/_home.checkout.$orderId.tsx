@@ -2,9 +2,11 @@ import { useState } from "react"
 
 import {
   ActionArgs,
+  json,
   LinksFunction,
   LoaderArgs,
   redirect,
+  TypedResponse,
 } from "@remix-run/server-runtime"
 
 import { Form, useLoaderData, V2_MetaFunction } from "@remix-run/react"
@@ -42,7 +44,7 @@ import {
 
 import { routes } from "../routes"
 
-import { type JoinedOrderItem } from "../constants"
+import { CLIENT_CACHE_DURATION, type JoinedOrderItem } from "../constants"
 
 import orderCss from "./../components/styles/order.css"
 import pageCss from "./styles/checkout-page.css"
@@ -132,7 +134,7 @@ type LoaderType = {
 export const loader = async ({
   request,
   params,
-}: LoaderArgs): Promise<LoaderType> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -197,7 +199,14 @@ export const loader = async ({
       throw new Response("مشکلی پیش آمد")
     }
 
-    return { items, order, store, address, schedules }
+    return json(
+      { items, order, store, address, schedules },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
+      },
+    )
   } catch (error) {
     throw error
   }

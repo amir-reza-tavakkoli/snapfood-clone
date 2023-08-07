@@ -9,7 +9,7 @@ import {
   useNavigate,
 } from "@remix-run/react"
 
-import { ActionArgs, LinksFunction } from "@remix-run/server-runtime"
+import { ActionArgs, json, LinksFunction, TypedResponse } from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "../utils/session.server"
 
@@ -62,6 +62,7 @@ import {
   DEFAULT_IMG_PLACEHOLDER,
   JoinedOrderItem,
   INVALID_ADDRESS_RANGE,
+  CLIENT_CACHE_DURATION,
 } from "../constants"
 
 import foodCardCss from "./../components/styles/food-card.css"
@@ -208,7 +209,7 @@ type LoaderType = {
 export const loader: LoaderFunction = async ({
   request,
   params,
-}: LoaderArgs): Promise<LoaderType> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -262,18 +263,25 @@ export const loader: LoaderFunction = async ({
       throw new Response("آدرس فروشگاه صحیح نیست")
     }
 
-    return {
-      user,
-      schedules,
-      store,
-      items,
-      order,
-      totalPrice,
-      storeAddress,
-      categorizedItems,
-      orderItems,
-      addresses,
-    }
+    return json(
+      {
+        user,
+        schedules,
+        store,
+        items,
+        order,
+        totalPrice,
+        storeAddress,
+        categorizedItems,
+        orderItems,
+        addresses,
+      },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
+      },
+    )
   } catch (error) {
     throw error
   }

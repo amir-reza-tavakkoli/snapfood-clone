@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from "react"
 
 import { Outlet, useLoaderData, useNavigate } from "@remix-run/react"
 
-import type { LinksFunction, LoaderArgs } from "@remix-run/server-runtime"
+import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
 
 import type { Address, City, StoreKind, User } from "@prisma/client"
 
@@ -16,6 +16,7 @@ import { IntroBanner } from "../components/intro-banner"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { UserMenu } from "../components/user-menu"
 import { PageNav } from "../components/page-nav"
+import { Logo } from "~/components/logo"
 
 import { getPhoneNumber } from "../utils/session.server"
 import { requireValidatedUser } from "../utils/validate.server"
@@ -24,11 +25,12 @@ import { getUserAddresses } from "../queries.server/address.query.server"
 import { getStoresKinds } from "../queries.server/store.query.server"
 import { getSupportedCities } from "../queries.server/address.query.server"
 
+import { useSplash } from "~/hooks/splash"
 import { useForceAddress } from "../hooks/forceAddress"
 
 import { routes } from "../routes"
 
-import { DEAFULT_DIRECTION, DEFAULT_CITY } from "../constants"
+import { CLIENT_CACHE_DURATION, DEAFULT_DIRECTION, DEFAULT_CITY } from "../constants"
 
 import addressesCss from "./../components/styles/addresses.css"
 import ratingsCss from "@smastrom/react-rating/style.css"
@@ -47,8 +49,6 @@ import fanBannerCss from "./../components/styles/fan-banner.css"
 import errorBoundaryCss from "./../components/styles/error-boundary.css"
 import introBannerCss from "./../components/styles/intro-banner.css"
 import logoCss from "./../components/styles/logo.css"
-import { Logo } from "~/components/logo"
-import { useSplash } from "~/hooks/splash"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: ratingsCss },
@@ -77,7 +77,9 @@ type LoaderType = {
   user: User | null
 }
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const phoneNumber = await getPhoneNumber(request)
 
@@ -92,10 +94,15 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
         phoneNumber: user.phoneNumber,
       })
 
-      return { addresses, storesKind, cities, user }
+      return json({ addresses, storesKind, cities, user },
+    {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
     }
 
-    return { storesKind, cities, user: null, addresses: null }
+    return json({ storesKind, cities, user: null, addresses: null })
   } catch (error) {
     throw error
   }
@@ -127,7 +134,7 @@ export default function HomePage() {
       setRedirect(false)
 
       navigate(routes.storesCity(cityState))
-      
+
       return
     }
   })

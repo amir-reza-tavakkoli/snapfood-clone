@@ -58,6 +58,8 @@ export const PER_UNIT_ADDED_TIME = 2
 export const INVALID_ADDRESS_RANGE = -1
 export const MAX_ORDER_DELAY = 10
 
+export const CLIENT_CACHE_DURATION = 300 // sec
+
 export const DEFAULT_USER_NAME = "کاربر"
 export type RESPONDED_BY = "مدیر رستوران" | typeof VENDOR_NAME
 export type AllowedStoresFeatures =

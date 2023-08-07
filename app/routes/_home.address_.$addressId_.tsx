@@ -11,8 +11,10 @@ import {
 
 import {
   ActionArgs,
+  json,
   LinksFunction,
   LoaderArgs,
+  TypedResponse,
 } from "@remix-run/server-runtime"
 
 import {
@@ -37,6 +39,7 @@ import { Button } from "../components/button"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import {
+  CLIENT_CACHE_DURATION,
   DEAFULT_DIRECTION,
   DEFAULT_CITY,
   DEFAULT_COORDINATIONS,
@@ -72,7 +75,9 @@ type ActionType = {
   reason?: string
 }
 
-export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
+export const action = async ({
+  request,
+}: ActionArgs): Promise<ActionType> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
@@ -157,7 +162,7 @@ type LoaderType = {
 export const loader = async ({
   params,
   request,
-}: LoaderArgs): Promise<LoaderType> => {
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
@@ -217,7 +222,12 @@ export const loader = async ({
       throw new Response("مشکلی پیش آمد", { status: 404 })
     }
 
-    return { address, cities }
+    return json({ address, cities },
+    {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
   } catch (error) {
     throw error
   }

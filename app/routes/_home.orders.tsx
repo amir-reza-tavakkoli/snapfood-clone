@@ -9,7 +9,7 @@ import { requireValidatedUser } from "../utils/validate.server"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { CartComp } from "../components/cart"
 
-import { type CartProps } from "../constants"
+import { CLIENT_CACHE_DURATION, type CartProps } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
@@ -44,7 +44,7 @@ export const loader = async ({
 
     return json(cart, {
       headers: {
-        "Cache-Control": "public, s-maxage=3600",
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
       },
     })
   } catch (error) {

@@ -7,10 +7,12 @@ import {
   V2_MetaFunction,
 } from "@remix-run/react"
 
-import type {
+import {
   ActionArgs,
+  json,
   LinksFunction,
   LoaderArgs,
+  TypedResponse,
 } from "@remix-run/server-runtime"
 
 import {
@@ -32,6 +34,7 @@ import {
 } from "../utils/validate.server"
 
 import {
+  CLIENT_CACHE_DURATION,
   DEAFULT_DIRECTION,
   MAX_EMAIL_LENGTH,
   MAX_NAME_LENGTH,
@@ -138,11 +141,17 @@ export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
 
 type LoaderType = User
 
-export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
+export const loader = async ({
+  request,
+}: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
 
-    return user
+    return json(user, {
+      headers: {
+        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+      },
+    })
   } catch (error) {
     throw error
   }
