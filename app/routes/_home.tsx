@@ -44,6 +44,7 @@ import pageNavCss from "./../components/styles/page-nav.css"
 import userMenuCss from "./../components/styles/user-menu.css"
 import ownerBannerCss from "./../components/styles/owner-banner.css"
 import fanBannerCss from "./../components/styles/fan-banner.css"
+import errorBoundaryCss from "./../components/styles/error-boundary.css"
 import introBannerCss from "./../components/styles/intro-banner.css"
 import logoCss from "./../components/styles/logo.css"
 import { Logo } from "~/components/logo"
@@ -53,6 +54,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: ratingsCss },
   { rel: "stylesheet", href: buttonCss },
   { rel: "stylesheet", href: iconCss },
+  { rel: "stylesheet", href: errorBoundaryCss },
   { rel: "stylesheet", href: headerCss },
   { rel: "stylesheet", href: categoryNavCss },
   { rel: "stylesheet", href: ownerBannerCss },
@@ -89,6 +91,7 @@ export const loader = async ({ request }: LoaderArgs): Promise<LoaderType> => {
       const addresses = await getUserAddresses({
         phoneNumber: user.phoneNumber,
       })
+
       return { addresses, storesKind, cities, user }
     }
 
@@ -117,11 +120,17 @@ export default function HomePage() {
 
   const { splash } = useSplash()
 
+  const [redirect, setRedirect] = useState(true)
+
   useEffect(() => {
-    if (user && cityState && location.pathname === routes.index) {
+    if (user && cityState && redirect && location.pathname === routes.index) {
+      setRedirect(false)
+
       navigate(routes.storesCity(cityState))
+      
+      return
     }
-  }, [user, cityState])
+  })
 
   return (
     <>
