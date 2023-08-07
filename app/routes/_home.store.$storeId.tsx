@@ -387,8 +387,8 @@ export default function StorePage() {
           ></StoreInfo>
 
           <div className="_store-page-items">
-            {itemsState.map(category => (
-              <div className="_category">
+            {itemsState.map((category,index) => (
+              <div className="_category" key={index}>
                 <p id={"__" + category.name}>{category.name}</p>
 
                 <div>
@@ -414,6 +414,7 @@ export default function StorePage() {
                             discountPercent: item.discountPercent,
                           },
                         ]}
+                        key={index}
                       ></FoodCard>
                     ),
                   )}
