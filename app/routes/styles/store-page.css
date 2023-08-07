@@ -7,12 +7,11 @@
   margin-block-end: var(--length-24);
 }
 
-:where(.store-page .store-page-items) {
+:where(.store-page ._store-page-items) {
   display: flex;
   justify-content: center;
   flex-direction: column;
   inline-size: 50%;
-  margin-inline: auto;
 }
 
 :where(.store-page ._category) {
@@ -38,11 +37,9 @@
 }
 
 :where(.store-page > .store-info) {
-  max-block-size: 250px;
-  inline-size: max(210px, 18%);
+  inline-size: max(200px, 16%);
   padding-block: var(--length-24);
   padding-inline: 32px;
-  margin-inline: 24px;
   margin-block-end: 24px;
   border: solid var(--color-faded-4) 0.05px;
 }
@@ -55,7 +52,7 @@
   margin-inline: 0px;
   flex-shrink: 0;
   flex-grow: 1;
-  flex-basis: 300px;
+  flex-basis: 270px;
   max-inline-size: 300px;
   border: solid var(--color-faded-4) 0.05px;
 }
