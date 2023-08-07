@@ -33,10 +33,10 @@
   }
 }
 
-@media (max-width: 38.5rem) {
+@media (max-width: 34.5rem) {
   :where(.stores-page > ul) {
     max-block-size: 700px;
-    inline-size: 95%;
+    inline-size: 90%;
     margin-inline: auto;
     overflow-y: auto;
   }
@@ -44,5 +44,9 @@
   :where(.stores-page > ul li) {
     max-inline-size: 140px;
     margin-inline: 6px;
+  }
+
+  :where(.stores-page > ul li:nth-child(n + 6)) {
+    display: none;
   }
 }

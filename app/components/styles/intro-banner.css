@@ -159,9 +159,8 @@
     justify-content: space-evenly;
     min-block-size: initial;
     block-size: max-content;
-    inline-size: 95%;
+    inline-size: 90%;
     padding-block: var(--length-32);
-    margin-inline: 24px;
     border-radius: 12px;
     text-align: center;
   }
