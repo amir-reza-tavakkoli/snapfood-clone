@@ -38,7 +38,11 @@ import { getFormattedDate, getRateDescription } from "../utils/utils"
 import { Button } from "../components/button"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { CLIENT_CACHE_DURATION, MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "../constants"
+import {
+  CLIENT_CACHE_DURATION,
+  MAX_DESCRIPTION_LENGTH,
+  MIN_DESCRIPTION_LENGTH,
+} from "../constants"
 
 import pageCss from "./styles/add-comment-page.css"
 

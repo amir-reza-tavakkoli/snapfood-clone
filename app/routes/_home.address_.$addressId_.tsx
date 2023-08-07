@@ -75,9 +75,7 @@ type ActionType = {
   reason?: string
 }
 
-export const action = async ({
-  request,
-}: ActionArgs): Promise<ActionType> => {
+export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
     const phoneNumber = await requirePhoneNumber(request)
 
@@ -222,12 +220,14 @@ export const loader = async ({
       throw new Response("مشکلی پیش آمد", { status: 404 })
     }
 
-    return json({ address, cities },
-    {
-      headers: {
-        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+    return json(
+      { address, cities },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
       },
-    })
+    )
   } catch (error) {
     throw error
   }

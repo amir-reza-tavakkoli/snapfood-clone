@@ -1,6 +1,11 @@
 import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
-import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
+import {
+  json,
+  LinksFunction,
+  LoaderArgs,
+  TypedResponse,
+} from "@remix-run/server-runtime"
 
 import type { Address, Store, storeSchedule } from "@prisma/client"
 
@@ -23,7 +28,11 @@ import { Icon } from "../components/icon"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { CommentComp } from "../components/comment"
 
-import { CLIENT_CACHE_DURATION, DEFAULT_IMG_PLACEHOLDER, StoreComment } from "../constants"
+import {
+  CLIENT_CACHE_DURATION,
+  DEFAULT_IMG_PLACEHOLDER,
+  StoreComment,
+} from "../constants"
 
 import commentCss from "./../components/styles/comment.css"
 import pageCss from "./styles/store-info-page.css"

@@ -4,7 +4,12 @@ import {
   V2_MetaFunction,
 } from "@remix-run/react"
 
-import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
+import {
+  json,
+  LinksFunction,
+  LoaderArgs,
+  TypedResponse,
+} from "@remix-run/server-runtime"
 
 import type { Address } from "@prisma/client"
 

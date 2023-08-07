@@ -1,6 +1,11 @@
 import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
-import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
+import {
+  json,
+  LinksFunction,
+  LoaderArgs,
+  TypedResponse,
+} from "@remix-run/server-runtime"
 
 import { getCart } from "../queries.server/cart.query.server"
 
@@ -10,7 +15,11 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import { requireValidatedUser } from "../utils/validate.server"
 
-import { type CartProps, DEAFULT_DIRECTION, CLIENT_CACHE_DURATION } from "./../constants"
+import {
+  type CartProps,
+  DEAFULT_DIRECTION,
+  CLIENT_CACHE_DURATION,
+} from "./../constants"
 
 import orderCss from "../components/styles/order-summary.css"
 import pageCss from "./styles/orders-page.css"

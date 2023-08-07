@@ -9,7 +9,12 @@ import {
   useNavigate,
 } from "@remix-run/react"
 
-import { ActionArgs, json, LinksFunction, TypedResponse } from "@remix-run/server-runtime"
+import {
+  ActionArgs,
+  json,
+  LinksFunction,
+  TypedResponse,
+} from "@remix-run/server-runtime"
 
 import { requirePhoneNumber } from "../utils/session.server"
 
@@ -395,7 +400,7 @@ export default function StorePage() {
           ></StoreInfo>
 
           <div className="_store-page-items">
-            {itemsState.map((category,index) => (
+            {itemsState.map((category, index) => (
               <div className="_category" key={index}>
                 <p id={"__" + category.name}>{category.name}</p>
 

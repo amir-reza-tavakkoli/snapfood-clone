@@ -8,7 +8,12 @@ import type {
 
 import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
-import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
+import {
+  json,
+  LinksFunction,
+  LoaderArgs,
+  TypedResponse,
+} from "@remix-run/server-runtime"
 
 import {
   getJoinedOrderItems,
@@ -112,12 +117,14 @@ export const loader = async ({
       throw new Response("فروشگاه در دسترس نیست", { status: 404 })
     }
 
-    return json({ items, order, store, comment, address, schedule },
-    {
-      headers: {
-        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+    return json(
+      { items, order, store, comment, address, schedule },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
       },
-    })
+    )
   } catch (error) {
     throw error
   }

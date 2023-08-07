@@ -124,13 +124,15 @@ export const loader: LoaderFunction = async ({
       itemId: foundItem.id,
       storeId,
     })
-    
-    return json({ foundItem, store, order, comments },
-    {
-      headers: {
-        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+
+    return json(
+      { foundItem, store, order, comments },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+        },
       },
-    })
+    )
   } catch (error) {
     throw error
   }

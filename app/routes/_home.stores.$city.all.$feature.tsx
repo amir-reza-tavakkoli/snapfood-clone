@@ -16,7 +16,11 @@ import { features } from "../utils/utils.server"
 
 import { routes } from "../routes"
 
-import { CLIENT_CACHE_DURATION, type AllowedStoresFeatures, type StoreWithTags } from "../constants"
+import {
+  CLIENT_CACHE_DURATION,
+  type AllowedStoresFeatures,
+  type StoreWithTags,
+} from "../constants"
 
 import storeCardCss from "./../components/styles/store-card.css"
 import pageCss from "./styles/stores-all-page.css"

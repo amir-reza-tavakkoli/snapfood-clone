@@ -18,11 +18,6 @@
   overflow-y: auto;
 }
 
-:where(.store-container > div:first-of-type > a > svg) {
-  margin-inline: 10px;
-  transform: rotate(180deg);
-}
-
 :where(.store-container > div:first-of-type > a) {
   display: flex;
   align-items: center;
@@ -31,12 +26,21 @@
   text-decoration: none;
 }
 
+:where(.store-container > div:first-of-type > a > svg) {
+  margin-inline: 10px;
+}
+
 :where(.store-container > div:first-of-type > p) {
   margin-inline-start: 10px;
   margin-block-end: var(--length-2);
   font-weight: bold;
   font-size: var(--length-20);
   color: var(--color-text);
+}
+
+:where(.store-container > div:last-of-type) {
+  display: flex;
+  overflow-x: auto;
 }
 
 :where(.store-container > div:last-of-type > a) {
@@ -70,6 +74,16 @@
 }
 
 @media (max-width: 34.5rem) {
+  :where(.store-container > div:first-of-type > p) {
+    font-size: var(--length-16);
+  }
+  :where(.store-container > div:first-of-type > a) {
+    font-size: var(--length-14);
+  }
+  :where(.store-container > div:last-of-type) {
+    display: flex;
+    overflow-x: auto;
+  }
   :where(.store-container > div:last-of-type > a) {
     flex-basis: 200px;
   }

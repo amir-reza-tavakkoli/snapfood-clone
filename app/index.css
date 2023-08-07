@@ -115,7 +115,6 @@
 
 :where(html, body) {
   height: 100%;
-  overflow-x: hidden
 }
 
 :where(#root, #__next) {
@@ -266,3 +265,31 @@ input[type="radio"]:hover {
     font-size: 14px;
   }
 }
+
+/* header {
+  opacity: 0;
+  transform: translateY(300px);
+  animation: fromTop 0.3s ease-out 0.1s forwards;
+}
+
+main {
+  opacity: 0;
+  transform: translateX(300px);
+  animation: fromRight 0.7s ease-out 0.1s forwards;
+}
+
+@keyframes fromRight {
+
+  100% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+
+@keyframes fromTop {
+
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+} */

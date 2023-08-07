@@ -1,4 +1,9 @@
-import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
+import {
+  json,
+  LinksFunction,
+  LoaderArgs,
+  TypedResponse,
+} from "@remix-run/server-runtime"
 
 import { useLoaderData, V2_MetaFunction } from "@remix-run/react"
 

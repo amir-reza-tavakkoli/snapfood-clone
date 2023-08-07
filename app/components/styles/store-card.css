@@ -39,6 +39,7 @@
 :where(.vendor-card ._image > img) {
   display: inline-block;
   inline-size: 100%;
+  min-block-size: 100px;
   border-start-start-radius: 12px;
   border-start-end-radius: 12px;
   aspect-ratio: 2/1;

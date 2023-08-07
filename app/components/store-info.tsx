@@ -138,8 +138,8 @@ export const StoreInfo = ({
         <ol className="_categories">
           {categories
             ? categories.map((category, index) => (
-              <li
-                key={index}
+                <li
+                  key={index}
                   className={
                     decodeURI(location.hash) === `#__${category}`
                       ? "_choosed-link"

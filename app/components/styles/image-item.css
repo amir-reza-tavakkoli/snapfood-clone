@@ -38,6 +38,10 @@
   line-height: var(--length-24);
 }
 
+:where(.image-item span) {
+  display: inline-block;
+}
+
 :where(.image-item p span) {
   display: flex;
   justify-content: center;
@@ -53,8 +57,11 @@
 
 :where(.image-item svg) {
   display: inline-block;
-  inline-size: min(var(--length-10), 20px);
-  block-size: min(var(--length-10), 20px);
+  inline-size: 16px;
+  block-size: 16px;
+  margin-inline: auto;
+  text-align: center;
+  transform: scale(1.25) translateX(-4px);
   aspect-ratio: 1/1;
 }
 

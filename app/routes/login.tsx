@@ -47,7 +47,6 @@ import {
   VERIFIED_PHONE,
 } from "../constants"
 
-
 import pageCss from "./styles/login-page.css"
 import buttonCss from "./../components/styles/button.css"
 import iconCss from "./../components/styles/icon.css"
@@ -282,9 +281,7 @@ export default function LoginPage() {
                     name="phoneNumber"
                     inputMode="tel"
                     required={true}
-                    placeholder={
-                      "۰۹*******"
-                    }
+                    placeholder={"۰۹*******"}
                     aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
                     aria-errormessage={
                       actionData?.fieldErrors?.phoneNumber

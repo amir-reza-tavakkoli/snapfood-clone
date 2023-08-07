@@ -20,8 +20,10 @@ import { DEAFULT_DIRECTION } from "./constants"
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: baseCss },
   { rel: "stylesheet", href: errorBoundaryCss },
-  { rel: "icon", href: "https://i.postimg.cc/kXNr9gTb/vendor-img-big.png" },
-  { rel: "favicon", href: "https://i.postimg.cc/kXNr9gTb/vendor-img-big.png" },
+  {
+    rel: "favicon",
+    href: "https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png",
+  },
 ]
 
 export const meta: V2_MetaFunction = () => {
@@ -53,10 +55,11 @@ export default function App({
         <meta name="twitter:title" content="SnappFood Clone" />
         <Meta />
         {title ? <title>{title}</title> : null}
+        <link rel="preload" href="./IRANSans.woff2" as="font" />
         <Links />
         <link
           rel="icon"
-          href="https://i.postimg.cc/kXNr9gTb/vendor-img-big.png"
+          href="https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png"
         ></link>
       </head>
       <body>

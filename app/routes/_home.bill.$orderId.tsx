@@ -45,7 +45,11 @@ import { validateOrderPossibility } from "../utils/utils"
 
 import { routes } from "../routes"
 
-import { CLIENT_CACHE_DURATION, DEFAULT_CURRENCY, type JoinedOrderItem } from "../constants"
+import {
+  CLIENT_CACHE_DURATION,
+  DEFAULT_CURRENCY,
+  type JoinedOrderItem,
+} from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/bill-page.css"

@@ -34,7 +34,7 @@
   display: inline-block;
   margin-block-start: var(--length-24);
   margin-inline-end: 16px;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 :where(.login-page ._input) {
@@ -96,4 +96,15 @@
   background-color: transparent;
   font-weight: 700;
   font-size: var(--length-14);
+}
+
+@media (max-width: 34.5rem) {
+  :where(.login-page) {
+    inline-size: 90%;
+  }
+
+  :where(.login-page ._identity) {
+    flex-direction: column;
+    align-items: center;
+  }
 }

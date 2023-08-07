@@ -2,7 +2,12 @@ import { memo, useEffect, useState } from "react"
 
 import { Outlet, useLoaderData, useNavigate } from "@remix-run/react"
 
-import { json, LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/server-runtime"
+import {
+  json,
+  LinksFunction,
+  LoaderArgs,
+  TypedResponse,
+} from "@remix-run/server-runtime"
 
 import type { Address, City, StoreKind, User } from "@prisma/client"
 
@@ -30,7 +35,11 @@ import { useForceAddress } from "../hooks/forceAddress"
 
 import { routes } from "../routes"
 
-import { CLIENT_CACHE_DURATION, DEAFULT_DIRECTION, DEFAULT_CITY } from "../constants"
+import {
+  CLIENT_CACHE_DURATION,
+  DEAFULT_DIRECTION,
+  DEFAULT_CITY,
+} from "../constants"
 
 import addressesCss from "./../components/styles/addresses.css"
 import ratingsCss from "@smastrom/react-rating/style.css"
@@ -94,12 +103,14 @@ export const loader = async ({
         phoneNumber: user.phoneNumber,
       })
 
-      return json({ addresses, storesKind, cities, user },
-    {
-      headers: {
-        "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
-      },
-    })
+      return json(
+        { addresses, storesKind, cities, user },
+        {
+          headers: {
+            "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
+          },
+        },
+      )
     }
 
     return json({ storesKind, cities, user: null, addresses: null })
