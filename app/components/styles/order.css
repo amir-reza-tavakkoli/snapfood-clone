@@ -64,6 +64,8 @@
 
 :where(.order ._store-img) {
   inline-size: 60px;
+  block-size: 60px;
+  aspect-ratio: 1/1;
 }
 
 :where(.order ._comment p *) {

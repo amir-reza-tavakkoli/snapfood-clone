@@ -54,7 +54,8 @@
 :where(.food-card img:only-of-type) {
   flex-grow: 0;
   align-self: flex-start;
-  inline-size: 45%;
+  inline-size: 50px;
+  block-size: 50px;
   max-inline-size: 32rem;
   margin-inline-end: var(--length-4);
   aspect-ratio: 1/1;
@@ -135,9 +136,3 @@
   box-shadow: var(--box-shadow-thick);
 }
 
-@media (max-width: 68.75rem) {
-  :where(.food-card img:only-of-type) {
-    max-inline-size: 16rem;
-    inline-size: 6rem;
-  }
-}

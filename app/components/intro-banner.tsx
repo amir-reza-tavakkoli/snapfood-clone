@@ -45,8 +45,8 @@ export function IntroBanner({ storesKind, city = "" }: IntroBannerProps) {
         src="https://snappfood.ir/static/images/hero-image.png"
         alt=""
         loading="lazy"
-        width={153}
-        height={128}
+        width={652}
+        height={616}
         role="prsentation"
       />
 

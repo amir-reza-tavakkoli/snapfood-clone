@@ -169,6 +169,7 @@
 
 :where(.footer ._credentials img) {
   aspect-ratio: 1/1;
+  block-size: 100px;
   inline-size: 100px;
 }
 

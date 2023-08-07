@@ -24,7 +24,8 @@
 }
 
 :where(.cart ._order > div > img) {
-  inline-size: 48px;
+  inline-size: 50px;
+  block-size: 50px;
   aspect-ratio: 1/1;
   margin-inline: 16px;
   margin-block: var(--length-16);
@@ -73,7 +74,8 @@
 
 :where(.cart ul img) {
   margin-inline: 6px;
-  inline-size: 42px;
+  inline-size: 40px;
+  block-size: 40px;
   aspect-ratio: 1/1;
   margin-block: var(--length-2);
   margin-inline: 2px;
