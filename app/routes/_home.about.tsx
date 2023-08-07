@@ -31,12 +31,12 @@ export default function AboutPage() {
         />
         <source
           media="(min-width: 800px)"
-          srcSet="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
+          srcSet="https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png"
           width={950}
           height={550}
         />
         <img
-          src="https://i.postimg.cc/vmpWHbmJ/vendor-img-big.png"
+          src="https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png"
           alt=""
           loading="lazy"
           role="presentation"

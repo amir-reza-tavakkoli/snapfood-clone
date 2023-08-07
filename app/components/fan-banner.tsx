@@ -22,11 +22,7 @@ export function FanBanner() {
           </label>
 
           <span className="_input">
-            <input
-              type="text"
-              id="__phoneNumber"
-              placeholder={"۰۹*******"}
-            />
+            <input type="text" id="__phoneNumber" placeholder={"۰۹*******"} />
 
             <button type="submit">دریافت لینک</button>
           </span>
