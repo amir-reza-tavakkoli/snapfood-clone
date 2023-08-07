@@ -273,7 +273,7 @@ export default function LoginPage() {
                     inputMode="tel"
                     required={true}
                     placeholder={
-                      "۰" + Number("9").toLocaleString("fa-IR") + "*******"
+                      "۰۹*******"
                     }
                     aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
                     aria-errormessage={

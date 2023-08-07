@@ -25,9 +25,7 @@ export function FanBanner() {
             <input
               type="text"
               id="__phoneNumber"
-              placeholder={
-                "۰" + Number("9").toLocaleString("fa-IR") + "*******"
-              }
+              placeholder={"۰۹*******"}
             />
 
             <button type="submit">دریافت لینک</button>
@@ -72,8 +70,8 @@ export function FanBanner() {
       </div>
 
       <img
-        width={615}
-        height={922}
+        width={424}
+        height={628}
         src="https://snappfood.ir/static/images/img_app_mockup@2x.png"
         alt=""
         role="presentation"
