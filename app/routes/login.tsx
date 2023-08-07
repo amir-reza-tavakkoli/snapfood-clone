@@ -37,6 +37,8 @@ import { Button } from "../components/button"
 import { Timer } from "../components/timer"
 import { Icon } from "../components/icon"
 
+import { routes } from "../routes"
+
 import {
   ALLOWED_URLS,
   INDEX_URL,
@@ -45,10 +47,18 @@ import {
   VERIFIED_PHONE,
 } from "../constants"
 
-import pageCss from "./styles/login-page.css"
-import { routes } from "../routes"
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: pageCss }]
+import pageCss from "./styles/login-page.css"
+import buttonCss from "./../components/styles/button.css"
+import iconCss from "./../components/styles/icon.css"
+import errorBoundaryCss from "./../components/styles/error-boundary.css"
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: buttonCss },
+  { rel: "stylesheet", href: iconCss },
+  { rel: "stylesheet", href: errorBoundaryCss },
+  { rel: "stylesheet", href: pageCss },
+]
 
 type FieldErrors = {
   phoneNumber?: string
