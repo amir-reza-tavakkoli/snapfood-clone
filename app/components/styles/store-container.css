@@ -18,12 +18,12 @@
   overflow-y: auto;
 }
 
-:where(.store-container > :first-of-type > a > svg) {
+:where(.store-container > div:first-of-type > a > svg) {
   margin-inline: 10px;
   transform: rotate(180deg);
 }
 
-:where(.store-container > :first-of-type > a) {
+:where(.store-container > div:first-of-type > a) {
   display: flex;
   align-items: center;
   font-size: var(--length-20);
