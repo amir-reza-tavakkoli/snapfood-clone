@@ -18,7 +18,7 @@ export const DEFAULT_DELIVERY_METHOD = "ارسال اکسپرس"
 export const DEFAULT_CITY = "تهران"
 export const ALLOWED_PHONE_PREFIX = "09"
 export const DEFAULT_IMG_PLACEHOLDER =
-  "https://snappfood.ir/static/images/placeholder.png"
+  "https://i.postimg.cc/j24zSsfp/placeholder.png"
 
 export const ALLOWED_URLS = [
   routes.index,
@@ -211,3 +211,38 @@ export const MAX_ORDER_IN_CART_TIME = 30
 export const NOT_MAIN_CATEGORIES = ["نوشیدنی", "خوراک", "ویژه"]
 
 export const VERIFIED_PHONE = "09900249950"
+
+export const UNAUTH_USER_PHONE = "0"
+
+export const UNAUTHENTICATED_USER: User = {
+  firstName: "مهمان",
+  gender: false,
+  phoneNumber: "0",
+  isVerified: true,
+  isSuspended: false,
+  credit: 0,
+  birthday: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: null,
+  lastName: null,
+  verificationCode: null,
+  verificationCodeExpiry: null,
+}
+
+export const UNAUTHENTICATED_USER_ADDRESS: Address = {
+  address: "ابتدا وارد شوید",
+  cityName: DEFAULT_CITY,
+  isAvailible: true,
+  isValid: true,
+  createdAt: new Date(),
+  id: 1,
+  unit: 0,
+  userPhoneNumber: "0",
+  updatedAt: new Date(),
+  xAxis: DEFAULT_COORDINATIONS.xAxis,
+  yAxis: DEFAULT_COORDINATIONS.yAxis,
+  details: null,
+  postalCode: null,
+  title: null,
+}
