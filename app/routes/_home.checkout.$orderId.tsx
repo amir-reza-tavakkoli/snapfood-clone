@@ -137,7 +137,6 @@ export const loader = async ({
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
-    console.log(user, "ooo")
 
     const orderId = Number(params.orderId)
 

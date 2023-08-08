@@ -347,17 +347,19 @@ export async function getStoresByCategory({
   stores: Store[]
 }): Promise<Store[]> {
   try {
-    const newStores = await Promise.all(
-      stores.filter(async store => {
-        const items = (await getStoreItems({ storeId: store.id })).items
+    console.log(stores.length)
 
-        const result = items.find(item => item.itemCategoryName === category)
+    let newStores = await Promise.all(
+      stores.map(async store => {
+        const items = await getFullStoreItems({ storeId: store.id })
 
-        return !!result
+        return items.find(item => item.itemCategoryName === category)
+          ? store
+          : undefined
       }),
     )
-
-    return newStores
+      newStores  = newStores.filter(store => store)
+    return newStores as Store[]
   } catch (error) {
     throw error
   }

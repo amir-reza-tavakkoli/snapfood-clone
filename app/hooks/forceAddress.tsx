@@ -76,7 +76,5 @@ export function useForceAddress({
     }
   })
 
-  console.log("jj", cityState)
-
   return { addressState, setAddressState, cityState, setCityState }
 }
