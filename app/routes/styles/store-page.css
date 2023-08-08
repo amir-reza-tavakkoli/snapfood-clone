@@ -156,6 +156,7 @@
     margin-inline: auto;
     order: -1;
     background-color: var(--color-primary);
+    opacity: 1;
   }
 
   :where(.store-page > .store-info img) {

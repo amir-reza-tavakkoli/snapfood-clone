@@ -101,12 +101,12 @@
 
 :where(.food-card form button) {
   display: inline-flex;
-  inline-size: 32px;
   block-size: 32px;
-  padding-inline: 0px;
+  padding-inline: 6px;
   padding-block: 0px;
   margin-inline: 4px;
-  border-radius: 100%;
+  border-radius: 10000px;
+  font-size: var(--length-12);
   background-color: var(--color-accent);
   color: var(--color-primary);
 }

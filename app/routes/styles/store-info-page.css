@@ -125,6 +125,7 @@
   inline-size: 100%;
   padding-inline: 10px;
   margin-block: var(--length-8);
+  background-color: var(--color-primary);
   border-block: var(--border-extra-thin) solid var(--color-faded-5);
   font-weight: 400;
 }

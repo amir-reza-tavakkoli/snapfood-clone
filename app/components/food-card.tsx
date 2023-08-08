@@ -178,7 +178,7 @@ export const FoodCard = ({
                       reRender({})
                     }}
                   >
-                    +
+                    افزودن
                   </Button>
                 </Form>
 
