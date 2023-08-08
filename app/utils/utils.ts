@@ -9,6 +9,7 @@ import {
   JoinedOrderItem,
   PER_UNIT_ADDED_TIME,
   READY_TIME_OFFSET,
+  UNAUTH_USER_PHONE,
 } from "../constants"
 
 export function toPersianDigits(string: string) {
@@ -207,7 +208,7 @@ export function getFullName(user: User) {
     " " +
     user.firstName +
     "   " +
-    user.lastName
+    (user.lastName ?? "")
   )
 }
 
@@ -308,9 +309,11 @@ export function calculateShipmentTime({
     return
   }
 
-  return (
-    distance * BASE_SHIPMENT_MULTIPLIER * PER_UNIT_ADDED_TIME +
-    store.baseShipmentTime
+  return Number(
+    (
+      distance * BASE_SHIPMENT_MULTIPLIER * PER_UNIT_ADDED_TIME +
+      store.baseShipmentTime
+    ).toFixed(),
   )
 }
 
@@ -378,7 +381,7 @@ export function calculateItemsReadyTime({
         : undefined
     })
 
-    return max + READY_TIME_OFFSET + items.length
+    return Number((max + READY_TIME_OFFSET + items.length).toFixed())
   } catch (error) {
     throw error
   }
@@ -387,4 +390,8 @@ export function calculateItemsReadyTime({
 export function getDiffInMinutes(endTime: Date, startTime: Date) {
   let difference = Math.abs(endTime.getTime() - startTime.getTime())
   return Math.round(difference / 60000)
+}
+
+export function isUnAuthenticated(phoneNumber: string) {
+  return phoneNumber === UNAUTH_USER_PHONE
 }

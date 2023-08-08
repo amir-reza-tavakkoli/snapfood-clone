@@ -126,6 +126,12 @@ export async function createOrder({
       throw new Response("سفارش در جریان است", { status: 404 })
     }
 
+    if (estimatedReadyTime)
+      estimatedReadyTime = Number(estimatedReadyTime.toFixed())
+
+    if (estimatedShipmentTime)
+      estimatedShipmentTime = Number(estimatedShipmentTime.toFixed())
+
     const newOrder = await db.order.create({
       data: {
         userPhoneNumber,
@@ -185,6 +191,12 @@ export async function updateOrder({
     if (!order) {
       throw new Response("سفارشی وجود ندارد", { status: 404 })
     }
+
+    if (estimatedReadyTime)
+      estimatedReadyTime = Number(estimatedReadyTime.toFixed())
+
+    if (estimatedShipmentTime)
+      estimatedShipmentTime = Number(estimatedShipmentTime.toFixed())
 
     const newOrder = await db.order.update({
       where: { id },
@@ -289,7 +301,9 @@ export async function changeOrderItems({
             },
           },
           data: {
-            remainingCount: itemInStore.remainingCount - count,
+            remainingCount: Number(
+              (itemInStore.remainingCount - count).toFixed(),
+            ),
           },
         })
 
@@ -302,7 +316,7 @@ export async function changeOrderItems({
         data: {
           orderId,
           itemId,
-          count: Math.abs(count),
+          count: Math.abs(Number(count.toFixed())),
         },
       })
 
@@ -335,7 +349,9 @@ export async function changeOrderItems({
               },
             },
             data: {
-              remainingCount: itemInStore.remainingCount - count,
+              remainingCount: Number(
+                (itemInStore.remainingCount - count).toFixed(),
+              ),
             },
           })
 
@@ -365,7 +381,7 @@ export async function changeOrderItems({
             },
           },
           data: {
-            count: newCount,
+            count: Number(newCount.toFixed()),
           },
         })
 
@@ -410,8 +426,13 @@ export async function changeOrderItems({
               },
             },
             data: {
-              remainingCount:
-                itemInStore.remainingCount + itemInOrder.count - count,
+              remainingCount: Number(
+                (
+                  itemInStore.remainingCount +
+                  itemInOrder.count -
+                  count
+                ).toFixed(),
+              ),
             },
           })
 
@@ -423,7 +444,7 @@ export async function changeOrderItems({
             },
           },
           data: {
-            count,
+            count: Number(count.toFixed()),
           },
         })
 
@@ -745,7 +766,11 @@ export async function cancelOrder({ order }: { order: Order }) {
         if (!itemInStore.infiniteSupply)
           await db.storeHasItems.update({
             where: { storeId_itemId: { itemId: item.id, storeId: store.id } },
-            data: { remainingCount: itemInStore.remainingCount + item.count },
+            data: {
+              remainingCount: Number(
+                (itemInStore.remainingCount + item.count).toFixed(),
+              ),
+            },
           })
       }),
     )

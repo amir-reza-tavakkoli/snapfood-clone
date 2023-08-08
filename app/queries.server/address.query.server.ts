@@ -6,12 +6,19 @@ import { checkUnit, checkCity } from "../utils/validate.server"
 
 import { evaluateAddress } from "./evaluate.server"
 
+import { UNAUTHENTICATED_USER_ADDRESS } from "~/constants"
+import { isUnAuthenticated } from "~/utils/utils"
+
 export async function getUserAddresses({
   phoneNumber,
 }: {
   phoneNumber: string
 }): Promise<Address[]> {
   try {
+    if (isUnAuthenticated(phoneNumber)) {
+      ;[UNAUTHENTICATED_USER_ADDRESS]
+    }
+
     const addresses = await db.address.findMany({
       where: {
         userPhoneNumber: phoneNumber,
@@ -49,6 +56,8 @@ export async function createAddress({
     checkUnit({ unit })
 
     evaluateAddress({ address, cityName, details, postalCode, title })
+
+    if (unit) unit = Number(unit.toFixed())
 
     await checkCity({ cityName })
 
@@ -98,6 +107,8 @@ export async function updateAddress({
 
     if (unit) {
       checkUnit({ unit })
+
+      unit = Number(unit.toFixed())
     }
 
     evaluateAddress({ address, cityName, details, postalCode, title })

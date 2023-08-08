@@ -90,7 +90,7 @@ export async function addComment({
         data: {
           wasPositive,
           wasDeliveryPositive,
-          score,
+          score: Number(score.toFixed()),
           description,
           orderId,
           response,
@@ -101,7 +101,7 @@ export async function addComment({
       db.store.update({
         where: { id: store.id },
         data: {
-          scoreCount: store.scoreCount + 1,
+          scoreCount: Number((store.scoreCount + 1).toFixed()),
           score: newStoreScore,
         },
       }),
@@ -126,7 +126,7 @@ export async function addComment({
             storeId_itemId: { itemId: orderItem.itemId, storeId: store.id },
           },
           data: {
-            scoreCount: storeItem.scoreCount + 1,
+            scoreCount: Number((storeItem.scoreCount + 1).toFixed()),
             score: calculateScore({ store: storeItem, newScore: score }),
           },
         })

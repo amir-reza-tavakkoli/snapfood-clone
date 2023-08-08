@@ -10,7 +10,7 @@ import {
   getStoresWithFreeShipment,
 } from "../queries.server/store.query.server"
 
-import { LoginFieldErrors } from "../routes/login"
+import { LoginFieldErrors, LoginPageState } from "../routes/login"
 
 import {
   AllowedStoresFeatures,
@@ -50,7 +50,7 @@ export function generateVerificationExpiry(duration: number): Date {
 
 export function checkFieldsErrors(
   fieldErrors: LoginFieldErrors,
-  state?: string,
+  state?: LoginPageState,
 ) {
   if (Object.values(fieldErrors).some(Boolean)) {
     return {
@@ -68,13 +68,15 @@ type Features = {
 export const features: Features = [
   {
     name: "kind",
-    getStores: async ({ kind, stores }: { kind?: string; stores: Store[] }) => {
+    getStores: async ({ kind, city }: { kind?: string; city: string }) => {
       const kinds = await getStoresKinds()
 
       if (!kind || !kinds.find(storeKind => storeKind.name === kind))
         throw new Response("این نوع وجود ندارد.", { status: 404 })
 
-      const featureStores = await getStoresByKind({ kind })
+      const featureStores = (await getStoresByKind({ kind })).filter(
+        store => store.cityName === city,
+      )
 
       let kindFeature = features.find(feat => feat.name === "kind")
 
@@ -104,11 +106,15 @@ export const features: Features = [
     getStores: async ({
       stores,
       category,
+      city,
     }: {
       stores: Store[]
       category: string
+      city: string
     }) => {
-      const featureStores = await getStoresByCategory({ stores, category })
+      const featureStores = (
+        await getStoresByCategory({ stores, category })
+      ).filter(store => store.cityName === city)
 
       if (!featureStores) {
         throw new Response("این نوع وجود ندارد.", { status: 404 })
@@ -152,7 +158,7 @@ export function calculateScore({
       (
         (store.score * store.scoreCount + newScore) /
         (store.scoreCount + 1)
-      ).toFixed(SCORE_ROUNDING),
+      ).toFixed(),
     )
 
     if (isNaN(score)) {
