@@ -8,6 +8,7 @@
   overflow: hidden;
   border-radius: 8px;
   box-shadow: var(--box-shadow-extra-thick);
+  direction: ltr;
 }
 
 :where(.user-menu > ul) {
@@ -48,7 +49,7 @@
   font-size: var(--length-12);
 }
 
-:where(.user-menu > ul > li > a > *:nth-child(2)) {
+:where(.user-menu ._credit) {
   margin-inline-end: auto;
 }
 

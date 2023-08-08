@@ -6,7 +6,7 @@ import { Icon } from "./icon"
 
 import { routes } from "../routes"
 
-import { getFullName } from "../utils/utils"
+import { getFullName, isUnAuthenticated } from "../utils/utils"
 
 import { DEFAULT_CURRENCY } from "../constants"
 
@@ -31,7 +31,11 @@ export const UserMenu = ({
             <Icon name="user" color="text"></Icon>
 
             <span className="_user" aria-label="Name">
-              <span>{getFullName(user)}</span>
+              <span>
+                {!isUnAuthenticated(user.phoneNumber)
+                  ? "کاربر"
+                  : getFullName(user)}
+              </span>
 
               <span>مشاهده حساب کاربری</span>
             </span>
