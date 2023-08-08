@@ -3,7 +3,7 @@ import { Button } from "./button"
 
 import type { Store } from "@prisma/client"
 
-import { Link } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 
 import { routes } from "~/routes"
 
@@ -34,6 +34,8 @@ export const StoreInfo = ({
   categories,
   isOpen = true,
 }: StoreCardProps) => {
+  const location = useLocation()
+  
   return (
     <dl className="store-info" dir={dir}>
       <div>
