@@ -24,6 +24,9 @@ export async function createItem({
 
     evaluateItem({ basePrice, description, estimatedReadyTime, name })
 
+    if (estimatedReadyTime)
+      estimatedReadyTime = Number(estimatedReadyTime.toFixed())
+
     const item = await db.item.create({
       data: {
         avatarUrl,
@@ -62,6 +65,9 @@ export async function updateItem({
     }
 
     evaluateItem({ basePrice, description, estimatedReadyTime, name })
+
+    if (estimatedReadyTime)
+      estimatedReadyTime = Number(estimatedReadyTime.toFixed())
 
     const item = await db.item.update({
       where: { id },

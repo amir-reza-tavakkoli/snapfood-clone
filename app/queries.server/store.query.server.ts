@@ -349,9 +349,11 @@ export async function getStoresByCategory({
   try {
     const newStores = await Promise.all(
       stores.filter(async store => {
-        const items = await getStoreItems({ storeId: store.id })
+        const items = (await getStoreItems({ storeId: store.id })).items
 
-        return items.items.find(item => item.itemCategoryName === category)
+        const result = items.find(item => item.itemCategoryName === category)
+
+        return !!result
       }),
     )
 

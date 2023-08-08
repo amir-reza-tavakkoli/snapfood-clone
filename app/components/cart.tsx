@@ -11,8 +11,6 @@ import {
 } from "./../constants"
 
 export const CartComp = ({ orders, dir }: CartProps) => {
-  console.log(orders)
-
   return (
     <ol className="cart" dir={dir}>
       {orders

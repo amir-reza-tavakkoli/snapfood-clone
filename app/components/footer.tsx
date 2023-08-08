@@ -34,11 +34,10 @@ export const Footer = ({
   homepage = routes.index,
   description = "تجربه سفارش غذا، از زودفود تا اسنپ‌ فود",
   links = [
-    { name: "درباره اسنپ فود", href: routes.notImplemented },
+    { name: "درباره اسنپ فود", href: routes.about },
     { name: "وبلاگ", href: routes.notImplemented },
     { name: "قوانین سایت", href: routes.notImplemented },
     { name: "حریم شخصی", href: routes.notImplemented },
-    { name: "ثبت نام فروشندگان", href: routes.notImplemented },
     { name: "ثبت نام فروشندگان", href: routes.notImplemented },
     { name: "تماس با اسنپ فود", href: routes.notImplemented },
     { name: "ٍثبت شکایات", href: routes.notImplemented },

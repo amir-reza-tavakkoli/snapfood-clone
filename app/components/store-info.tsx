@@ -35,7 +35,7 @@ export const StoreInfo = ({
   isOpen = true,
 }: StoreCardProps) => {
   const location = useLocation()
-  
+
   return (
     <dl className="store-info" dir={dir}>
       <div>

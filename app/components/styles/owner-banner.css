@@ -64,6 +64,7 @@
   }
 
   :where(.owner-banner > div a) {
+    margin-block: var(--length-24);
     align-self: center;
   }
 

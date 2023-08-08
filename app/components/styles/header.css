@@ -253,10 +253,6 @@
     max-inline-size: 65%;
   }
 
-  :where(.header ._buttons button) {
-    padding-inline: 12px;
-  }
-
   :where(.header ._orders) {
     display: none;
   }
@@ -279,6 +275,10 @@
     display: none;
   }
 
+  :where(.header form svg) {
+    inline-size: 16px;
+    block-size: 16px;
+  }
   :where(.header ._identity svg) {
     display: none;
   }

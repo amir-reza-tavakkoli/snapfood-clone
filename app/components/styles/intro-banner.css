@@ -23,6 +23,7 @@
 :where(.intro-banner > div) {
   inline-size: 100%;
 }
+
 :where(.intro-banner a) {
   text-align: center;
 }
@@ -97,9 +98,24 @@
   border-radius: 12px;
 }
 
+:where(.intro-banner ._enter) {
+  inline-size: max-content;
+  margin-inline-start: auto;
+  margin-block-start: -20px;
+  font-size: var(--length-14);
+  border-radius: 100000px;
+}
+
+:where(.intro-banner ._enter svg) {
+  inline-size: 16px;
+  block-size: 16px;
+  margin-inline-end: 4px;
+}
+
 .intro-banner h1::after {
   content: "میوه";
-  inline-size: 40px;
+  display: inline-block;
+  inline-size: 70px;
   block-size: 50px;
   color: var(--color-accent);
   font-size: var(--length-32);
@@ -165,6 +181,11 @@
     text-align: center;
   }
 
+  :where(.intro-banner ._enter) {
+    margin-inline: auto;
+    margin-block: var(--length-10);
+  }
+
   :where(.intro-banner > div:first-of-type) {
     flex-direction: column;
     align-items: center;
@@ -199,5 +220,9 @@
 
   :where(.intro-banner ._store-owner) {
     display: none;
+  }
+
+  .intro-banner h1::after {
+    inline-size: 56px;
   }
 }
