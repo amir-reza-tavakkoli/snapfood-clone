@@ -40,6 +40,14 @@ export function IntroBanner({ storesKind, city = "" }: IntroBannerProps) {
 
         <p aria-label="Services">سفارش آنلاین غذا ، میوه، نان، شیرینی و ...</p>
       </div>
+      <Link
+        to={routes.storesCity("شیراز")}
+        className="_enter button"
+        data-variant="accent"
+      >
+        <Icon name="flash" color="primary"></Icon>
+        ورود بدون ثبت نام
+      </Link>
 
       <img
         src="https://snappfood.ir/static/images/hero-image.png"
