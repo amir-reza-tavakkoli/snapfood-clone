@@ -8,10 +8,9 @@ import { StoreContainer } from "../components/store-container"
 
 import {
   getStoreCategories,
-  getStoresByCity,
 } from "../queries.server/store.query.server"
 
-import { requireValidatedUser, checkCity } from "../utils/validate.server"
+import { requireUser, checkCity } from "../utils/validate.server"
 
 import { features } from "../utils/utils.server"
 
@@ -57,7 +56,7 @@ export const loader = async ({
   request,
 }: LoaderArgs): Promise<TypedResponse<LoaderType | TypedResponse<never>>> => {
   try {
-    const user = await requireValidatedUser(request)
+    const user = await requireUser(request)
 
     let city = params.city
 
@@ -66,14 +65,6 @@ export const loader = async ({
     }
 
     city = await checkCity({ cityName: city })
-
-    let stores = await getStoresByCity({ cityName: city })
-
-    if (!stores) {
-      throw new Response("فروشگاهی در شهر انتخاب شده وجود ندارد", {
-        status: 404,
-      })
-    }
 
     const featureObject = features.find(feat => feat.name === "kind")
 
@@ -85,7 +76,7 @@ export const loader = async ({
 
     let featureStores = await featureObject.getStores({
       kind: kindType,
-      stores,
+      city: city,
     })
 
     featureStores = await Promise.all(

@@ -5,3 +5,14 @@
   background-color: var(--color-primary);
   color: var(--color-text-2);
 }
+
+:where(.no-where) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:where(.no-where h1) {
+  margin-block: var(--length-48);
+  font-size: var(--length-20);
+}

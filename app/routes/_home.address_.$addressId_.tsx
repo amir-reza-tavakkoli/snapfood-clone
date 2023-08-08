@@ -24,7 +24,7 @@ import {
   updateAddress,
 } from "../queries.server/address.query.server"
 
-import { requirePhoneNumber } from "../utils/session.server"
+import { requuirePhoneNumber } from "../utils/session.server"
 
 import { requireValidatedUser } from "../utils/validate.server"
 
@@ -77,7 +77,7 @@ type ActionType = {
 
 export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const phoneNumber = await requuirePhoneNumber(request)
 
     const form = await request.formData()
 
@@ -86,7 +86,7 @@ export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
     const address = form.get("address")
     const title = form.get("title")
     const details = form.get("details")
-    const unit: number | undefined = Number(form.get("unit"))
+    const unit: number | undefined = Number(Number(form.get("unit")).toFixed())
     const xAxis: number | undefined = Number(form.get("xAxis"))
     const yAxis: number | undefined = Number(form.get("yAxis"))
 
@@ -337,7 +337,8 @@ export default function AddressPage() {
               if (isNaN(Number(e.target.value))) {
                 return undefined
               }
-              setUnit(Number(e.target.value))
+
+              setUnit(Number(Number(e.target.value).toFixed()))
             }}
           />
         </div>

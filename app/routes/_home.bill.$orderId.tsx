@@ -35,10 +35,10 @@ import {
 import { getAddressById } from "../queries.server/address.query.server"
 
 import {
-  requireValidatedUser,
   validateNumberParam,
   checkOrder,
   checkStore,
+  requireValidatedUser,
 } from "../utils/validate.server"
 
 import { validateOrderPossibility } from "../utils/utils"

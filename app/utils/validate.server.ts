@@ -2,7 +2,7 @@ import type { Order, Store, User } from "@prisma/client"
 
 import { generateRandomCode, generateVerificationExpiry } from "./utils.server"
 
-import { requirePhoneNumber } from "./session.server"
+import { getPhoneNumber, requuirePhoneNumber } from "./session.server"
 
 import {
   getUserByPhone,
@@ -15,10 +15,12 @@ import { routes } from "../routes"
 import {
   ALLOWED_PHONE_PREFIX,
   JoinedOrderItem,
+  UNAUTHENTICATED_USER,
   VERIFICATION_CODE_EXPIRY_MINS,
   VERIFICATION_CODE_FIGURES,
 } from "../constants"
 import { sendSMS } from "./sms.server"
+import { redirect } from "@remix-run/server-runtime"
 
 export function checkPhoneNumber(phoneNumber: string) {
   if (
@@ -158,8 +160,24 @@ export async function sendVerification({
   return user
 }
 
-export async function requireValidatedUser(request: Request) {
-  const phoneNumber = await requirePhoneNumber(request)
+export async function requireUser(request: Request) {
+  const phoneNumber = await getPhoneNumber(request)
+
+  let user = phoneNumber ? await getUserByPhone({ phoneNumber }) : null
+
+  if (user) user = checkUser({ user })
+  else {
+    user = UNAUTHENTICATED_USER
+  }
+
+  return user
+}
+
+export async function requireValidatedUser(
+  request: Request,
+  redirectTo?: string,
+) {
+  const phoneNumber = await requuirePhoneNumber(request)
 
   let user = await getUserByPhone({ phoneNumber })
 

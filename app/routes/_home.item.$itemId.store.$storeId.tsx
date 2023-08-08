@@ -23,7 +23,7 @@ import {
 import { ItemComp } from "../components/item"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { requireValidatedUser } from "../utils/validate.server"
+import { requireUser } from "../utils/validate.server"
 
 import { useCheckAddress } from "../hooks/checkAddress"
 
@@ -71,7 +71,7 @@ export const loader: LoaderFunction = async ({
   request,
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
-    const user = await requireValidatedUser(request)
+    const user = await requireUser(request)
 
     const itemId = Number(params.itemId)
 

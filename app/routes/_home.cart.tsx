@@ -19,6 +19,7 @@ import { CLIENT_CACHE_DURATION, type CartProps } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
+import { User } from "@prisma/client"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: cartCss },
@@ -44,7 +45,7 @@ export const loader = async ({
   request,
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
-    const user = await requireValidatedUser(request)
+    const user = (await requireValidatedUser(request)) as User
 
     const cart = await getCart({ phoneNumber: user.phoneNumber })
 

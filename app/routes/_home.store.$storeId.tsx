@@ -16,7 +16,7 @@ import {
   TypedResponse,
 } from "@remix-run/server-runtime"
 
-import { requirePhoneNumber } from "../utils/session.server"
+import { requuirePhoneNumber } from "../utils/session.server"
 
 import {
   calculateOrder,
@@ -50,11 +50,12 @@ import { routes } from "../routes"
 
 import {
   getStoreCurrentSchedule,
+  isUnAuthenticated,
   validateStorePossibility,
 } from "../utils/utils"
 
 import {
-  requireValidatedUser,
+  requireUser,
   validateNumberParam,
   checkStore,
   checkUser,
@@ -125,7 +126,7 @@ export const action = async ({
 
     const form = await request.formData()
 
-    const phoneNumber = await requirePhoneNumber(request)
+    const phoneNumber = await requuirePhoneNumber(request)
     const job = form.get("job") as ChangeOrderItemState | undefined
     const addressId: number | undefined = Number(form.get("address"))
     const itemId: number | undefined = Number(form.get("id"))
@@ -216,13 +217,13 @@ export const loader: LoaderFunction = async ({
   params,
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
-    const user = await requireValidatedUser(request)
+    const user = await requireUser(request)
 
     const storeId = Number(params.storeId)
 
     let store = await getStore({ storeId })
 
-    checkUser({ user })
+    !isUnAuthenticated(user.phoneNumber) ? checkUser({ user }) : null
 
     store = checkStore({ store })
 
@@ -316,7 +317,9 @@ export default function StorePage() {
 
   const [orderState, setOrderState] = useState(order)
 
-  const [address, setAddress] = useState<number>(0)
+  const [address, setAddress] = useState<number>(
+    user.phoneNumber === "0" ? 1 : 0,
+  )
 
   const [orderItemsState, setorderItems] = useState(orderItems)
 
@@ -326,6 +329,9 @@ export default function StorePage() {
   const actionData = useActionData() as unknown as ActionType
 
   useEffect(() => {
+    if (!user || user.phoneNumber === "0") {
+      return
+    }
     const redirectionDealy = 2000
     const choosedAddress = localStorage.getItem(COOKIE_ADDRESS)
 
@@ -341,6 +347,10 @@ export default function StorePage() {
   }, [render])
 
   useEffect(() => {
+    if (!user || user.phoneNumber === "0") {
+      return
+    }
+
     if (
       actionData &&
       actionData.newTotalPrice &&
@@ -350,6 +360,9 @@ export default function StorePage() {
   }, [actionData])
 
   useEffect(() => {
+    if (!user || user.phoneNumber === "0") {
+      return
+    }
     if (
       actionData &&
       actionData.categorizedItems &&
@@ -359,6 +372,10 @@ export default function StorePage() {
   }, [actionData])
 
   useEffect(() => {
+    if (!user || user.phoneNumber === "0") {
+      return
+    }
+
     if (actionData && actionData.orderItems) {
       setorderItems(actionData.orderItems)
       setOrderState(actionData.orderInCart)
@@ -437,7 +454,7 @@ export default function StorePage() {
           </div>
 
           {storeAddress && storePossibility.status === 2 ? (
-            <output className="_close-popup" aria-live="polite">
+            <output className="_close-popup _error" aria-live="polite">
               <p>فروشگاه بسته است</p>
             </output>
           ) : storeAddress && storePossibility.status === 3 ? (

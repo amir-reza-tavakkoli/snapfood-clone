@@ -37,14 +37,11 @@ import { Button } from "../components/button"
 import { Timer } from "../components/timer"
 import { Icon } from "../components/icon"
 
-import { routes } from "../routes"
-
 import {
   ALLOWED_URLS,
   INDEX_URL,
   VENDOR_NAME_ENG,
   VERIFICATION_CODE_EXPIRY_MINS,
-  VERIFIED_PHONE,
 } from "../constants"
 
 import pageCss from "./styles/login-page.css"
@@ -102,10 +99,6 @@ export const action = async ({
       throw new Response("مشکلی بوجود آمد", { status: 400 })
     }
 
-    if (submittedPhone === VERIFIED_PHONE) {
-      createUserSession(submittedPhone, routes.index)
-    }
-
     if (!submittedPhone || typeof submittedPhone !== "string") {
       return {
         formError: "فرم به درستی کامل نشده است.",
@@ -161,7 +154,11 @@ export const action = async ({
         fieldErrors.verificationCode = "رمز وارد شده اشتباه است."
       }
 
-      checkFieldsErrors(fieldErrors, "verification")
+      const check = checkFieldsErrors(fieldErrors, "verification")
+
+      if (check) {
+        return check
+      }
 
       try {
         await createOrUpdateUser({
@@ -192,7 +189,11 @@ export const action = async ({
       fieldErrors.phoneNumber = "کاربر مسدود است."
     }
 
-    checkFieldsErrors(fieldErrors)
+    const check = checkFieldsErrors(fieldErrors)
+
+    if (check) {
+      return check
+    }
 
     try {
       user = await sendVerification({ phoneNumber: submittedPhone })
@@ -253,185 +254,200 @@ export default function LoginPage() {
   } = useLogin(actionData)
 
   return (
-    <main className="login-page">
-      <h1 className="nonvisual">ورود</h1>
+    <main className="login-wrapper">
+      <div className="login-page">
+        <h1 className="nonvisual">ورود</h1>
 
-      {loaderData.isLoggedIn ? (
-        <p>قبلا وارد شده اید</p>
-      ) : (
-        <>
-          <Form method="post">
-            {pgaeState === "phoneNumber" ? (
-              <>
-                <div className="_identity">
-                  <Icon name={VENDOR_NAME_ENG} color="accent"></Icon>
+        {loaderData.isLoggedIn ? (
+          <p>قبلا وارد شده اید</p>
+        ) : (
+          <>
+            <Form method="post">
+              {pgaeState === "phoneNumber" ? (
+                <>
+                  <div className="_identity">
+                    <Icon name={VENDOR_NAME_ENG} color="accent"></Icon>
+
+                    <p>
+                      ورود <span>یا </span> عضویت
+                    </p>
+                  </div>
+
+                  <div className="_input">
+                    <label htmlFor="phoneNumber">شماره تلفن‌همراه</label>
+
+                    <input
+                      type="text"
+                      id="phoneNumber"
+                      autoComplete="tel"
+                      name="phoneNumber"
+                      inputMode="tel"
+                      required={true}
+                      placeholder={"۰۹*******"}
+                      aria-invalid={Boolean(
+                        actionData?.fieldErrors?.phoneNumber,
+                      )}
+                      aria-errormessage={
+                        actionData?.fieldErrors?.phoneNumber
+                          ? "Phone Number Response"
+                          : undefined
+                      }
+                      onChange={e => {
+                        e.preventDefault()
+                        if (e.target.value && !isNaN(Number(e.target.value))) {
+                          setPhoneNumber(e.target.value)
+                        }
+                      }}
+                    />
+
+                    <small>شماره با ۰۹ شروع می‌شود</small>
+                  </div>
+
+                  <input type="hidden" name="state" value="phoneNumber" />
+
+                  <Button
+                    type="submit"
+                    variant="accent"
+                    disabled={
+                      phoneNumber.length != 11 || !phoneNumber.match(/\d{11}/)
+                    }
+                  >
+                    ادامه
+                  </Button>
+
+                  {actionData?.fieldErrors?.verificationCode ? (
+                    <output
+                      role="alert"
+                      aria-label="error"
+                      aria-live="assertive"
+                      className="_error"
+                    >
+                      {actionData.fieldErrors.phoneNumber}
+                    </output>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  <div className="_identity">
+                    <Icon name="snappfood" color="accent"></Icon>
+
+                    <p>تأیید شماره </p>
+                  </div>
+
+                  <button
+                    className="_edit"
+                    type="button"
+                    onClick={() => setPageState("phoneNumber")}
+                  >
+                    اصلاح شماره
+                  </button>
 
                   <p>
-                    ورود <span>یا </span> عضویت
+                    کد تأیید به شماره
+                    {" " +
+                      Number(phoneNumber)
+                        .toLocaleString("fa")
+                        .replaceAll("٬", "") +
+                      " "}
+                    فرستاده شد.
                   </p>
-                </div>
 
-                <div className="_input">
-                  <label htmlFor="phoneNumber">شماره تلفن‌همراه</label>
+                  <label htmlFor="verification">کد تایید</label>
+
+                  {timerFinished ? (
+                    <div className="_resend" aria-live="polite">
+                      <p>کد تأیید را دریافت نکردید؟</p>
+
+                      <Button
+                        type="button"
+                        aria-label="Resend"
+                        onClick={() => {
+                          setPageState("phoneNumber")
+                        }}
+                      >
+                        ارسال دوباره
+                      </Button>
+                    </div>
+                  ) : null}
 
                   <input
                     type="text"
-                    id="phoneNumber"
-                    autoComplete="tel"
-                    name="phoneNumber"
-                    inputMode="tel"
+                    autoComplete="one-time-code"
+                    inputMode="numeric"
+                    id="verification"
                     required={true}
-                    placeholder={"۰۹*******"}
-                    aria-invalid={Boolean(actionData?.fieldErrors?.phoneNumber)}
+                    name="verification"
+                    minLength={4}
+                    defaultValue=""
+                    placeholder={Number("1234").toLocaleString("fa-IR")}
+                    aria-invalid={Boolean(
+                      actionData.fieldErrors?.verificationCode,
+                    )}
                     aria-errormessage={
-                      actionData?.fieldErrors?.phoneNumber
-                        ? "Phone Number Response"
+                      actionData.fieldErrors?.verificationCode
+                        ? "Verification Code Response"
                         : undefined
                     }
                     onChange={e => {
                       e.preventDefault()
                       if (e.target.value && !isNaN(Number(e.target.value))) {
-                        setPhoneNumber(e.target.value)
+                        setVerificationCode(e.target.value)
                       }
                     }}
                   />
 
-                  <small>شماره با ۰۹ شروع می‌شود</small>
-                </div>
+                  <Timer
+                    initialSeconds={59}
+                    initialMinute={VERIFICATION_CODE_EXPIRY_MINS - 1}
+                    setTimerFinished={setTimerFinished}
+                  ></Timer>
 
-                <input type="hidden" name="state" value="phoneNumber" />
+                  <input
+                    type="hidden"
+                    name="redirectTo"
+                    value={searchParams.get("redirectTo") ?? undefined}
+                  />
 
-                <Button
-                  type="submit"
-                  variant="accent"
-                  disabled={
-                    phoneNumber.length != 11 || !phoneNumber.match(/\d{11}/)
-                  }
-                >
-                  ادامه
-                </Button>
+                  <input type="hidden" name="phoneNumber" value={phoneNumber} />
 
-                {actionData?.fieldErrors?.verificationCode ? (
-                  <output role="alert" aria-label="error" aria-live="assertive">
-                    {actionData.fieldErrors.phoneNumber}
-                  </output>
-                ) : null}
-              </>
-            ) : (
-              <>
-                <div className="_identity">
-                  <Icon name="snappfood" color="accent"></Icon>
+                  <input type="hidden" name="state" value="verification" />
 
-                  <p>تأیید شماره </p>
-                </div>
+                  <small>
+                    ثبت نام در اسنپ‌فود به منزله
+                    <span>پذیرش همه قوانین و شرایط</span>
+                    استفاده است.
+                  </small>
 
-                <button
-                  className="_edit"
-                  type="button"
-                  onClick={() => setPageState("phoneNumber")}
-                >
-                  اصلاح شماره
-                </button>
+                  <Button variant="accent" type="submit">
+                    عضویت
+                  </Button>
 
-                <p>
-                  کد تأیید به شماره
-                  {" " +
-                    Number(phoneNumber)
-                      .toLocaleString("fa")
-                      .replaceAll("٬", "") +
-                    " "}
-                  فرستاده شد.
-                </p>
-
-                <label htmlFor="verification">کد تایید</label>
-
-                {timerFinished ? (
-                  <div className="_resend" aria-live="polite">
-                    <p>کد تأیید را دریافت نکردید؟</p>
-
-                    <Button
-                      type="button"
-                      aria-label="Resend"
-                      onClick={() => {
-                        setPageState("phoneNumber")
-                      }}
+                  {actionData?.fieldErrors?.verificationCode ? (
+                    <output
+                      role="alert"
+                      aria-label="error"
+                      aria-live="assertive"
+                      className="_error"
                     >
-                      ارسال دوباره
-                    </Button>
-                  </div>
-                ) : null}
+                      {actionData.fieldErrors.verificationCode}
+                    </output>
+                  ) : null}
+                </>
+              )}
+            </Form>
 
-                <input
-                  type="text"
-                  autoComplete="one-time-code"
-                  inputMode="numeric"
-                  id="verification"
-                  required={true}
-                  name="verification"
-                  defaultValue=""
-                  placeholder={Number("1234").toLocaleString("fa-IR")}
-                  aria-invalid={Boolean(
-                    actionData.fieldErrors?.verificationCode,
-                  )}
-                  aria-errormessage={
-                    actionData.fieldErrors?.verificationCode
-                      ? "Verification Code Response"
-                      : undefined
-                  }
-                  onChange={e => {
-                    e.preventDefault()
-                    if (e.target.value && !isNaN(Number(e.target.value))) {
-                      setVerificationCode(e.target.value)
-                    }
-                  }}
-                />
+            {actionData && actionData.formError ? (
+              <output aria-label="error" aria-live="assertive" role="alert">
+                <>
+                  <p className="nonvisual">Response</p>
 
-                <Timer
-                  initialSeconds={59}
-                  initialMinute={VERIFICATION_CODE_EXPIRY_MINS - 1}
-                  setTimerFinished={setTimerFinished}
-                ></Timer>
-
-                <input
-                  type="hidden"
-                  name="redirectTo"
-                  value={searchParams.get("redirectTo") ?? undefined}
-                />
-
-                <input type="hidden" name="phoneNumber" value={phoneNumber} />
-
-                <input type="hidden" name="state" value="verification" />
-
-                <small>
-                  ثبت نام در اسنپ‌فود به منزله
-                  <span>پذیرش همه قوانین و شرایط</span>
-                  استفاده است.
-                </small>
-
-                <Button variant="accent" type="submit">
-                  عضویت
-                </Button>
-
-                {actionData?.fieldErrors?.verificationCode ? (
-                  <output role="alert" aria-label="error" aria-live="assertive">
-                    {actionData.fieldErrors.verificationCode}
-                  </output>
-                ) : null}
-              </>
-            )}
-          </Form>
-
-          {actionData && actionData.formError ? (
-            <output aria-label="error" aria-live="assertive" role="alert">
-              <>
-                <p className="nonvisual">Response</p>
-
-                <p>{actionData.formError}</p>
-              </>
-            </output>
-          ) : null}
-        </>
-      )}
+                  <p className="_error">{actionData.formError}</p>
+                </>
+              </output>
+            ) : null}
+          </>
+        )}
+      </div>
     </main>
   )
 }

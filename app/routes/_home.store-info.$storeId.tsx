@@ -19,10 +19,7 @@ import { getStoreComments } from "../queries.server/comment.query"
 
 import { getFullAddress, getStoreCurrentSchedule } from "../utils/utils"
 
-import {
-  requireValidatedUser,
-  validateNumberParam,
-} from "../utils/validate.server"
+import { requireUser, validateNumberParam } from "../utils/validate.server"
 
 import { Icon } from "../components/icon"
 import { GlobalErrorBoundary } from "../components/error-boundary"
@@ -70,7 +67,7 @@ export const loader = async ({
   params,
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
-    const user = await requireValidatedUser(request)
+    const user = await requireUser(request)
 
     const storeId = validateNumberParam(Number(params.storeId))
 

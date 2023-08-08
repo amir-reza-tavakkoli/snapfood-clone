@@ -12,10 +12,10 @@ import {
 import { Form, useLoaderData, V2_MetaFunction } from "@remix-run/react"
 
 import {
-  requireValidatedUser,
   validateNumberParam,
   checkOrder,
   checkStore,
+  requireValidatedUser,
 } from "../utils/validate.server"
 
 import type { Address, Order, Store, storeSchedule } from "@prisma/client"
@@ -137,6 +137,7 @@ export const loader = async ({
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
     const user = await requireValidatedUser(request)
+    console.log(user, "ooo")
 
     const orderId = Number(params.orderId)
 

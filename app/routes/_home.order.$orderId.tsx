@@ -28,11 +28,11 @@ import {
 } from "../queries.server/store.query.server"
 
 import {
-  requireValidatedUser,
   validateItems,
   validateNumberParam,
   checkOrder,
   checkStore,
+  requireValidatedUser,
 } from "../utils/validate.server"
 
 import { getComment } from "../queries.server/comment.query"

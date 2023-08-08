@@ -10,7 +10,7 @@ import {
   V2_MetaFunction,
 } from "@remix-run/node"
 
-import type { Address, ItemCategory } from "@prisma/client"
+import type { Address, ItemCategory, User } from "@prisma/client"
 
 import { ImageItem } from "../components/image-item"
 import { GlobalErrorBoundary } from "../components/error-boundary"
@@ -20,7 +20,7 @@ import { getUserAddresses } from "../queries.server/address.query.server"
 
 import { useForceAddress } from "../hooks/forceAddress"
 
-import { requireValidatedUser } from "../utils/validate.server"
+import { requireUser } from "../utils/validate.server"
 
 import { routes } from "../routes"
 
@@ -50,20 +50,21 @@ export const meta: V2_MetaFunction = () => {
 type LoaderType = {
   categories: ItemCategory[]
   addresses: Address[]
+  user: User
 }
 
 export const loader = async ({
   request,
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
-    const user = await requireValidatedUser(request)
+    const user = await requireUser(request)
 
     const categories = await getItemCategories()
 
     const addresses = await getUserAddresses({ phoneNumber: user.phoneNumber })
 
     return json(
-      { categories, addresses },
+      { categories, addresses, user },
       {
         headers: {
           "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
@@ -76,10 +77,12 @@ export const loader = async ({
 }
 
 export default function StoresPage() {
-  const { categories, addresses } = useLoaderData() as unknown as LoaderType
+  const { categories, addresses, user } =
+    useLoaderData() as unknown as LoaderType
 
   const { cityState } = useForceAddress({
     addresses,
+    user,
   })
 
   const MemoizedList = React.memo(

@@ -11,7 +11,7 @@ import {
   getStoresByCity,
 } from "../queries.server/store.query.server"
 
-import { requireValidatedUser, checkCity } from "../utils/validate.server"
+import { requireUser, checkCity } from "../utils/validate.server"
 
 import { features } from "../utils/utils.server"
 
@@ -57,7 +57,7 @@ export const loader = async ({
   request,
 }: LoaderArgs): Promise<TypedResponse<LoaderType | TypedResponse<never>>> => {
   try {
-    const user = await requireValidatedUser(request)
+    const user = await requireUser(request)
 
     let city = params.city
 
@@ -86,6 +86,7 @@ export const loader = async ({
     let featureStores = await featureObject.getStores({
       category: categoryType,
       stores,
+      city: city,
     })
 
     featureStores = await Promise.all(

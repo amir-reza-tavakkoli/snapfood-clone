@@ -1,6 +1,11 @@
 import { memo, useEffect, useState } from "react"
 
-import { Outlet, useLoaderData, useNavigate } from "@remix-run/react"
+import {
+  Outlet,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+} from "@remix-run/react"
 
 import {
   json,
@@ -23,8 +28,8 @@ import { UserMenu } from "../components/user-menu"
 import { PageNav } from "../components/page-nav"
 import { Logo } from "~/components/logo"
 
-import { getPhoneNumber } from "../utils/session.server"
-import { requireValidatedUser } from "../utils/validate.server"
+import { requireUser } from "../utils/validate.server"
+import { isUnAuthenticated } from "~/utils/utils"
 
 import { getUserAddresses } from "../queries.server/address.query.server"
 import { getStoresKinds } from "../queries.server/store.query.server"
@@ -90,30 +95,29 @@ export const loader = async ({
   request,
 }: LoaderArgs): Promise<TypedResponse<LoaderType>> => {
   try {
-    const phoneNumber = await getPhoneNumber(request)
-
     const storesKind = await getStoresKinds()
 
     const cities = await getSupportedCities()
 
-    if (phoneNumber) {
-      const user = await requireValidatedUser(request)
+    const user = await requireUser(request)
 
-      const addresses = await getUserAddresses({
-        phoneNumber: user.phoneNumber,
-      })
+    const addresses = await getUserAddresses({
+      phoneNumber: user.phoneNumber,
+    })
 
-      return json(
-        { addresses, storesKind, cities, user },
-        {
-          headers: {
-            "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
-          },
+    return json(
+      {
+        addresses: addresses,
+        storesKind,
+        cities,
+        user,
+      },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CLIENT_CACHE_DURATION}`,
         },
-      )
-    }
-
-    return json({ storesKind, cities, user: null, addresses: null })
+      },
+    )
   } catch (error) {
     throw error
   }
@@ -125,6 +129,8 @@ export default function HomePage() {
 
   const navigate = useNavigate()
 
+  const location = useLocation()
+
   const FooterMemo = memo(Footer, () => true)
 
   const CityListMemo = memo(CityList, () => true)
@@ -134,14 +140,20 @@ export default function HomePage() {
   const [userMenuShowing, setUserMenuShowing] = useState(false)
 
   const { addressState, setAddressState, cityState, setCityState } =
-    useForceAddress({ addresses })
+    useForceAddress({ addresses, user })
 
   const { splash } = useSplash()
 
   const [redirect, setRedirect] = useState(true)
 
   useEffect(() => {
-    if (user && cityState && redirect && location.pathname === routes.index) {
+    if (
+      user &&
+      !isUnAuthenticated(user.phoneNumber) &&
+      cityState &&
+      redirect &&
+      location.pathname === routes.index
+    ) {
       setRedirect(false)
 
       navigate(routes.storesCity(cityState))
@@ -152,7 +164,54 @@ export default function HomePage() {
 
   return (
     <>
-      {user ? (
+      {user && user.phoneNumber !== "0" ? (
+        <>
+          <div className="_headers-container">
+            <Header
+              dir={DEAFULT_DIRECTION}
+              address={addressState}
+              toggleMenu={setUserMenuShowing}
+            ></Header>
+          </div>
+
+          {storesKind ? (
+            <CategoryNav
+              dir={DEAFULT_DIRECTION}
+              type="Categories"
+              items={storesKind.map(kind => {
+                return {
+                  name: kind.name,
+                  avatarUrl: kind.avatarUrl,
+                  href: routes.storesKind(cityState, kind.name),
+                }
+              })}
+            ></CategoryNav>
+          ) : null}
+
+          <UserMenu
+            user={user}
+            isShowing={userMenuShowing}
+            setShowing={setUserMenuShowing}
+          ></UserMenu>
+
+          <PageNav></PageNav>
+
+          <Outlet context={[addressState, setAddressState]}></Outlet>
+        </>
+      ) : location.pathname === "/" ? (
+        <>
+          {storesKind ? (
+            <IntroBanner
+              storesKind={storesKind}
+              city={DEFAULT_CITY}
+            ></IntroBanner>
+          ) : null}
+
+          <FanBanner></FanBanner>
+
+          <OwnerBanner></OwnerBanner>
+        </>
+      ) : (
         <>
           <div className="_headers-container">
             <Header
@@ -176,28 +235,7 @@ export default function HomePage() {
             ></CategoryNavMemo>
           ) : null}
 
-          <UserMenu
-            user={user}
-            isShowing={userMenuShowing}
-            setShowing={setUserMenuShowing}
-          ></UserMenu>
-
-          <PageNav></PageNav>
-
-          <Outlet context={[addressState, setAddressState]}></Outlet>
-        </>
-      ) : (
-        <>
-          {storesKind ? (
-            <IntroBanner
-              storesKind={storesKind}
-              city={DEFAULT_CITY}
-            ></IntroBanner>
-          ) : null}
-
-          <FanBanner></FanBanner>
-
-          <OwnerBanner></OwnerBanner>
+          <Outlet></Outlet>
         </>
       )}
 

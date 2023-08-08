@@ -29,8 +29,8 @@ import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import {
   checkPhoneNumber,
-  requireValidatedUser,
   checkUser,
+  requireValidatedUser,
 } from "../utils/validate.server"
 
 import {

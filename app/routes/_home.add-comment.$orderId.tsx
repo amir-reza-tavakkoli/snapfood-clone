@@ -25,13 +25,13 @@ import { addComment, getComment } from "../queries.server/comment.query"
 import { getOrderStatus } from "../queries.server/db.utils.query"
 
 import {
-  requireValidatedUser,
   validateNumberParam,
   checkOrder,
   checkStore,
+  requireValidatedUser,
 } from "../utils/validate.server"
 
-import { requirePhoneNumber } from "../utils/session.server"
+import { requuirePhoneNumber } from "../utils/session.server"
 
 import { getFormattedDate, getRateDescription } from "../utils/utils"
 
@@ -72,7 +72,7 @@ export const action = async ({
   params,
 }: ActionArgs): Promise<ActionType> => {
   try {
-    const phoneNumber = await requirePhoneNumber(request)
+    const phoneNumber = await requuirePhoneNumber(request)
 
     const form = await request.formData()
 

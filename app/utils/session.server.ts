@@ -41,7 +41,7 @@ export async function getPhoneNumber(request: Request) {
   return phoneNumber
 }
 
-export async function requirePhoneNumber(
+export async function requuirePhoneNumber(
   request: Request,
   redirectTo: string = new URL(request.url).pathname,
 ) {

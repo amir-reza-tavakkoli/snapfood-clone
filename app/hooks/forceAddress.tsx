@@ -2,7 +2,9 @@ import { useEffect, useState } from "react"
 
 import { useLocation, useNavigate } from "@remix-run/react"
 
-import type { Address } from "@prisma/client"
+import type { Address, User } from "@prisma/client"
+
+import { isUnAuthenticated } from "~/utils/utils"
 
 import { routes } from "../routes"
 
@@ -15,8 +17,10 @@ import {
 
 export function useForceAddress({
   addresses,
+  user,
 }: {
   addresses: Address[] | null
+  user: User | null
 }) {
   const [addressState, setAddressState] = useState<Address | null>()
 
@@ -27,12 +31,20 @@ export function useForceAddress({
   const navigate = useNavigate()
 
   useEffect(() => {
+    if (!user || isUnAuthenticated(user.phoneNumber)) {
+      return
+    }
+
     const choosedCity = localStorage.getItem(COOKIE_City)
 
     if (choosedCity && cityState !== choosedCity) setCityState(choosedCity)
   })
 
   useEffect(() => {
+    if (!user || isUnAuthenticated(user.phoneNumber)) {
+      return
+    }
+
     if (ALLOWED_URLS.includes(location.pathname)) {
       return
     }
@@ -63,6 +75,8 @@ export function useForceAddress({
       setAddressState(choosedAddress)
     }
   })
+
+  console.log("jj", cityState)
 
   return { addressState, setAddressState, cityState, setCityState }
 }
