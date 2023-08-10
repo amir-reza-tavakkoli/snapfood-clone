@@ -31,7 +31,7 @@ import {
   requireValidatedUser,
 } from "../utils/validate.server"
 
-import { requuirePhoneNumber } from "../utils/session.server"
+import { requirePhoneNumber } from "../utils/session.server"
 
 import { getFormattedDate, getRateDescription } from "../utils/utils"
 
@@ -72,7 +72,7 @@ export const action = async ({
   params,
 }: ActionArgs): Promise<ActionType> => {
   try {
-    const phoneNumber = await requuirePhoneNumber(request)
+    const phoneNumber = await requirePhoneNumber(request)
 
     const form = await request.formData()
 

@@ -26,7 +26,7 @@ export const UserMenu = ({
   return (
     <nav className={isShowing ? "user-menu" : "nonvisual"} dir={dir}>
       <ul>
-        <li>
+        <li onClick={() => setShowing(false)}>
           <Link to={routes.userInfo} tabIndex={isShowing ? undefined : -1}>
             <Icon name="user" color="text"></Icon>
 
@@ -52,7 +52,7 @@ export const UserMenu = ({
           </button>
         </li>
 
-        <li>
+        <li onClick={() => setShowing(false)}>
           <Link to={routes.wallet} tabIndex={isShowing ? undefined : -1}>
             <Icon name="coupon" color="text"></Icon>
 
@@ -64,7 +64,7 @@ export const UserMenu = ({
           </Link>
         </li>
 
-        <li>
+        <li onClick={() => setShowing(false)}>
           <Link
             to={routes.notImplemented}
             tabIndex={isShowing ? undefined : -1}
@@ -75,7 +75,7 @@ export const UserMenu = ({
           </Link>
         </li>
 
-        <li>
+        <li onClick={() => setShowing(false)}>
           <form
             aria-label="Logout"
             action={routes.logout}

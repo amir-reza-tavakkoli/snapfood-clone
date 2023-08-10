@@ -96,6 +96,7 @@
   padding-block: var(--length-6);
   margin-block-start: 6px;
   /* optical alignment */
+  transform: scale(1.3);
   cursor: pointer;
 }
 

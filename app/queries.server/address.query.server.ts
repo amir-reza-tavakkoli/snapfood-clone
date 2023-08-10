@@ -2,12 +2,13 @@ import { db } from "../utils/db.server"
 
 import type { Address, City } from "@prisma/client"
 
+import { isUnAuthenticated } from "~/utils/utils"
+
 import { checkUnit, checkCity } from "../utils/validate.server"
 
 import { evaluateAddress } from "./evaluate.server"
 
 import { UNAUTHENTICATED_USER_ADDRESS } from "~/constants"
-import { isUnAuthenticated } from "~/utils/utils"
 
 export async function getUserAddresses({
   phoneNumber,
@@ -22,6 +23,7 @@ export async function getUserAddresses({
     const addresses = await db.address.findMany({
       where: {
         userPhoneNumber: phoneNumber,
+        isValid: true,
       },
       orderBy: { id: "desc" },
     })

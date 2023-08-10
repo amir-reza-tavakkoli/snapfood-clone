@@ -40,8 +40,6 @@ import { getAddressById } from "../queries.server/address.query.server"
 
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { getStoreCurrentSchedule } from "../utils/utils"
-
 import { CLIENT_CACHE_DURATION, JoinedOrderItem } from "../constants"
 
 import orderCss from "../components/styles/order.css"
@@ -112,10 +110,6 @@ export const loader = async ({
     }
 
     const schedule = await getStoreSchedule({ store })
-
-    if (!order.isBilled && (!schedule || !getStoreCurrentSchedule(schedule))) {
-      throw new Response("فروشگاه در دسترس نیست", { status: 404 })
-    }
 
     return json(
       { items, order, store, comment, address, schedule },

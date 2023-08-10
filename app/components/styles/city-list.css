@@ -56,8 +56,7 @@
 }
 
 @media (pointer: coarse) {
-  :where(.city-list a) {
-    display: inline-flex;
+  :where(.city-list li) {
     min-block-size: var(--length-coarse-min);
   }
 }

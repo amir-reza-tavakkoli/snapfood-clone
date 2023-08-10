@@ -184,7 +184,7 @@
   }
 
   :where(.footer ._vendor svg) {
-    margin-inline-start: calc(var(--length-10) * -1);
+    margin-inline-start: -36px;
   }
 
   :where(.footer ._vendor span:only-of-type) {

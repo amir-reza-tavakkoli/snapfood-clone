@@ -68,14 +68,14 @@
   padding-inline-start: 10px;
   padding-block: var(--length-16);
   margin-block-end: var(--length-8);
-  color: var(--color-action-2);
+  color: var(--color-action);
   font-size: var(--length-16);
   font-weight: 700;
 }
 
 :where(.addresses > a:hover, .addresses > a:active) {
   padding-inline-start: 8px;
-  color: var(--color-action);
+  color: var(--color-action-2);
   background-color: var(--color-action-4);
   opacity: 0.75;
   border-radius: 8px;
@@ -88,6 +88,10 @@
   margin-inline: 8px;
   margin-block-start: 3px;
   /* opticall alignment */
+}
+
+:where(.addresses form) {
+  margin-inline-start: auto;
 }
 
 :where(.addresses ._empty) {

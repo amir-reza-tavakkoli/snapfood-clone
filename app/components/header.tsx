@@ -172,7 +172,7 @@ export const Header = ({
               <ul>
                 {itemInStore.stores.map((store, index) =>
                   store ? (
-                    <li key={index} onClick= {() => setSearchValue("")}>
+                    <li key={index} onClick={() => setSearchValue("")}>
                       <Link to={routes.store(store.id)}>
                         {store.name}
 

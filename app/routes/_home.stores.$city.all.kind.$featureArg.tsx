@@ -1,3 +1,5 @@
+import React from "react"
+
 import { useLoaderData } from "@remix-run/react"
 
 import { json, redirect, V2_MetaFunction } from "@remix-run/node"
@@ -6,9 +8,7 @@ import type { LinksFunction, LoaderArgs, TypedResponse } from "@remix-run/node"
 
 import { StoreContainer } from "../components/store-container"
 
-import {
-  getStoreCategories,
-} from "../queries.server/store.query.server"
+import { getStoreCategories } from "../queries.server/store.query.server"
 
 import { requireUser, checkCity } from "../utils/validate.server"
 
@@ -106,15 +106,22 @@ export const loader = async ({
 export default function KindStores() {
   const { name, title, stores } = useLoaderData() as unknown as LoaderType
 
+  const MemoizedStoreContainer = React.memo(
+    () => (
+      <StoreContainer
+        title={title ?? ""}
+        stores={stores as StoreWithTags[] | null}
+      ></StoreContainer>
+    ),
+    () => true,
+  )
+
   return (
     <main className="_stores-all-page">
       <h1 className="nonvisual">لیست فرشگاه ها</h1>
 
       {stores && stores.length > 0 ? (
-        <StoreContainer
-          title={title ?? ""}
-          stores={stores as StoreWithTags[] | null}
-        ></StoreContainer>
+        <MemoizedStoreContainer></MemoizedStoreContainer>
       ) : (
         <p className="_no-store">فروشگاهی وجود ندارد</p>
       )}

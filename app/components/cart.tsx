@@ -9,6 +9,7 @@ import {
   DEFAULT_CURRENCY,
   DEFAULT_IMG_PLACEHOLDER,
 } from "./../constants"
+import { OrderStatus } from "./order-status"
 
 export const CartComp = ({ orders, dir }: CartProps) => {
   return (
@@ -71,6 +72,8 @@ export const CartComp = ({ orders, dir }: CartProps) => {
                     </li>
                   ))}
                 </ul>
+
+                <OrderStatus order={order.order}></OrderStatus>
               </li>
             </Link>
           ))

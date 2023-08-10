@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Form, Link } from "@remix-run/react"
 
 import type { Address } from "@prisma/client"
 
@@ -65,13 +65,15 @@ export function Addresses({
                 {getFullAddress(address)}
               </p>
 
-              <Link
-                to={routes.address(address.id.toString())}
-                className="_delete"
-                aria-label="Remove"
-              >
-                <Icon name="bin" color="error"></Icon>
-              </Link>
+              <Form action={routes.addresses}>
+                <input type="hidden" name="remove" value={address.id} />
+
+                <button className="_delete" type="submit">
+                  <span className="nonvisual">Remove</span>
+
+                  <Icon name="bin" color="error"></Icon>
+                </button>
+              </Form>
 
               <Link
                 to={routes.address(address.id.toString())}

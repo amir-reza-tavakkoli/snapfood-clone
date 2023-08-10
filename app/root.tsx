@@ -13,16 +13,17 @@ import type { LinksFunction, V2_MetaFunction } from "@remix-run/node"
 
 import { GlobalErrorBoundary } from "./components/error-boundary"
 
+import { DEAFULT_DIRECTION } from "./constants"
+
 import baseCss from "./index.css"
 import errorBoundaryCss from "./components/styles/error-boundary.css"
-import { DEAFULT_DIRECTION } from "./constants"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: baseCss },
   { rel: "stylesheet", href: errorBoundaryCss },
   {
     rel: "favicon",
-    href: "https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png",
+    href: "https://snappfood.ir/static/images/favicon/favicon-96x96.png",
   },
 ]
 
@@ -56,10 +57,11 @@ export default function App({
         <Meta />
         {title ? <title>{title}</title> : null}
         <link rel="preload" href="./IRANSans.woff2" as="font" />
+        <link rel="canonical" href="https://snappfood.ir"></link>
         <Links />
         <link
           rel="icon"
-          href="https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png"
+          href="https://snappfood.ir/static/images/favicon/favicon-96x96.png"
         ></link>
       </head>
       <body>

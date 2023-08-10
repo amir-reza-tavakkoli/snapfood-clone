@@ -11,6 +11,8 @@ import { getCart } from "../queries.server/cart.query.server"
 
 import { requireValidatedUser } from "../utils/validate.server"
 
+import type { User } from "@prisma/client"
+
 import { CartComp } from "../components/cart"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { Icon } from "../components/icon"
@@ -19,7 +21,6 @@ import { CLIENT_CACHE_DURATION, type CartProps } from "../constants"
 
 import cartCss from "./../components/styles/cart.css"
 import pageCss from "./styles/orders-page.css"
-import { User } from "@prisma/client"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: cartCss },

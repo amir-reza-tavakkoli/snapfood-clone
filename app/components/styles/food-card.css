@@ -21,14 +21,17 @@
   display: flex;
   align-self: flex-start;
   flex-direction: column;
+  inline-size: 100%;
   padding-block-start: var(--length-8);
 }
 
 :where(.food-card > div:nth-child(1) > a) {
   display: inherit;
+  inline-size: 100%;
 }
 
 :where(.food-card > div:nth-child(1)) {
+  inline-size: 100%;
   margin-block-start: var(--length-8);
 }
 
@@ -97,14 +100,22 @@
 
 :where(.food-card ._forms dd) {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:where(.food-card ._forms dd button) {
+  inline-size: max-content;
 }
 
 :where(.food-card form button) {
   display: inline-flex;
   block-size: 32px;
-  padding-inline: 6px;
+  padding-inline: 12px;
   padding-block: 0px;
   margin-inline: 4px;
+  margin-block: var(--length-6);
   border-radius: 10000px;
   font-size: var(--length-12);
   background-color: var(--color-accent);

@@ -27,6 +27,7 @@ type FoodCardProps = {
   remainingCount: number
   id: number
   address: number
+  isOpen?: boolean
   reRender: React.Dispatch<React.SetStateAction<{}>>
   store: Store
 }
@@ -43,6 +44,7 @@ export const FoodCard = ({
   address,
   id,
   reRender,
+  isOpen = true,
   store,
 }: FoodCardProps) => {
   const [addressState, setAddressstate] = useState(address)
@@ -170,9 +172,10 @@ export const FoodCard = ({
                   <Button
                     type="submit"
                     disabled={
+                      !isOpen ||
                       remainingCount === 0 ||
                       !address ||
-                      cityName != store.cityName
+                      cityName !== store.cityName
                     }
                     onClick={() => {
                       reRender({})
@@ -190,7 +193,13 @@ export const FoodCard = ({
                   <input type="hidden" name="address" value={address} />
 
                   {!count || cityName !== store.cityName ? undefined : (
-                    <Button type="submit" aria-label="Remove">
+                    <Button
+                      type="submit"
+                      aria-label="Remove"
+                      disabled={
+                        !isOpen || !address || cityName !== store.cityName
+                      }
+                    >
                       -
                     </Button>
                   )}

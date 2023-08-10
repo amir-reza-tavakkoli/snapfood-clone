@@ -358,7 +358,7 @@ export async function getStoresByCategory({
           : undefined
       }),
     )
-      newStores  = newStores.filter(store => store)
+    newStores = newStores.filter(store => store)
     return newStores as Store[]
   } catch (error) {
     throw error

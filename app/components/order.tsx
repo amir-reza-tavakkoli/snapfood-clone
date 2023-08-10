@@ -199,9 +199,7 @@ export const OrderComp = ({
           </li>
         ) : null}
 
-        {order && order.isBilled ? (
-          <OrderStatus order={order}></OrderStatus>
-        ) : null}
+        {order ? <OrderStatus order={order}></OrderStatus> : null}
 
         {order &&
         !order.isBilled &&

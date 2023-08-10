@@ -2,7 +2,7 @@ import type { Order, Store, User } from "@prisma/client"
 
 import { generateRandomCode, generateVerificationExpiry } from "./utils.server"
 
-import { getPhoneNumber, requuirePhoneNumber } from "./session.server"
+import { getPhoneNumber, requirePhoneNumber } from "./session.server"
 
 import {
   getUserByPhone,
@@ -177,7 +177,7 @@ export async function requireValidatedUser(
   request: Request,
   redirectTo?: string,
 ) {
-  const phoneNumber = await requuirePhoneNumber(request)
+  const phoneNumber = await requirePhoneNumber(request)
 
   let user = await getUserByPhone({ phoneNumber })
 

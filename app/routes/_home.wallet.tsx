@@ -112,7 +112,9 @@ export default function WalletPage() {
       <dl>
         <dt>موجودی فعلی</dt>
 
-        <dd className="_credit">{user.credit.toLocaleString("fa-IR")}</dd>
+        <dd className="_credit">
+          {"   " + user.credit.toLocaleString("fa-IR")}
+        </dd>
 
         <dt className="nonvisual">Currency</dt>
 
@@ -140,6 +142,7 @@ export default function WalletPage() {
 
             <div>
               <Button
+                variant="primary"
                 aria-label="add"
                 type="button"
                 onClick={() => {
@@ -177,6 +180,7 @@ export default function WalletPage() {
 
               <Button
                 aria-label={`reduce by ${basePrice}`}
+                variant="primary"
                 type="button"
                 onClick={() => {
                   if (priceToPay <= basePrice || priceToPay >= maxPrice) {

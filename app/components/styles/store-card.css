@@ -3,7 +3,7 @@
   align-items: center;
   flex-direction: column;
   inline-size: 100%;
-  min-block-size: 240px;
+  min-block-size: 270px;
   border: solid var(--color-faded-4) var(--border-normal);
   border-radius: 8px;
   background-color: var(--color-primary);

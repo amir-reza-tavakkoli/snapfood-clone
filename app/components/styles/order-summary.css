@@ -1,14 +1,14 @@
 :where(.order-summary) {
   display: flex;
   flex-direction: column;
-  inline-size: 60%;
-  block-size: max(100%, 100vh);
+  inline-size: min(60%, 500px);
   padding-inline: var(--length-16);
   padding-block: var(--length-12);
   background-color: var(--color-primary);
   overflow-y: auto;
   border-radius: 6px;
   border: solid var(--color-faded-6) var(--border-normal);
+  overflow-x: hidden;
 }
 
 :where(.order-summary li) {
@@ -56,6 +56,21 @@
   border-radius: 4px;
 }
 
+:where(.order-summary ._comment) {
+  padding-inline: 8px;
+  padding-block: var(--length-6);
+  margin-inline: 6px;
+  font-size: var(--length-10);
+  background-color: var(--color-action-4);
+  border-radius: var(--length-4);
+  white-space: nowrap;
+}
+
+:where(.order-summary ._comment span) {
+  padding-block: var(--length-4);
+  padding-inline: 4px;
+}
+
 :where(.order-summary ._comment p *) {
   display: block;
 }
@@ -66,16 +81,6 @@
   justify-content: center;
   font-size: var(--length-10);
   font-weight: 400;
-}
-
-:where(.order-summary ._comment) {
-  padding-inline: 8px;
-  padding-block: var(--length-6);
-  margin-inline: 6px;
-  font-size: var(--length-10);
-  background-color: var(--color-action-4);
-  border-radius: var(--length-4);
-  white-space: nowrap;
 }
 
 :where(.order-summary ._space) {
@@ -123,7 +128,7 @@
 
 @media (max-width: 34.5rem) {
   :where(.order-summary ._buttons) {
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     align-self: start;
   }

@@ -24,7 +24,7 @@ export function useForceAddress({
 }) {
   const [addressState, setAddressState] = useState<Address | null>()
 
-  const [cityState, setCityState] = useState(DEFAULT_CITY)
+  const [cityState, setCityState] = useState("")
 
   let location = useLocation()
 

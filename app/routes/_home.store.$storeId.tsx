@@ -16,7 +16,7 @@ import {
   TypedResponse,
 } from "@remix-run/server-runtime"
 
-import { requuirePhoneNumber } from "../utils/session.server"
+import { requirePhoneNumber } from "../utils/session.server"
 
 import {
   calculateOrder,
@@ -51,6 +51,7 @@ import { routes } from "../routes"
 import {
   getStoreCurrentSchedule,
   isUnAuthenticated,
+  validateOrderPossibility,
   validateStorePossibility,
 } from "../utils/utils"
 
@@ -120,15 +121,18 @@ export const action = async ({
 
     validateNumberParam(storeId)
 
-    const store = await getStore({ storeId })
+    let store = await getStore({ storeId })
 
-    checkStore({ store })
+    store = checkStore({ store })
 
     const form = await request.formData()
 
-    const phoneNumber = await requuirePhoneNumber(request)
+    const phoneNumber = await requirePhoneNumber(request)
+
     const job = form.get("job") as ChangeOrderItemState | undefined
+
     const addressId: number | undefined = Number(form.get("address"))
+
     const itemId: number | undefined = Number(form.get("id"))
 
     if (job && typeof job !== "string") {
@@ -140,6 +144,21 @@ export const action = async ({
     if (!address || address.userPhoneNumber != phoneNumber) {
       throw new Response("آدرس اشتباه است")
     }
+
+    const schedules = await getStoreSchedule({ store })
+
+    const storeAddress = await getAddressById({ addressId: store.id })
+
+    if (!storeAddress) {
+      throw new Response("آدرس فروشگاه صحیح نیست")
+    }
+
+    validateOrderPossibility({
+      address,
+      schedules,
+      store,
+      storeAddress,
+    })
 
     let orderInCart = await getStoreOrderInCart({ phoneNumber, storeId })
 
@@ -317,6 +336,8 @@ export default function StorePage() {
 
   const [orderState, setOrderState] = useState(order)
 
+  const [popup, setPopup] = useState(true)
+
   const [address, setAddress] = useState<number>(
     user.phoneNumber === "0" ? 1 : 0,
   )
@@ -327,8 +348,11 @@ export default function StorePage() {
 
   const [render, reRender] = useState({})
   const actionData = useActionData() as unknown as ActionType
+  const [currentSchedule] = useState(getStoreCurrentSchedule(schedules))
 
   useEffect(() => {
+    console.log(currentSchedule)
+
     if (!user || user.phoneNumber === "0") {
       return
     }
@@ -382,8 +406,6 @@ export default function StorePage() {
     }
   }, [actionData])
 
-  const currentSchedule = getStoreCurrentSchedule(schedules)
-
   const currentAddress = addresses.find(a => a.id === address)
 
   const storePossibility = validateStorePossibility({
@@ -426,13 +448,14 @@ export default function StorePage() {
                     (item: JoinedOrderItem, index: number) => (
                       <FoodCard
                         store={store}
+                        isOpen={storePossibility.status === 0}
                         reRender={reRender}
                         address={address ?? -1}
                         count={item.count ?? 0}
                         id={item.id ?? 0}
                         remainingCount={item.remainingCount ?? 0}
                         name={item.name ?? ""}
-                        image={item.avatarUrl ?? ""}
+                        image={item.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
                         ingredients={item.description ?? ""}
                         type={item.itemCategoryName}
                         available={item.isAvailible ?? false}
@@ -453,24 +476,23 @@ export default function StorePage() {
             ))}
           </div>
 
-          {storeAddress && storePossibility.status === 2 ? (
-            <output className="_close-popup _error" aria-live="polite">
-              <p>فروشگاه بسته است</p>
-            </output>
-          ) : storeAddress && storePossibility.status === 3 ? (
+          {popup && storeAddress && storePossibility.status !== 0 ? (
             <output className="_close-popup" aria-live="polite">
               <p>
-                فروشگاه در محدوده نیست
+                <button type="button" onClick={() => setPopup(false)}>
+                  ❌<span className="nonvisual">بستن</span>
+                </button>
+
+                {storePossibility.reason}
+
                 <br />
-                <Link to={routes.addresses}>
-                  انتخاب آدرسی دیگر
-                  <Icon name="flash" color="text"></Icon>
-                </Link>
+                {storePossibility.status !== 2 ? (
+                  <Link to={routes.addresses}>
+                    انتخاب آدرسی دیگر
+                    <Icon name="flash" color="text"></Icon>
+                  </Link>
+                ) : null}
               </p>
-            </output>
-          ) : !store.isVerified || !store.isAvailible ? (
-            <output className="_close-popup" aria-live="polite">
-              <p>فروشگاه خارج از دسترس است</p>
             </output>
           ) : null}
 

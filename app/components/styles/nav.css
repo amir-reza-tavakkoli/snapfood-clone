@@ -15,7 +15,7 @@
 :where(.nav li) {
   flex-grow: 1;
   flex-shrink: 1;
-  min-inline-size: var(--length-80);
+  min-inline-size: 80px;
 }
 
 :where(.nav a) {
@@ -51,6 +51,12 @@
 @media (pointer: coarse) {
   :where(.nav a) {
     min-block-size: var(--length-coarse-min);
+  }
+}
+
+@media (max-width: 34.5rem) {
+  :where(.nav li) {
+    min-inline-size: 60px;
   }
 }
 

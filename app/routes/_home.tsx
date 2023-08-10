@@ -152,6 +152,7 @@ export default function HomePage() {
       !isUnAuthenticated(user.phoneNumber) &&
       cityState &&
       redirect &&
+      cityState !== "" &&
       location.pathname === routes.index
     ) {
       setRedirect(false)

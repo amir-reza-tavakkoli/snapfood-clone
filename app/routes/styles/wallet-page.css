@@ -9,6 +9,10 @@
   border-radius: 20px;
 }
 
+:where(.wallet-page h1) {
+  margin-block: var(--length-8);
+}
+
 :where(.wallet-page ._credit) {
   display: inline-block;
   margin-block-start: var(--length-6);
@@ -25,6 +29,7 @@
 
 :where(.wallet-page button) {
   margin-block: var(--length-2);
+  border-radius: 8px;
 }
 
 :where(.wallet-page label) {
@@ -71,6 +76,7 @@
   display: flex;
   inline-size: 75%;
   justify-content: center;
+  margin-block: var(--length-8);
   align-items: center;
 }
 
