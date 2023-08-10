@@ -274,7 +274,7 @@ const Navigation = ({ name, color, ...props }: IconProps) => (
     height={14}
     viewBox="0 0 12 14"
     fill="#181C20"
-    fillOpacity={0.2}
+    fillOpacity={1}
     className={SVG_ICON_PREFIX + name}
     data-color={color}
     {...props}

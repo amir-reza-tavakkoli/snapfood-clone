@@ -47,6 +47,7 @@
   block-size: 16px;
   margin-inline: 12px;
   /* optocal alignment */
+  opacity: 0.35;
   text-align: center;
 }
 
@@ -105,14 +106,12 @@
   flex-basis: 0px;
   flex-grow: 0;
   flex-shrink: 0;
+  padding-block: 16px;
+  padding-inline: 16px;
   margin-inline-start: max(-4rem, -100px);
   inline-size: max-content;
   border: none;
   background-color: transparent;
-}
-
-:where(.header ._buttons button:last-child span) {
-  padding-inline-start: var(--length-6);
 }
 
 :where(.header form input) {
@@ -126,6 +125,7 @@
   border-radius: 12px;
   border: none;
   outline: none;
+  direction: rtl;
 }
 
 :where(.header ._buttons) {
@@ -206,7 +206,8 @@
 
   :where(.header ._backup-button) {
     display: inline-flex;
-    padding-inline: 0px;
+    margin-block-start: 4px;
+    /* optical alignment */
   }
 
   :where(.header form ._submit) {
@@ -219,8 +220,6 @@
   }
 
   :where(.header form button) {
-    padding-inline: 0px;
-    padding-block: 0px;
     margin-inline: 0px;
     text-align: center;
   }
@@ -265,6 +264,7 @@
 @media (max-width: 34.5rem) {
   :where(.header) {
     padding-inline: 6px;
+    margin-block-start: var(--length-6);
   }
 
   :where(.header ._identity > a) {
@@ -279,7 +279,13 @@
     inline-size: 16px;
     block-size: 16px;
   }
+
   :where(.header ._identity svg) {
     display: none;
+  }
+
+  :where(.header button) {
+    padding-block: var(--length-10);
+    padding-inline: 10px;
   }
 }
