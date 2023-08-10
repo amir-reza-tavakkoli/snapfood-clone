@@ -31,6 +31,8 @@
 }
 
 :where(.logo svg) {
+  inline-size: 160px;
+  block-size: 200px;
   animation: fade-out 0.3s linear 2s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
@@ -41,12 +43,10 @@
     inline-size: 160px;
     block-size: 200px;
   }
-  :where(.logo svg path) {
-    max-inline-size: 160px;
-    max-block-size: 200px;
-  }
-  :where(.logo svg g) {
-    max-inline-size: 160px;
-    max-block-size: 200px;
+}
+
+@media (prefers-reduced-motion) {
+  :where(.logo) {
+    display: none;
   }
 }
