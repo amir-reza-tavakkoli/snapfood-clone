@@ -24,7 +24,7 @@ import {
   updateAddress,
 } from "../queries.server/address.query.server"
 
-import { requuirePhoneNumber } from "../utils/session.server"
+import { requirePhoneNumber } from "../utils/session.server"
 
 import { requireValidatedUser } from "../utils/validate.server"
 
@@ -77,7 +77,7 @@ type ActionType = {
 
 export const action = async ({ request }: ActionArgs): Promise<ActionType> => {
   try {
-    const phoneNumber = await requuirePhoneNumber(request)
+    const phoneNumber = await requirePhoneNumber(request)
 
     const form = await request.formData()
 
@@ -251,7 +251,7 @@ export default function AddressPage() {
   const [map, setMap] = useState<Map | null>(null)
 
   return (
-    <main className="_address-page" dir={DEAFULT_DIRECTION}>
+    <main className="address-page" dir={DEAFULT_DIRECTION}>
       <h1>جزییات آدرس</h1>
 
       <Form method="post">
@@ -277,14 +277,15 @@ export default function AddressPage() {
 
         <div>
           <label htmlFor="address">نشانی</label>
-          <input
+
+          <textarea
             autoComplete="street-address"
-            type="text"
             name="address"
             id="address"
             value={addressState}
             onChange={e => {
               e.preventDefault()
+
               setAddressState(e.target.value)
             }}
           />
@@ -292,8 +293,9 @@ export default function AddressPage() {
 
         <div>
           <label htmlFor="city">شهر</label>
+
           <select name="city" id="city" autoComplete="city">
-            {cities?.map((city, index) => (
+            {cities.map((city, index) => (
               <option
                 key={index}
                 value={city.name}
@@ -334,6 +336,7 @@ export default function AddressPage() {
             value={unit}
             onChange={e => {
               e.preventDefault()
+
               if (isNaN(Number(e.target.value))) {
                 return undefined
               }
@@ -359,7 +362,11 @@ export default function AddressPage() {
           />
         </div>
 
-        <Button variant="accent" type="submit" disabled={!unit || !address}>
+        <Button
+          variant="accent"
+          type="submit"
+          disabled={!unit || !address || addressState === ""}
+        >
           ثبت
         </Button>
 

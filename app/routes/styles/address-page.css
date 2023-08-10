@@ -1,29 +1,36 @@
-:where(._address-page) {
+:where(.address-page) {
   inline-size: 50%;
   margin-inline: auto;
   border: solid var(--color-faded-2) var(--border-normal);
 }
 
-:where(._address-page > p) {
+:where(.address-page > h1) {
+  margin-inline: 16px;
+  margin-block: var(--length-16);
+  font-size: var(--length-20);
+}
+
+:where(.address-page > p) {
   margin-inline: 16px;
   margin-block: var(--length-16);
   font-size: var(--length-20);
   font-weight: 600;
 }
 
-:where(._address-page > form) {
+:where(.address-page > form) {
   display: flex;
   flex-direction: column;
 }
 
-:where(._address-page > form > div > label) {
+:where(.address-page > form > div > label) {
   align-self: center;
   margin-block: var(--length-6);
-  font-size: var(--length-14);
-  font-weight: 500;
+  margin-inline-end: 12px;
+  font-size: var(--length-12);
+  font-weight: 700;
 }
 
-:where(._address-page > form > div) {
+:where(.address-page > form > div) {
   display: flex;
   padding-inline: 12px;
   margin-inline: 16px;
@@ -33,22 +40,23 @@
   box-shadow: var(--box-shadow-double);
 }
 
-:where(._address-page > form > div:focus-within) {
+:where(.address-page > form > div:focus-within) {
   background-color: var(--color-faded-4);
   outline: solid var(--border-thin) var(--color-faded);
   outline-offset: 0px;
 }
 
-:where(._address-page > form button) {
+:where(.address-page > form button) {
   align-self: center;
   inline-size: 36px;
   margin-block: var(--length-8);
+  border-radius: 8px;
 }
 
 :where(
-    ._address-page form input,
-    ._address-page form select,
-    ._address-page form textarea
+    .address-page form input,
+    .address-page form select,
+    .address-page form textarea
   ) {
   inline-size: 100%;
   padding-inline: 12px;
@@ -63,36 +71,60 @@
 }
 
 :where(
-    ._address-page form input:focus,
-    ._address-page form select:focus,
-    ._address-page form textarea:focus
+    .address-page form input:focus,
+    .address-page form select:focus,
+    .address-page form textarea:focus
   ) {
   outline: none;
   background-color: transparent;
 }
 
-:where(._address-page output) {
+:where(.address-page output) {
   align-self: center;
   text-align: center;
   margin-block: var(--length-6);
 }
 
-:where(._address-page output ._success) {
+:where(.address-page output .success) {
   font-weight: 600;
 }
 
-:where(._address-page > form #__map) {
+:where(.address-page > form #map) {
   inline-size: 100%;
 }
 
-@media (max-width: 37.5rem) {
-  :where(._address-page) {
-    inline-size: 90%;
-  }
+:where(.address-page input) {
+  direction: rtl;
 }
 
 @media (max-width: 68.75rem) {
-  :where(._address-page) {
+  :where(.address-page) {
     inline-size: 75%;
+  }
+}
+
+@media (max-width: 37.5rem) {
+  :where(.address-page) {
+    inline-size: 90%;
+  }
+
+  :where(.address-page > form > div) {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :where(.address-page form input) {
+    margin-block: var(--length-24);
+  }
+
+  :where(
+      .address-page form input,
+      .address-page form select,
+      .address-page form textarea
+    ) {
+    text-align: center;
+    margin-inline: initial;
+    padding-block: var(--length-12);
   }
 }
