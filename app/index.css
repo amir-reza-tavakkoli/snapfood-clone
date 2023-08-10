@@ -35,7 +35,7 @@
   --length-64: 4rem;
   --length-80: 5rem;
 
-  --length-coarse-min: 40px;
+  --length-coarse-min: 32px;
 
   --small: 34.375rem;
   --normal: 68.75rem;
@@ -107,6 +107,7 @@
   font-family: "IRANSans", "IRANSansMobile", system-ui, -apple-system,
     /* Firefox supports this but not yet `system-ui` */ Helvetica, Roboto,
     "Segoe UI", sans-serif, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  accent-color: var(--color-accent);
 }
 
 :where(html) {
@@ -231,6 +232,10 @@ input[type="radio"]:hover {
   white-space: nowrap !important;
 }
 
+:where(p, h1) {
+  color: var(--color-text-2);
+}
+
 :where(._error) {
   color: var(--color-error);
 }
@@ -242,10 +247,6 @@ input[type="radio"]:hover {
 :where(button:hover, button:active) {
   transform: translateY(1px) scale(1.01);
   transition: transform 0.01s linear;
-}
-
-:where(p, h1) {
-  color: var(--color-text-2);
 }
 
 :where(p, h1, textarea, small, span, ) {
@@ -265,31 +266,3 @@ input[type="radio"]:hover {
     font-size: 14px;
   }
 }
-
-/* header {
-  opacity: 0;
-  transform: translateY(300px);
-  animation: fromTop 0.3s ease-out 0.1s forwards;
-}
-
-main {
-  opacity: 0;
-  transform: translateX(300px);
-  animation: fromRight 0.7s ease-out 0.1s forwards;
-}
-
-@keyframes fromRight {
-
-  100% {
-    opacity: 1;
-    transform: translateX(0px);
-  }
-}
-
-@keyframes fromTop {
-
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-} */
