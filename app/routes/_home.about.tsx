@@ -24,24 +24,24 @@ export default function AboutPage() {
       <h1>About SnappFood Clone</h1>
       <picture>
         <source
-          media="(max-width: 799px)"
-          width={950}
-          height={550}
+          media="(max-width: 552px)"
+          width={504}
+          height={798}
           srcSet="https://i.postimg.cc/HxJjbpGz/vendor-img-small.png"
         />
         <source
-          media="(min-width: 800px)"
+          media="(min-width: 553px)"
           srcSet="https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png"
-          width={950}
-          height={550}
+          width={975}
+          height={576}
         />
         <img
           src="https://i.postimg.cc/htVXSMjB/vendor-img-big-1-min.png"
           alt=""
           loading="lazy"
           role="presentation"
-          width={950}
-          height={550}
+          width={975}
+          height={576}
         />
       </picture>
       <h2>Overview</h2>

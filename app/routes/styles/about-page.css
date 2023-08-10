@@ -4,66 +4,83 @@
   padding-block: var(--length-24);
   margin-block: var(--length-32);
   margin-inline: auto;
+  direction: ltr;
 }
 
 :where(.about-page img) {
-  max-inline-size: 100%;
+  display: flex;
+  max-inline-size: 60vw;
+  max-block-size: 40vw;
+  margin-inline: auto;
+  text-align: center;
 }
 
 :where(.about-page h1) {
   padding-inline: 10px;
   margin-block: var(--length-24);
+  direction: ltr;
   font-size: var(--length-24);
 }
 
 :where(.about-page h2) {
   padding-inline: 10px;
   margin-block: var(--length-18);
-  font-size: var(--length-16);
+  direction: ltr;
+  font-size: var(--length-18);
 }
 
 :where(.about-page p) {
   padding-inline: 6px;
-  font-size: var(--length-14);
+  font-size: var(--length-16);
+  direction: ltr;
   color: var(--color-text-2);
 }
 
 :where(.about-page a) {
   padding-inline: 6px;
   color: var(--color-accent);
+  direction: ltr;
   font-weight: 700;
 }
 
 :where(.about-page ul) {
   padding-inline: 6px;
   margin-block: var(--length-8);
+  direction: ltr;
 }
 
 :where(.about-page ul ul) {
   padding-inline: 6px;
-  margin-block: var(--length-20);
   margin-inline: 48px;
+  margin-block: var(--length-20);
+  direction: ltr;
 }
 
 :where(.about-page li) {
   font-size: var(--length-14);
   color: var(--color-text-2);
+  direction: ltr;
   display: block;
 }
 
 .about-page li::before {
   display: inline-block;
   content: "  ";
-  background-color: var(--color-accent);
   padding-inline: 3px;
   padding-block: 3px;
-  border-radius: 100%;
   margin-inline: 4px;
+  background-color: var(--color-accent);
+  border-radius: 100%;
 }
 
 @media (max-width: 34.5rem) {
   :where(.about-page) {
     inline-size: 90%;
+  }
+
+  :where(.about-page img) {
+    max-inline-size: 40vw;
+    max-block-size: 60vw;
   }
 
   :where(.about-page ul ul) {
