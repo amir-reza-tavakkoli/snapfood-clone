@@ -196,7 +196,8 @@ export function getStoreCurrentSchedule(
 
   const schedule = todaySchedule.find(
     schedule =>
-      schedule.startTime < now.getHours() && schedule.endTime > now.getHours(),
+      schedule.startTime <= now.getHours() &&
+      schedule.endTime >= now.getHours(),
   )
 
   return schedule
@@ -225,47 +226,42 @@ export function validateOrderPossibility({
   storeAddress: Address | undefined | null
   schedules: storeSchedule[]
 }) {
-  try {
-    if (order && (order.isBilled || order.isCanceled || !order.isInCart)) {
-      throw new Response("سفارش قبلا تایید شده است", { status: 404 })
-    }
-
-    if (!store.isVerified || !store.isAvailible) {
-      throw new Response("فروشگاه دردسترس نیست", { status: 404 })
-    }
-
-    if (!address || store.cityName !== address.cityName) {
-      throw new Response("آدرس صحیح نیست", { status: 404 })
-    }
-
-    if (order && order.totalPrice < store.minOrderPrice) {
-      throw new Response("حداقل قیمت صحیح نیست", { status: 404 })
-    }
-
-    if (!schedules || getStoreCurrentSchedule(schedules)) {
-      throw new Response("فروشگاه بسته است", { status: 404 })
-    }
-
-    if (order && getOrderStatus({ order }).status !== "inCart") {
-      throw new Response("مشکلی در دریافت وضعیت سفارش پیش آمد", { status: 404 })
-    }
-
-    if (
-      !storeAddress ||
-      !isAddressInRange({ destinationAddress: address, store, storeAddress })
-    ) {
-      throw new Response("فروشگاه در رنج نیست", { status: 404 })
-    }
-
-    return true
-  } catch (error) {
-    return false
+  if (order && (order.isBilled || order.isCanceled || !order.isInCart)) {
+    throw new Error("سفارش قبلا تایید شده است")
   }
+
+  if (!store.isVerified || !store.isAvailible) {
+    throw new Error("فروشگاه دردسترس نیست")
+  }
+
+  if (!address || store.cityName !== address.cityName) {
+    throw new Error("آدرس صحیح نیست")
+  }
+
+  if (order && order.totalPrice < store.minOrderPrice) {
+    throw new Error("حداقل قیمت صحیح نیست")
+  }
+
+  if (!schedules || getStoreCurrentSchedule(schedules)) {
+    throw new Error("فروشگاه بسته است")
+  }
+
+  if (order && getOrderStatus({ order }).status !== "inCart") {
+    throw new Error("مشکلی در دریافت وضعیت سفارش پیش آمد")
+  }
+
+  if (
+    !storeAddress ||
+    !isAddressInRange({ destinationAddress: address, store, storeAddress })
+  ) {
+    throw new Error("فروشگاه در رنج نیست")
+  }
+
+  return true
 }
 
 export function validateStorePossibility({
   store,
-
   address,
   schedules,
   storeAddress,
@@ -276,7 +272,7 @@ export function validateStorePossibility({
   schedules: storeSchedule[]
 }) {
   if (!address || store.cityName !== address.cityName) {
-    return { reason: "آدرس صحیح نیست", status: 1 }
+    return { reason: "آدرس ها در یک شهر قرار ندارند ", status: 1 }
   }
 
   if (!schedules || !getStoreCurrentSchedule(schedules)) {
