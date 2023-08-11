@@ -43,12 +43,13 @@ import type { Address, Order, Store, storeSchedule, User } from "@prisma/client"
 import { StoreInfo } from "../components/store-info"
 import { FoodCard } from "../components/food-card"
 import { OrderComp } from "../components/order"
-import { Icon } from "~/components/icon"
+import { Icon } from "../components/icon"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
 import { routes } from "../routes"
 
 import {
+  calculateShipmentPrice,
   getStoreCurrentSchedule,
   isUnAuthenticated,
   validateOrderPossibility,
@@ -197,7 +198,13 @@ export const action = async ({
       storeId,
     })
 
-    const newTotalPrice = await calculateOrder({ orderId: orderInCart.id })
+    const shipmentPrice = calculateShipmentPrice({
+      store,
+      storeAddress,
+      destinationAddress: address,
+    })
+
+    const newTotalPrice = await calculateOrder({ orderId: orderInCart.id,shipmentPrice })
 
     const categorizedItems = categorizeItems({ items: newItems })
 
@@ -347,6 +354,7 @@ export default function StorePage() {
   const [totalPriceState, setTotalPriceState] = useState<number>(totalPrice)
 
   const [render, reRender] = useState({})
+
   const actionData = useActionData() as unknown as ActionType
   const [currentSchedule] = useState(getStoreCurrentSchedule(schedules))
 
@@ -356,7 +364,9 @@ export default function StorePage() {
     if (!user || user.phoneNumber === "0") {
       return
     }
+
     const redirectionDealy = 2000
+
     const choosedAddress = localStorage.getItem(COOKIE_ADDRESS)
 
     if (!choosedAddress || isNaN(Number(choosedAddress))) {
@@ -414,6 +424,15 @@ export default function StorePage() {
     store,
     storeAddress,
   })
+
+  const deliveryPrice = currentAddress
+    ? calculateShipmentPrice({
+        store,
+        storeAddress,
+        destinationAddress: currentAddress,
+      })
+    : store.baseShipmentPrice
+
   return (
     <>
       {!address || address <= INVALID_ADDRESS_RANGE ? (
@@ -430,6 +449,7 @@ export default function StorePage() {
           <h1 className="nonvisual">{store.name}</h1>
 
           <StoreInfo
+            deliveryPrice={deliveryPrice}
             store={store}
             name={store.name}
             logo={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}

@@ -1,3 +1,4 @@
+import { DEFAULT_CURRENCY } from "../constants"
 import { Icon } from "./icon"
 
 type VendorCardProps = {
@@ -7,12 +8,11 @@ type VendorCardProps = {
   logo?: string
   ratingValue?: number | string
   ratingRange?: number
-  ratingCount?: number
+  ratingCount?: number | string
   discount?: number
   tags?: string[]
   deliveryMethod: string
-  deliveryPrice: string | number
-  deliveryCurrency: string
+  deliveryPrice: number
   dir?: "lrt" | "rtl"
 }
 
@@ -21,21 +21,20 @@ export const VendorCard = ({
   logo,
   image,
   ratingRange,
-  ratingValue,
-  ratingCount,
+  ratingValue = 1,
+  ratingCount = "جدید",
   deliveryMethod,
   type,
   discount,
   tags,
-  deliveryCurrency,
   deliveryPrice,
   dir,
 }: VendorCardProps) => {
-  return (
+  return name ? (
     <dl className="vendor-card" dir={dir}>
       <dt className="nonvisual">Name</dt>
 
-      <dd className="_name">{name ?? null}</dd>
+      <dd className="_name">{name}</dd>
 
       {type ? (
         <>
@@ -64,32 +63,26 @@ export const VendorCard = ({
       ) : null}
 
       <div className="_images">
-        <dt className="nonvisual">Image</dt>
+        {image && logo ? (
+          <>
+            <dt className="nonvisual">Image</dt>
 
-        <dd className="_image">
-          {(
-            <img
-              src={image}
-              alt={`${name}  ${type}`}
-              width={60}
-              height={60}
-              loading="lazy"
-            />
-          ) ?? null}
+            <dd className="_image">
+              <img src={image} alt="" width={60} height={60} loading="lazy" />
 
-          {logo ? (
-            <span className="_logo" role="presentation">
-              <img
-                src={logo}
-                alt=""
-                role="presentation"
-                loading="lazy"
-                width={40}
-                height={40}
-              />
-            </span>
-          ) : null}
-        </dd>
+              <span className="_logo" role="presentation">
+                <img
+                  src={logo}
+                  alt=""
+                  role="presentation"
+                  loading="lazy"
+                  width={40}
+                  height={40}
+                />
+              </span>
+            </dd>
+          </>
+        ) : null}
 
         {discount ? (
           <>
@@ -102,47 +95,53 @@ export const VendorCard = ({
         ) : null}
       </div>
 
-      {ratingValue ? (
-        <>
-          <dt className="nonvisual">Rating</dt>
+      <>
+        <dt className="nonvisual">Rating</dt>
 
-          <dd className="_rating">
-            <dl>
-              <dt className="nonvisual">Stars</dt>
+        <dd className="_rating">
+          <dl>
+            {ratingValue ? (
+              <>
+                <dt className="nonvisual">Value</dt>
 
-              <dd className="_star-icon">
-                {<Icon name="star" role="presentation" />}
-              </dd>
+                <dd aria-label="Stars">{ratingValue.toLocaleString("fa")}</dd>
+              </>
+            ) : null}
 
-              {ratingValue ? (
-                <>
-                  <dt className="nonvisual">Value</dt>
+            <dt className="nonvisual">Stars</dt>
 
-                  <dd aria-label="Stars">{ratingValue.toLocaleString("fa")}</dd>
-                </>
-              ) : null}
-              {ratingRange ? (
-                <>
-                  <dd className="nonvisual">Range</dd>
+            <dd className="_star-icon">
+              {<Icon name="star" role="presentation" />}
+            </dd>
 
-                  <dt className="nonvisual">
-                    / {ratingRange.toLocaleString("fa")}
-                  </dt>
-                </>
-              ) : null}
-              {ratingCount ? (
-                <>
-                  <dt className="nonvisual">Count</dt>
+            {ratingRange ? (
+              <>
+                <dd className="nonvisual">Range</dd>
 
-                  <dd className="_rating-count">
-                    ( {ratingCount.toLocaleString("fa")} )
-                  </dd>
-                </>
-              ) : null}
-            </dl>
-          </dd>
-        </>
-      ) : null}
+                <dt className="nonvisual">
+                  / {ratingRange.toLocaleString("fa")}
+                </dt>
+              </>
+            ) : null}
+
+            {ratingCount && typeof ratingCount === "number" ? (
+              <>
+                <dt className="nonvisual">Count</dt>
+
+                <dd className="_rating-count">
+                  ( {ratingCount.toLocaleString("fa")} )
+                </dd>
+              </>
+            ) : (
+              <>
+                <dt className="nonvisual">Count</dt>
+
+                <dd className="_rating-count">جدید</dd>
+              </>
+            )}
+          </dl>
+        </dd>
+      </>
 
       {deliveryMethod ? (
         <>
@@ -150,7 +149,7 @@ export const VendorCard = ({
 
           <dd>
             <dl>
-              {deliveryPrice && deliveryMethod ? (
+              {deliveryMethod ? (
                 <>
                   <dt className="nonvisual">Method / Price:</dt>
 
@@ -160,13 +159,16 @@ export const VendorCard = ({
                     <div>
                       <span>{deliveryMethod} </span>
 
-                      <span>
-                        {deliveryPrice
-                          ? deliveryPrice.toLocaleString("fa")
-                          : "رایگان"}
-                      </span>
-
-                      <span>{deliveryCurrency ?? null}</span>
+                      {deliveryPrice ? (
+                        <>
+                          <span className="_price">
+                            {deliveryPrice.toLocaleString("fa")}
+                          </span>
+                          <span>{DEFAULT_CURRENCY}</span>{" "}
+                        </>
+                      ) : (
+                        <span className="_price">رایگان </span>
+                      )}
                     </div>
                   </dd>
 
@@ -188,5 +190,5 @@ export const VendorCard = ({
         </>
       ) : null}
     </dl>
-  )
+  ) : null
 }

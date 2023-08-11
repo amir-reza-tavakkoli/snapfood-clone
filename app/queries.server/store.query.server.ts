@@ -10,8 +10,7 @@ import type {
 
 import { getOrder, getOrderItems } from "./order.query.server"
 
-import { checkStore } from "../utils/validate.server"
-import { checkCity } from "../utils/validate.server"
+import { checkStore, checkCity } from "../utils/validate.server"
 
 import {
   DEFAULT_TAKE_THIS_MUCH,
@@ -338,6 +337,23 @@ export async function getStoresWithFreeShipment({
     throw error
   }
 }
+
+export async function getBestStores({
+  stores,
+  take,
+}: {
+  stores: Store[] | null
+  take?: number
+  }): Promise<Store[]> {
+  try {
+    if (!stores) {
+      return []
+    }
+    return stores.sort((a, b) => a.score > b.score ? 1 : -1)
+  } catch (error) {
+    throw error
+  }
+ }
 
 export async function getStoresByCategory({
   category,

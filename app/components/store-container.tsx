@@ -28,13 +28,13 @@ export function StoreContainer({
   return stores && stores.length > 0 ? (
     <ul className="store-container" aria-label="Stores" dir={dir}>
       <div>
-        <p>{title}</p>
+        { title ? <p>{title}</p> : null}
 
         {moreHref ? (
           <Link to={moreHref}>
             مشاهده همه{<Icon name="flash" color="action"></Icon>}
           </Link>
-        ) : undefined}
+        ) : null}
       </div>
 
       <div>
@@ -47,11 +47,10 @@ export function StoreContainer({
                   name={store.name}
                   type={store.storeKindName}
                   ratingValue={store.score}
-                  ratingCount={store.scoreCount ?? "جدید"}
+                  ratingCount={store.scoreCount}
                   dir="rtl"
-                  tags={store.tags ?? ["فست فود"]}
+                  tags={store.tags ?? []}
                   deliveryMethod={DEFAULT_DELIVERY_METHOD}
-                  deliveryCurrency={DEFAULT_CURRENCY}
                   deliveryPrice={store.baseShipmentPrice ?? 0}
                   logo="https://cdn.snappfood.ir/media/cache/vendor_logo/uploads/images/vendors/logos/634bff2c452e0.jpg"
                 ></VendorCard>

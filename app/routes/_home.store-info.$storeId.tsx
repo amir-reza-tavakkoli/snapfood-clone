@@ -27,11 +27,11 @@ import { requireUser, validateNumberParam } from "../utils/validate.server"
 
 import { Icon } from "../components/icon"
 import { GlobalErrorBoundary } from "../components/error-boundary"
-import { ClientOnly } from "~/client.map"
-import { MapComponent } from "~/components/map.client"
+import { ClientOnly } from "../client.map"
+import { MapComponent } from "../components/map.client"
 import { CommentComp } from "../components/comment"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import {
   CLIENT_CACHE_DURATION,

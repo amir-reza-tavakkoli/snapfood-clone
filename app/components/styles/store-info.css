@@ -6,6 +6,15 @@
   min-inline-size: min-content;
 }
 
+:where(.store-info + .placeholder) {
+  position: sticky;
+  inset-block-start: 0px;
+  inset-inline-start: 0px;
+  block-size: 189px;
+  inline-size: 100%;
+  background-color: white;
+}
+
 :where(.store-info > div:first-child) {
   display: flex;
   flex-grow: 0;
@@ -44,7 +53,7 @@
 
 :where(.store-info ._name) {
   order: 3;
-  padding-inline-start: 16px;
+  padding-inline-start: 6px;
   margin-block-end: var(--length-10);
   font-size: var(--length-14);
   font-weight: 700;
@@ -159,6 +168,25 @@
   color: var(--color-text-2);
   font-size: var(--length-14);
   font-weight: 600;
+}
+
+:where(.store-info ._time) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block: var(--length-12);
+  padding-inline: 12px;
+  padding-block: var(--length-8);
+  font-size: var(--length-10);
+  text-align: center;
+  border: var(--border-extra-thin) solid var(--color-faded-5);
+  box-shadow: var(--box-shadow-double);
+  border-radius: 8px;
+}
+
+:where(.store-info ._time svg) {
+  inline-size: 16px;
+  block-size: 16px;
 }
 
 :where(.store-info ._categories > li) {
