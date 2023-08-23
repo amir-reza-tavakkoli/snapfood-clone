@@ -205,6 +205,7 @@ model Order {
   updatedAt DateTime @updatedAt
 
   totalPrice    Float
+  priceToPay    Float?
   shipmentPrice Float
 
   estimatedReadyTime    Int

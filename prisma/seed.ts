@@ -874,6 +874,8 @@ async function seedThirdDataChunk() {
       takesOfflineOrder: false,
       storeKindName: "رستوران",
       cityName: storeAddress.cityName,
+      score: 4,
+      scoreCount: 50,
       addressId: storeAddress.id,
       packagingPrice: 20000,
       userPhoneNumber: storeOwner.phoneNumber,
@@ -955,6 +957,589 @@ async function seedThirdDataChunk() {
   })
 }
 
+async function seedForthDataChunk() {
+  const user = await prisma.user.create({
+    data: {
+      phoneNumber: "09173196666",
+      firstName: "علی",
+
+      lastName: "حبیبی",
+      credit: 1000000,
+    },
+  })
+
+  const storeOwner = await prisma.user.create({
+    data: {
+      phoneNumber: "09825486202",
+      firstName: "طاهره",
+      lastName: "اسکندری",
+      gender: true,
+      credit: 1000000,
+    },
+  })
+
+  const storeAddress = await prisma.address.create({
+    data: {
+      address: "بلوار نیشابور ، احمد برگر",
+      unit: 1,
+      cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const userAddress = await prisma.address.create({
+    data: {
+      address: "سعادت آباد دوم بولواراصلی",
+      unit: 16,
+      cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
+      userPhoneNumber: user.phoneNumber,
+    },
+  })
+
+  let items: Item[] = []
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چوریتسو برگر",
+        description:
+          "گوشت گوساله خالص ،گردو، سوسیس چوریتسو،پنیرورقه ای، قارچ، نان مک دونالد",
+        basePrice: 220000,
+        estimatedReadyTime: 75,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/6329709095616.jpeg",
+        itemCategoryName: "برگر",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فیله استریپس (چهار تکه)",
+        description: `۴ تکه فیله سوخاری، سیب زمینی سرخ شده، سالاد کلم، نان بروتچن`,
+        basePrice: 305000,
+        estimatedReadyTime: 45,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296fbdb7975.jpeg",
+        itemCategoryName: "فست فود",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "ساندویچ برگر تنوری سینگل",
+        description: `برگر دست ساز گوشت گوساله خالص ، میکس پنیر پیتزا، چیپس، سس قارچ، نان باگت فرانسوی`,
+        basePrice: 180000,
+        estimatedReadyTime: 55,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/630dcf51c29db.jpeg`,
+        itemCategoryName: "ساندویچ",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فانتا قوطی",
+        description: "۳۳۰ میلی لیتر",
+        estimatedReadyTime: 5,
+        basePrice: 19000,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296e4b8b231.jpeg`,
+        itemCategoryName: "نوشیدنی",
+      },
+    }),
+  )
+
+  const store = await prisma.store.create({
+    data: {
+      takesOfflineOrder: true,
+      name: "احمد برگر",
+      baseShipmentTime: 5,
+      avatarUrl:
+        "https://cdn.snappfood.ir/300x200/uploads/images/vendors/covers/6488c57fd46ce.jpeg",
+      minOrderPrice: 80000,
+      baseShipmentPrice: 15000,
+      storeKindName: "رستوران",
+      score: 2.3,
+      scoreCount: 81,
+      cityName: storeAddress.cityName,
+      addressId: storeAddress.id,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const startTime = 12
+  const endTime = 24
+  const daysNumber = [0, 1, 2, 3, 4, 5, 6]
+
+  await Promise.all(
+    daysNumber.map(day =>
+      prisma.storeSchedule.create({
+        data: { dayNumber: day, endTime, startTime, storeId: store.id },
+      }),
+    ),
+  )
+
+  const itemsInStore = await Promise.all(
+    items.map(item =>
+      prisma.storeHasItems.create({
+        data: {
+          storeId: store.id,
+          infiniteSupply: true,
+          itemId: item.id,
+          price: item.basePrice!,
+          score: 2,
+          scoreCount: 20,
+          remainingCount: 100,
+          estimatedReadyTime: item.estimatedReadyTime,
+        },
+      }),
+    ),
+  )
+
+  const order = await prisma.order.create({
+    data: {
+      estimatedShipmentTime: DEFAULT_SHIPMENT_TIME,
+      storeId: store.id,
+      userPhoneNumber: user.phoneNumber,
+      addressId: userAddress.id,
+      estimatedReadyTime: 50,
+      billDate: new Date(Date.now()),
+      isBilled: true,
+      isDelivered: true,
+      isShipped: true,
+      shipmentPrice: 3000,
+      totalPrice: 0,
+    },
+  })
+
+  const itemsInOrder = await Promise.all(
+    items.map(item =>
+      prisma.orderHasItems.create({
+        data: {
+          count: 1,
+          itemId: item.id,
+          orderId: order.id,
+        },
+      }),
+    ),
+  )
+
+  const totalPrice = await calculateOrder({ orderId: order.id })
+
+  const newOrder = await prisma.order.update({
+    where: { id: order.id },
+    data: { totalPrice },
+  })
+
+  const comment = await prisma.comment.create({
+    data: {
+      orderId: order.id,
+      wasPositive: true,
+      wasDeliveryPositive: true,
+      score: 5,
+      description: " نبود عالی",
+    },
+  })
+}
+
+async function seedّFifthDataChunk() {
+  const user = await prisma.user.create({
+    data: {
+      phoneNumber: "09173196667",
+      firstName: "علی",
+
+      lastName: "حبیبی",
+      credit: 1000000,
+    },
+  })
+
+  const storeOwner = await prisma.user.create({
+    data: {
+      phoneNumber: "09825486282",
+      firstName: "طاهره",
+      lastName: "اسکندری",
+      gender: true,
+      credit: 1000000,
+    },
+  })
+
+  const storeAddress = await prisma.address.create({
+    data: {
+      address: "گیشا خیابان دوم",
+      unit: 1,
+      cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const userAddress = await prisma.address.create({
+    data: {
+      address: "سعادت آباد دوم بولواراصلی",
+      unit: 16,
+      cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
+      userPhoneNumber: user.phoneNumber,
+    },
+  })
+
+  let items: Item[] = []
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چوریتسو برگر",
+        description:
+          "گوشت گوساله خالص ،گردو، سوسیس چوریتسو،پنیرورقه ای، قارچ، نان مک دونالد",
+        basePrice: 220000,
+        estimatedReadyTime: 75,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/6329709095616.jpeg",
+        itemCategoryName: "برگر",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فیله استریپس (چهار تکه)",
+        description: `۴ تکه فیله سوخاری، سیب زمینی سرخ شده، سالاد کلم، نان بروتچن`,
+        basePrice: 305000,
+        estimatedReadyTime: 45,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296fbdb7975.jpeg",
+        itemCategoryName: "فست فود",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "ساندویچ برگر تنوری سینگل",
+        description: `برگر دست ساز گوشت گوساله خالص ، میکس پنیر پیتزا، چیپس، سس قارچ، نان باگت فرانسوی`,
+        basePrice: 180000,
+        estimatedReadyTime: 55,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/630dcf51c29db.jpeg`,
+        itemCategoryName: "ساندویچ",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فانتا قوطی",
+        description: "۳۳۰ میلی لیتر",
+        estimatedReadyTime: 5,
+        basePrice: 19000,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296e4b8b231.jpeg`,
+        itemCategoryName: "نوشیدنی",
+      },
+    }),
+  )
+
+  const store = await prisma.store.create({
+    data: {
+      takesOfflineOrder: true,
+      name: "تهران بار",
+      baseShipmentTime: 15,
+      avatarUrl:
+        "https://cdn.snappfood.ir/300x200/uploads/images/vendor-cover-app-review/16/08.jpg",
+      minOrderPrice: 80000,
+      baseShipmentPrice: 15000,
+      packagingPrice: 10000,
+      taxPercent: 10,
+      storeKindName: "رستوران",
+      cityName: storeAddress.cityName,
+      score: 4,
+      scoreCount: 6422,
+      addressId: storeAddress.id,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const startTime = 12
+  const endTime = 24
+  const daysNumber = [0, 1, 2, 3, 4, 5, 6]
+
+  await Promise.all(
+    daysNumber.map(day =>
+      prisma.storeSchedule.create({
+        data: { dayNumber: day, endTime, startTime, storeId: store.id },
+      }),
+    ),
+  )
+
+  const itemsInStore = await Promise.all(
+    items.map(item =>
+      prisma.storeHasItems.create({
+        data: {
+          storeId: store.id,
+          itemId: item.id,
+          price: item.basePrice!,
+          score: 2,
+          scoreCount: 20,
+          remainingCount: 100,
+          discountPercent: 50,
+          infiniteSupply: true,
+          estimatedReadyTime: item.estimatedReadyTime,
+        },
+      }),
+    ),
+  )
+
+  const order = await prisma.order.create({
+    data: {
+      estimatedShipmentTime: DEFAULT_SHIPMENT_TIME,
+      storeId: store.id,
+      userPhoneNumber: user.phoneNumber,
+      addressId: userAddress.id,
+      estimatedReadyTime: 50,
+      billDate: new Date(Date.now()),
+      isBilled: true,
+      isDelivered: true,
+      isShipped: true,
+      shipmentPrice: 3000,
+      totalPrice: 0,
+    },
+  })
+
+  const itemsInOrder = await Promise.all(
+    items.map(item =>
+      prisma.orderHasItems.create({
+        data: {
+          count: 1,
+          itemId: item.id,
+          orderId: order.id,
+        },
+      }),
+    ),
+  )
+
+  const totalPrice = await calculateOrder({ orderId: order.id })
+
+  const newOrder = await prisma.order.update({
+    where: { id: order.id },
+    data: { totalPrice },
+  })
+
+  const comment = await prisma.comment.create({
+    data: {
+      orderId: order.id,
+      wasPositive: true,
+      wasDeliveryPositive: true,
+      score: 5,
+      description: " نبود عالی",
+    },
+  })
+}
+
+async function seedّSixthDataChunk() {
+  const user = await prisma.user.create({
+    data: {
+      phoneNumber: "09173726667",
+      firstName: "علی",
+
+      lastName: "شاهرخی",
+      credit: 1000000,
+    },
+  })
+
+  const storeOwner = await prisma.user.create({
+    data: {
+      phoneNumber: "09825666282",
+      firstName: "اسکندر",
+      lastName: "اسکندری",
+      gender: true,
+      credit: 1000000,
+    },
+  })
+
+  const storeAddress = await prisma.address.create({
+    data: {
+      address: "گیشا خیابان دوم",
+      unit: 1,
+      cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const userAddress = await prisma.address.create({
+    data: {
+      address: "سعادت آباد دوم بولواراصلی",
+      unit: 16,
+      cityName: "تهران",
+      xAxis: DEFAULT_COORDINATIONS.xAxis,
+      yAxis: DEFAULT_COORDINATIONS.yAxis,
+      userPhoneNumber: user.phoneNumber,
+    },
+  })
+
+  let items: Item[] = []
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "چوریتسو برگر",
+        description:
+          "گوشت گوساله خالص ،گردو، سوسیس چوریتسو،پنیرورقه ای، قارچ، نان مک دونالد",
+        basePrice: 220000,
+        estimatedReadyTime: 75,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/6329709095616.jpeg",
+        itemCategoryName: "برگر",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فیله استریپس (چهار تکه)",
+        description: `۴ تکه فیله سوخاری، سیب زمینی سرخ شده، سالاد کلم، نان بروتچن`,
+        basePrice: 305000,
+        estimatedReadyTime: 45,
+        avatarUrl:
+          "https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296fbdb7975.jpeg",
+        itemCategoryName: "فست فود",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "ساندویچ برگر تنوری سینگل",
+        description: `برگر دست ساز گوشت گوساله خالص ، میکس پنیر پیتزا، چیپس، سس قارچ، نان باگت فرانسوی`,
+        basePrice: 180000,
+        estimatedReadyTime: 55,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/630dcf51c29db.jpeg`,
+        itemCategoryName: "ساندویچ",
+      },
+    }),
+  )
+
+  items.push(
+    await prisma.item.create({
+      data: {
+        name: "فانتا قوطی",
+        description: "۳۳۰ میلی لیتر",
+        estimatedReadyTime: 5,
+        basePrice: 19000,
+        avatarUrl: `https://cdn.snappfood.ir/200x201/cdn/49/82/8/vendor/63296e4b8b231.jpeg`,
+        itemCategoryName: "نوشیدنی",
+      },
+    }),
+  )
+
+  const store = await prisma.store.create({
+    data: {
+      takesOfflineOrder: true,
+      name: "پنینی بار",
+      baseShipmentTime: 15,
+      avatarUrl:
+        "https://cdn.snappfood.ir/300x200/uploads/images/vendor-cover-app-review/8/07.jpg",
+      minOrderPrice: 80000,
+      baseShipmentPrice: 15000,
+      storeKindName: "رستوران",
+      cityName: storeAddress.cityName,
+      addressId: storeAddress.id,
+      score: 4,
+      scoreCount: 293,
+      userPhoneNumber: storeOwner.phoneNumber,
+    },
+  })
+
+  const startTime = 12
+  const endTime = 24
+  const daysNumber = [0, 1, 2, 3, 4, 5, 6]
+
+  await Promise.all(
+    daysNumber.map(day =>
+      prisma.storeSchedule.create({
+        data: { dayNumber: day, endTime, startTime, storeId: store.id },
+      }),
+    ),
+  )
+
+  const itemsInStore = await Promise.all(
+    items.map(item =>
+      prisma.storeHasItems.create({
+        data: {
+          storeId: store.id,
+          itemId: item.id,
+          price: item.basePrice!,
+          score: 2,
+          scoreCount: 20,
+          infiniteSupply: true,
+          remainingCount: 100,
+          estimatedReadyTime: item.estimatedReadyTime,
+        },
+      }),
+    ),
+  )
+
+  const order = await prisma.order.create({
+    data: {
+      estimatedShipmentTime: DEFAULT_SHIPMENT_TIME,
+      storeId: store.id,
+      userPhoneNumber: user.phoneNumber,
+      addressId: userAddress.id,
+      estimatedReadyTime: 50,
+      billDate: new Date(Date.now()),
+      isBilled: true,
+      description: "بهتر باشه",
+      isDelivered: true,
+      isShipped: true,
+      shipmentPrice: 3000,
+      totalPrice: 0,
+    },
+  })
+
+  const itemsInOrder = await Promise.all(
+    items.map(item =>
+      prisma.orderHasItems.create({
+        data: {
+          count: 1,
+          itemId: item.id,
+          orderId: order.id,
+        },
+      }),
+    ),
+  )
+
+  const totalPrice = await calculateOrder({ orderId: order.id })
+
+  const newOrder = await prisma.order.update({
+    where: { id: order.id },
+    data: { totalPrice },
+  })
+
+  const comment = await prisma.comment.create({
+    data: {
+      orderId: order.id,
+      wasPositive: true,
+      wasDeliveryPositive: true,
+      score: 5,
+      description: " نبود عالی",
+    },
+  })
+}
+
 async function seedData() {
   await seedFirstDataChunk()
     .then(async () => {
@@ -989,6 +1574,51 @@ async function seedData() {
   await seedThirdDataChunk()
     .then(async () => {
       console.log("Seeded third chunk successfully")
+
+      await prisma.$disconnect()
+    })
+
+    .catch(async e => {
+      console.error(e)
+
+      await prisma.$disconnect()
+
+      process.exit(1)
+    })
+
+  await seedForthDataChunk()
+    .then(async () => {
+      console.log("Seeded forth chunk successfully")
+
+      await prisma.$disconnect()
+    })
+
+    .catch(async e => {
+      console.error(e)
+
+      await prisma.$disconnect()
+
+      process.exit(1)
+    })
+
+  await seedّFifthDataChunk()
+    .then(async () => {
+      console.log("Seeded fifth chunk successfully")
+
+      await prisma.$disconnect()
+    })
+
+    .catch(async e => {
+      console.error(e)
+
+      await prisma.$disconnect()
+
+      process.exit(1)
+    })
+
+  await seedّSixthDataChunk()
+    .then(async () => {
+      console.log("Seeded sixth chunk successfully")
 
       await prisma.$disconnect()
     })
