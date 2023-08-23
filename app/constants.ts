@@ -68,6 +68,7 @@ export type AllowedStoresFeatures =
   | "freeShipment"
   | "all"
   | "category"
+  | "bestInTown"
 export type StoreWithTags = Store & {
   tags?: string[]
 }
@@ -192,6 +193,9 @@ export const DEFAULT_MIN_ADDRESS_LENGTH = 10
 
 export const MAX_VALID_DATE_YEAR_ADDED = 1
 export const MIN_VALID_DATE_YEAR = 1950
+
+export const MAX_SCORE = 5
+export const MIN_SCORE = 1
 
 export const MIN_NAME_LENGTH = 3
 export const MAX_NAME_LENGTH = 30

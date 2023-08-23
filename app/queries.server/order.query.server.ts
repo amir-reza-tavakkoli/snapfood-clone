@@ -507,7 +507,7 @@ export async function billOrder({
 
     user = checkUser({ user })
 
-    if (user.credit < order.totalPrice || user.credit < 0) {
+    if (user.credit < (order.priceToPay ?? order.totalPrice) || user.credit < 0) {
       throw new Response("کمبود وجه", { status: 404 })
     }
 
@@ -517,7 +517,7 @@ export async function billOrder({
           phoneNumber: user.phoneNumber,
         },
         data: {
-          credit: user.credit - order.totalPrice,
+          credit: user.credit - (order.priceToPay ?? order.totalPrice),
         },
       }),
       db.order.update({
@@ -527,7 +527,7 @@ export async function billOrder({
         data: {
           isBilled: true,
           billDate: new Date(Date.now()),
-          paymentNumber: generateRandomCode(10), // must come from bank
+          paymentNumber: order.isOrderOffline ? null : generateRandomCode(10), // must come from a bank
         },
       }),
     ])
@@ -544,8 +544,10 @@ export async function billOrder({
 
 export async function calculateOrder({
   orderId,
+  shipmentPrice,
 }: {
   orderId: number
+  shipmentPrice?: number
 }): Promise<number> {
   try {
     const order = await getOrder({ orderId })
@@ -560,7 +562,9 @@ export async function calculateOrder({
       throw new Response("سفارش خالی است", { status: 404 })
     }
 
-    let totalPrice: number = 0
+    let finalPrice = 0
+    let totalPrice = 0
+    let totalDiscount = 0
 
     orderItems.forEach(orderItem => {
       if (!orderItem || !orderItem.price || !orderItem.count) {
@@ -570,35 +574,47 @@ export async function calculateOrder({
       let tempPrice = orderItem.price
 
       if (orderItem.discountPercent) {
-        tempPrice *= orderItem.discountPercent / 100
+        tempPrice *= 1 - orderItem.discountPercent / 100
+        totalDiscount += tempPrice * orderItem.count
       }
 
-      totalPrice += tempPrice * orderItem.count
+      totalPrice += orderItem.price * orderItem.count
+
+      finalPrice += tempPrice * orderItem.count
     })
 
     let store = await getStore({ storeId: order.storeId })
 
     store = checkStore({ store })
 
-    totalPrice +=
-      order.shipmentPrice +=
-      store.packagingPrice +=
-        totalPrice * store.taxPercent
+    shipmentPrice = shipmentPrice ?? store.baseShipmentPrice
 
-    if (totalPrice < 0) {
+    finalPrice +=
+      shipmentPrice +=
+      store.packagingPrice +=
+        finalPrice * store.taxPercent
+
+    totalPrice +=
+      shipmentPrice +=
+      store.packagingPrice +=
+        finalPrice * store.taxPercent
+
+    if (finalPrice < 0) {
       throw new Response("قیمت اشتباه است", { status: 404 })
     }
 
-    if (order.totalPrice === totalPrice || order.isBilled) {
-      return totalPrice
+    if (order.totalPrice === finalPrice || order.isBilled) {
+      return finalPrice
     }
 
     const newOrder = await db.order.update({
       where: { id: orderId },
-      data: { totalPrice },
+      data: { totalPrice, priceToPay: finalPrice },
     })
 
-    return totalPrice
+    console.log(totalPrice, totalDiscount, finalPrice, "ppp")
+
+    return finalPrice
   } catch (error) {
     throw error
   }

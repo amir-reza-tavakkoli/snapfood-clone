@@ -2,9 +2,9 @@ import { db } from "../utils/db.server"
 
 import { getStore } from "./store.query.server"
 
-import { SearchParams } from "../constants"
+import { DEFAULT_TAKE_THIS_MUCH, SearchParams } from "../constants"
 
-export async function searchStore({ param, takeThisMuch = 4 }: SearchParams) {
+export async function searchStore({ param, takeThisMuch = DEFAULT_TAKE_THIS_MUCH }: SearchParams) {
   const nears = await db.store.findMany({
     where: { name: { contains: param } },
     orderBy: { score: "desc" },
@@ -14,7 +14,7 @@ export async function searchStore({ param, takeThisMuch = 4 }: SearchParams) {
   return nears
 }
 
-export async function searchItem({ param, takeThisMuch = 4 }: SearchParams) {
+export async function searchItem({ param, takeThisMuch = DEFAULT_TAKE_THIS_MUCH }: SearchParams) {
   const nears = await db.item.findMany({
     where: { name: { contains: param } },
     take: takeThisMuch,

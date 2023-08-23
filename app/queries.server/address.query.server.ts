@@ -2,13 +2,13 @@ import { db } from "../utils/db.server"
 
 import type { Address, City } from "@prisma/client"
 
-import { isUnAuthenticated } from "~/utils/utils"
+import { isUnAuthenticated } from "../utils/utils"
 
 import { checkUnit, checkCity } from "../utils/validate.server"
 
 import { evaluateAddress } from "./evaluate.server"
 
-import { UNAUTHENTICATED_USER_ADDRESS } from "~/constants"
+import { UNAUTHENTICATED_USER_ADDRESS } from "../constants"
 
 export async function getUserAddresses({
   phoneNumber,
