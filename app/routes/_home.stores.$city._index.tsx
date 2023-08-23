@@ -132,7 +132,7 @@ export default function CityStores() {
       <main className="_stores-city-page">
         <h1 className="nonvisual">فروشگاه ها</h1>
 
-        {stores && cityName ? (
+        {stores && cityName && stores.length > 0 ? (
           <>
             <StoreContainer
               title={`همه در ${cityName}`}
@@ -163,7 +163,7 @@ export default function CityStores() {
             ) : null}
           </>
         ) : (
-          <p>فروشگاهی وجود ندارد</p>
+          <p className="_error _no-store"> متاسفانه فروشگاهی در این شهر وجود ندارد </p>
         )}
       </main>
 

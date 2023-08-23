@@ -19,7 +19,7 @@ type ItemProps = {
 
 export function ItemComp({ item, store, address }: ItemProps) {
   return (
-    <dl className="item-card">
+    item ? <dl className="item-card">
       <dt className="nonvisual">Image</dt>
 
       <dd>
@@ -48,15 +48,15 @@ export function ItemComp({ item, store, address }: ItemProps) {
           {item.price?.toLocaleString("fa") + DEFAULT_CURRENCY}
         </dd>
 
-        <Link
+        {store ? <Link
           type="submit"
           className="button"
           data-variant="primary"
           to={routes.store(store.id)}
         >
           افزودن
-        </Link>
+        </Link> : null}
       </div>
-    </dl>
+    </dl> : null
   )
 }

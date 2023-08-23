@@ -311,9 +311,11 @@ export default function LoginPage() {
                     disabled={
                       phoneNumber.length != 11 || !phoneNumber.match(/\d{11}/)
                     }
+                      spining={true}
+                      reactTo={[actionData]}
                   >
                     ادامه
-                  </Button>
+                    </Button>
 
                   {actionData?.fieldErrors?.verificationCode ? (
                     <output

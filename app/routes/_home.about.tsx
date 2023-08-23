@@ -91,8 +91,7 @@ export default function AboutPage() {
           <li> follows the right element roles and landmarks</li>
           <li> follows the right document hierarchy</li>
           <li> uses live regions</li>
-          <li>
-            has the right tab order and keyboard interoperability and focus
+          <li> has the right tab order and keyboard interoperability and focus
             management
           </li>
           <li> uses appropriate ARIA attributes</li>

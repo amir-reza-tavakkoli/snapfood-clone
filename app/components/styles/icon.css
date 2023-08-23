@@ -1,3 +1,21 @@
+.dot {
+  animation: 1s blink infinite;
+  fill: var(--color-primary);
+}
+
+.dot:nth-child(2) {
+  animation-delay: 250ms
+}
+
+.dot:nth-child(3) {
+  animation-delay: 500ms
+}
+
+.loader {
+
+  color: var(--color-primary);
+}
+
 :where(svg[data-color="accent"], svg[data-color="accent"] path) {
   fill: var(--color-accent);
 }
@@ -24,4 +42,10 @@
 
 :where(svg[data-color="error"], svg[data-color="error"] path) {
   fill: var(--color-error);
+}
+
+@keyframes blink {
+  50% {
+    fill: transparent
+  }
 }

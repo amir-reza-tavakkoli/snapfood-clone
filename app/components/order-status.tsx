@@ -32,7 +32,7 @@ export function OrderStatus({ order }: ComponentProps) {
   )
 
   return (
-    <div className="order-status">
+   order ? <div className="order-status">
       {status === "canceled" ? (
         <p className="_error">کنسل شده</p>
       ) : status === "fullfilled" ? (
@@ -67,6 +67,6 @@ export function OrderStatus({ order }: ComponentProps) {
           ) : null}
         </>
       ) : null}
-    </div>
+    </div> : null
   )
 }

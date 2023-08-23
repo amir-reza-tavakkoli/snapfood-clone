@@ -26,16 +26,16 @@ import { IntroBanner } from "../components/intro-banner"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 import { UserMenu } from "../components/user-menu"
 import { PageNav } from "../components/page-nav"
-import { Logo } from "~/components/logo"
+import { Logo } from "../components/logo"
 
 import { requireUser } from "../utils/validate.server"
-import { isUnAuthenticated } from "~/utils/utils"
+import { isUnAuthenticated } from "../utils/utils"
 
 import { getUserAddresses } from "../queries.server/address.query.server"
 import { getStoresKinds } from "../queries.server/store.query.server"
 import { getSupportedCities } from "../queries.server/address.query.server"
 
-import { useSplash } from "~/hooks/splash"
+import { useSplash } from "../hooks/splash"
 import { useForceAddress } from "../hooks/forceAddress"
 
 import { routes } from "../routes"
@@ -165,7 +165,7 @@ export default function HomePage() {
 
   return (
     <>
-      {user && user.phoneNumber !== "0" ? (
+      {user && !isUnAuthenticated(user.phoneNumber) ? (
         <>
           <div className="_headers-container">
             <Header
@@ -199,7 +199,7 @@ export default function HomePage() {
 
           <Outlet context={[addressState, setAddressState]}></Outlet>
         </>
-      ) : location.pathname === "/" ? (
+      ) : location.pathname === routes.index ? (
         <>
           {storesKind ? (
             <IntroBanner
@@ -250,7 +250,7 @@ export default function HomePage() {
             return {
               name: city.name,
               href: city.latinName
-                ? routes.storesCity(city.latinName)
+                ? routes.storesCity(city.name)
                 : undefined,
             }
           })}

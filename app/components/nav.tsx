@@ -15,7 +15,7 @@ type NavProps = {
 
 export const CategoryNav = ({ items, type, dir }: NavProps) => {
   return (
-    <nav className="nav" dir={dir}>
+    items ?  <nav className="nav" dir={dir}>
       <h1 className="nonvisual">Kinds</h1>
 
       <ul aria-label={type}>
@@ -38,6 +38,6 @@ export const CategoryNav = ({ items, type, dir }: NavProps) => {
           </li>
         ))}
       </ul>
-    </nav>
+    </nav> : null
   )
 }

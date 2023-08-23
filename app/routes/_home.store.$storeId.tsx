@@ -204,7 +204,10 @@ export const action = async ({
       destinationAddress: address,
     })
 
-    const newTotalPrice = await calculateOrder({ orderId: orderInCart.id,shipmentPrice })
+    const newTotalPrice = await calculateOrder({
+      orderId: orderInCart.id,
+      shipmentPrice,
+    })
 
     const categorizedItems = categorizeItems({ items: newItems })
 
@@ -381,7 +384,7 @@ export default function StorePage() {
   }, [render])
 
   useEffect(() => {
-    if (!user || user.phoneNumber === "0") {
+    if (!user || isUnAuthenticated(user.phoneNumber)) {
       return
     }
 
@@ -394,7 +397,7 @@ export default function StorePage() {
   }, [actionData])
 
   useEffect(() => {
-    if (!user || user.phoneNumber === "0") {
+    if (!user || isUnAuthenticated(user.phoneNumber)) {
       return
     }
     if (
@@ -406,7 +409,7 @@ export default function StorePage() {
   }, [actionData])
 
   useEffect(() => {
-    if (!user || user.phoneNumber === "0") {
+    if (!user || isUnAuthenticated(user.phoneNumber)) {
       return
     }
 
@@ -417,6 +420,22 @@ export default function StorePage() {
   }, [actionData])
 
   const currentAddress = addresses.find(a => a.id === address)
+
+  const [discount, setDiscount] = useState(0)
+
+  useEffect(() => {
+    let maxDiscount = 0
+
+    categorizedItems.forEach(item =>
+      item.value.forEach(item =>
+        item.discountPercent && item.discountPercent > maxDiscount
+          ? (maxDiscount = item.discountPercent)
+          : undefined,
+      ),
+    )
+
+    if (maxDiscount > discount) setDiscount(maxDiscount)
+  }, [])
 
   const storePossibility = validateStorePossibility({
     address: currentAddress,
@@ -451,9 +470,7 @@ export default function StorePage() {
           <StoreInfo
             deliveryPrice={deliveryPrice}
             store={store}
-            name={store.name}
-            logo={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
-            type={store.storeKindName}
+            discount={discount}
             categories={categorizedItems.map(category => category.name)}
             isOpen={!!currentSchedule}
           ></StoreInfo>
@@ -518,7 +535,7 @@ export default function StorePage() {
 
           {orderItems &&
           orderItemsState &&
-          order &&
+          order && !order.isCanceled &&
           orderState &&
           addresses &&
           orderItems.length > 0 &&

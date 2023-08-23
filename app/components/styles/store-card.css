@@ -85,6 +85,11 @@
   box-shadow: var(--box-shadow-normal);
 }
 
+:where(.vendor-card ._price) {
+  font-size: var(--length-12);
+  font-weight: 700;
+}
+
 :where(.vendor-card ._rating) {
   order: 3;
 }

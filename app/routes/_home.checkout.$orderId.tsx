@@ -21,6 +21,7 @@ import {
 import type { Address, Order, Store, storeSchedule } from "@prisma/client"
 
 import {
+  calculateOrder,
   getJoinedOrderItems,
   getOrder,
   updateOrder,
@@ -89,9 +90,15 @@ export const action = async ({ request, params }: ActionArgs) => {
 
     let order = await getOrder({ orderId })
 
+    if (!order) {
+      throw new Error("سفارشی وجود ندارد");
+    }
+
+    const price = await calculateOrder({ orderId: order.id })
+
     order = checkOrder({ order, phoneNumber: user.phoneNumber })
 
-    const newOrder = await updateOrder({ id: orderId, description })
+    const newOrder = description ? await updateOrder({ id: orderId, description }) : order
 
     let store = await getStore({ storeId: order.storeId })
 
@@ -192,7 +199,7 @@ export const loader = async ({
       id: order.id,
       estimatedReadyTime,
       estimatedShipmentTime,
-      shipmentPrice,
+      shipmentPrice : store.baseShipmentPrice,
     })
 
     if (!updateOrder) {
@@ -241,12 +248,16 @@ export default function CheckoutPage() {
             </label>
 
             <textarea
+              defaultValue={order.description ?? undefined}
               name="description"
               id="description"
               placeholder="توضیحات سفارش..."
               value={description ?? undefined}
               onChange={e => {
                 if (e.target.value) setDescription(e.target.value)
+                else {
+                  setDescription(null)
+                }
               }}
             ></textarea>
 

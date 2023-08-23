@@ -9,7 +9,7 @@
 }
 
 :where(.checkout-page > h1) {
-  margin-block: var(--length-16);
+  margin-block: var(--length-20);
   margin-inline: 10px;
   font-size: var(--length-20);
   font-weight: 600;

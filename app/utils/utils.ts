@@ -197,7 +197,7 @@ export function getStoreCurrentSchedule(
   const schedule = todaySchedule.find(
     schedule =>
       schedule.startTime <= now.getHours() &&
-      schedule.endTime >= now.getHours(),
+      schedule.endTime > now.getHours(),
   )
 
   return schedule
@@ -242,7 +242,7 @@ export function validateOrderPossibility({
     throw new Error("حداقل قیمت صحیح نیست")
   }
 
-  if (!schedules || getStoreCurrentSchedule(schedules)) {
+  if (!schedules || !getStoreCurrentSchedule(schedules)) {
     throw new Error("فروشگاه بسته است")
   }
 
@@ -326,7 +326,7 @@ export function calculateShipmentPrice({
   const distance = getDistance({ destinationAddress, storeAddress })
 
   if (isNaN(distance)) {
-    return
+    return 0
   }
 
   return (

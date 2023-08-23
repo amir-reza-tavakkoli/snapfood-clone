@@ -16,59 +16,32 @@ import {
   DEFAULT_IMG_PLACEHOLDER,
 } from "./../constants"
 import { OrderStatus } from "./order-status"
+import { usePrices } from "../hooks/prices"
 
 export const OrderComp = ({
   order,
   items,
   store,
   dir,
-  schedule,
   totalPrice,
+  schedule,
   address,
   storeAddress,
   comment = null,
   commentSection = false,
   billSection = false,
 }: CartCompProps) => {
-  const [newTotalPrice, setNewTotalPrice] = useState(0)
-
-  const [totalDiscount, setTotalDiscount] = useState(0)
-
-  const [finalPrice, setFinalPrice] = useState(totalPrice ?? 0)
-
-  useEffect(() => {
-    let tempPrice = items.reduce(
-      (prev, item) => (item.price ?? 0) * (item.count ?? 0) + prev,
-      0,
-    )
-
-    if (newTotalPrice !== tempPrice) setNewTotalPrice(tempPrice)
-
-    tempPrice =
-      ((newTotalPrice -
-        totalDiscount +
-        store.baseShipmentPrice +
-        store.packagingPrice) *
-        (100 + store.taxPercent)) /
-      100
-
-    if (finalPrice !== tempPrice) setFinalPrice(tempPrice)
-
-    tempPrice = items.reduce(
-      (prev, item) =>
-        (item.price ?? 0) *
-          (item.count ?? 0) *
-          ((item.discountPercent ?? 0) / 100) +
-        prev,
-      0,
-    )
-
-    if (totalDiscount !== tempPrice) setTotalDiscount(tempPrice)
+  const { finalPrice, totalDiscount, newTotalPrice } = usePrices({
+    items,
+    store,
+    totalPrice,
+    address,
+    storeAddress,
   })
 
   const status = getOrderStatus({ order }).status
 
-  return (
+  return store && order && items ? (
     <Link to={routes.store(store.id)} className="order">
       <ul dir={dir}>
         <li className="_store">
@@ -134,7 +107,7 @@ export const OrderComp = ({
                   <span className="_item-name">{item.name}</span>
 
                   <span aria-label="Count" className="_count">
-                    {item.count.toLocaleString("fa-IR") + "×"}
+                    {"  " + item.count.toLocaleString("fa-IR") + "×"}
                   </span>
 
                   <span className="_price">
@@ -221,5 +194,5 @@ export const OrderComp = ({
         ) : null}
       </ul>
     </Link>
-  )
+  ) : null
 }

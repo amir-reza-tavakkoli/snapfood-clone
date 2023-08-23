@@ -28,11 +28,9 @@
   align-self: center;
 }
 
-:where(
-    ._user-page > form input,
-    ._user-page > form select,
-    ._user-page > form textarea
-  ) {
+:where(._user-page > form input,
+  ._user-page > form select,
+  ._user-page > form textarea) {
   inline-size: 100%;
   padding-inline: 24px;
   padding-block: var(--length-6);
@@ -43,6 +41,7 @@
   background-color: var(--color-primary);
   border-radius: 6px;
   border: none;
+  direction: ltr;
 }
 
 :where(._user-page > form > div:focus-within) {
@@ -51,19 +50,15 @@
   outline-offset: 0px;
 }
 
-:where(
-    ._user-page > form input,
-    ._user-page form select,
-    ._user-page form textarea
-  ) {
+:where(._user-page > form input,
+  ._user-page form select,
+  ._user-page form textarea) {
   margin-inline: 8px;
 }
 
-:where(
-    ._user-page > form input:focus,
-    ._user-page form select:focus,
-    ._user-page form textarea:focus
-  ) {
+:where(._user-page > form input:focus,
+  ._user-page form select:focus,
+  ._user-page form textarea:focus) {
   outline: none;
   background-color: transparent;
 }

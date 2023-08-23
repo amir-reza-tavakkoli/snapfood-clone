@@ -3,6 +3,7 @@ import { json } from "@remix-run/node"
 import type { Store, StoreHasItems } from "@prisma/client"
 
 import {
+  getBestStores,
   getStoresByCategory,
   getStoresByKind,
   getStoresKinds,
@@ -14,7 +15,6 @@ import { LoginFieldErrors, LoginPageState } from "../routes/login"
 
 import {
   AllowedStoresFeatures,
-  SCORE_ROUNDING,
   VERIFICATION_CODE_EXPIRY_MINS,
 } from "../constants"
 
@@ -65,6 +65,7 @@ type Features = {
   getStores: ({ kind, stores }: any) => Promise<Store[]>
   title?: string
 }[]
+
 export const features: Features = [
   {
     name: "kind",
@@ -129,6 +130,21 @@ export const features: Features = [
     title: "دارای ارسال رایگان",
     getStores: async ({ stores }: { stores: Store[] }) => {
       const featureStores = await getStoresWithFreeShipment({ stores })
+
+      if (!featureStores) {
+        throw new Response("این نوع وجود ندارد.", { status: 404 })
+      }
+
+      return featureStores
+    },
+  },
+
+  {
+    name: "bestInTown",
+    title: "بهترین ها",
+    getStores: async ({ stores }: { stores: Store[] }) => {
+      const featureStores = await getBestStores({ stores })
+
       if (!featureStores) {
         throw new Response("این نوع وجود ندارد.", { status: 404 })
       }

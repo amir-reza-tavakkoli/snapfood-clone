@@ -7,7 +7,7 @@ import { routes } from "../routes"
 import { Icon } from "./icon"
 import { CategoryNav } from "./nav"
 
-import { DEAFULT_DIRECTION, VENDOR_NAME_ENG } from "../constants"
+import { DEAFULT_DIRECTION, DEFAULT_CITY, VENDOR_NAME_ENG } from "../constants"
 
 type IntroBannerProps = {
   city?: string
@@ -25,7 +25,6 @@ export function IntroBanner({ storesKind, city = "" }: IntroBannerProps) {
           </Link>
 
           <Link to={routes.login} className="_login">
-            {" "}
             ورود یا عضویت
           </Link>
         </span>
@@ -40,8 +39,9 @@ export function IntroBanner({ storesKind, city = "" }: IntroBannerProps) {
 
         <p aria-label="Services">سفارش آنلاین غذا ، میوه، نان، شیرینی و ...</p>
       </div>
+
       <Link
-        to={routes.storesCity("شیراز")}
+        to={routes.storesCity(DEFAULT_CITY)}
         className="_enter button"
         data-variant="accent"
       >

@@ -24,7 +24,7 @@ export const UserMenu = ({
   setShowing,
 }: UserMenuProps) => {
   return (
-    <nav className={isShowing ? "user-menu" : "nonvisual"} dir={dir}>
+    user ? <nav className={isShowing ? "user-menu" : "nonvisual"} dir={dir}>
       <ul>
         <li onClick={() => setShowing(false)}>
           <Link to={routes.userInfo} tabIndex={isShowing ? undefined : -1}>
@@ -90,6 +90,6 @@ export const UserMenu = ({
           </form>
         </li>
       </ul>
-    </nav>
+    </nav> : null
   )
 }

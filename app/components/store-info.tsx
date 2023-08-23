@@ -5,155 +5,191 @@ import type { Store } from "@prisma/client"
 
 import { Link, useLocation } from "@remix-run/react"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
-import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_IMG_PLACEHOLDER,
+  MAX_SCORE,
+} from "../constants"
 
 type StoreCardProps = {
   store: Store
-  name: string
-  logo?: string
-  type?: string
-  rating?: {
-    value?: number | string
-    range?: number
-    count?: number
-  }
   categories?: string[]
   dir?: "rtl" | "lrt"
   isOpen?: boolean
+  deliveryPrice: number
+  discount?: number
 }
 
 export const StoreInfo = ({
-  name,
-  logo,
-  type,
-  rating,
   store,
+  deliveryPrice,
   dir,
   categories,
+  discount,
   isOpen = true,
 }: StoreCardProps) => {
   const location = useLocation()
 
-  return (
-    <dl className="store-info" dir={dir}>
-      <div>
-        <dt className="nonvisual">Store</dt>
+  return store.name && store ? (
+    <>
+      <div className="placeholder"></div>
 
-        <dd className="_identity">
-          <dl>
-            <dt className="nonvisual">Name</dt>
+      <dl className="store-info" dir={dir}>
+        <div>
+          <dt className="nonvisual">Store</dt>
 
-            <dd className="_name">{name}</dd>
+          <dd className="_identity">
+            <dl>
+              <dt className="nonvisual">Name</dt>
 
-            <dt className="nonvisual">Type</dt>
+              <dd className="_name">
+                <Link to={routes.storeInfo(store.id)}>{store.name}</Link>
+              </dd>
 
-            <dd className="nonvisual">{type}</dd>
+              {store.storeKindName ? (
+                <>
+                  <dt className="nonvisual">Type</dt>
 
-            <dt className="nonvisual">Status</dt>
+                  <dd className="nonvisual">{store.storeKindName}</dd>
+                </>
+              ) : null}
 
-            <dd className={isOpen ? "_status-open" : "_status-closed"}>
-              {isOpen ? "باز" : "بسته"}
-            </dd>
+              <dt className="nonvisual">Status</dt>
 
-            {rating ? (
-              <>
-                <dt className="nonvisual">Rating</dt>
+              <dd className={isOpen ? "_status-open" : "_status-closed"}>
+                {isOpen ? "باز" : "بسته"}
+              </dd>
 
-                <dd className="_rating">
-                  <dl>
-                    <dt className="nonvisual">Starts</dt>
+              {discount && discount > 0 ? (
+                <>
+                  <dt className="nonvisual">Discount</dt>
+                  <dd className="_discount">
+                    {" " + discount.toLocaleString("Fa") + "% "}
+                  </dd>{" "}
+                </>
+              ) : null}
 
-                    <dd className="_star-icon">
-                      {<Icon name="star" role="presentation" />}
-                    </dd>
+              {store.score ? (
+                <>
+                  <dt className="nonvisual">Rating</dt>
 
-                    {rating.value ? (
-                      <>
-                        <dt className="nonvisual">Value</dt>
-                        <dd aria-label="Stars">
-                          {rating.value.toLocaleString("fa")}
-                        </dd>
-                      </>
-                    ) : null}
+                  <dd className="_rating">
+                    <dl>
+                      <dt className="nonvisual">Starts</dt>
 
-                    {rating.range ? (
-                      <>
-                        <dd className="nonvisual">Range</dd>
+                      <dd className="_star-icon">
+                        {<Icon name="star" role="presentation" />}
+                      </dd>
 
-                        <dt className="nonvisual">
-                          / {rating.range.toLocaleString("fa")}
-                        </dt>
-                      </>
-                    ) : null}
+                      {store.score ? (
+                        <>
+                          <dt className="nonvisual">Value</dt>
+                          <dd aria-label="Stars">
+                            {store.score.toLocaleString("fa")}
+                          </dd>
+                        </>
+                      ) : null}
 
-                    {rating.count ? (
-                      <>
-                        <dt className="nonvisual">Count</dt>
-                        <dd className="_rating-count">
-                          ( {rating.count.toLocaleString("fa")} نظر)
-                        </dd>
-                      </>
-                    ) : null}
-                  </dl>
-                </dd>
-              </>
-            ) : null}
-          </dl>
-        </dd>
+                      {store.score ? (
+                        <>
+                          <dd className="nonvisual">Range</dd>
 
-        <dt className="nonvisual">Images</dt>
+                          <dt className="nonvisual">
+                            / {MAX_SCORE.toLocaleString("fa")}
+                          </dt>
+                        </>
+                      ) : null}
 
-        <dd className="_image">
-          <dl>
-            <dt className="nonvisual">Logo</dt>
+                      {store.scoreCount ? (
+                        <>
+                          <dt className="nonvisual">Count</dt>
+                          <dd className="_rating-count">
+                            ( {store.scoreCount.toLocaleString("fa")} نظر)
+                          </dd>
+                        </>
+                      ) : null}
+                    </dl>
+                  </dd>
+                </>
+              ) : null}
+            </dl>
+          </dd>
+
+          <dt className="nonvisual">Images</dt>
+
+          <dd className="_image">
+            <dl>
+              <dt className="nonvisual">Logo</dt>
+
+              <dd>
+                <img
+                  width={50}
+                  height={50}
+                  alt=""
+                  loading="lazy"
+                  role="presentation"
+                  src={store.avatarUrl ?? DEFAULT_IMG_PLACEHOLDER}
+                ></img>
+              </dd>
+            </dl>
+          </dd>
+        </div>
+
+        <div>
+          <dt className="nonvisual">Information</dt>
+
+          <dd>
+            <Button
+              variant="primary"
+              type="button"
+              rounding="full"
+              icon={{ name: "info", color: "action" }}
+            >
+              <Link to={routes.storeInfo(store.id)}>اطلاعات و نظرات</Link>
+            </Button>
+          </dd>
+
+          <dt className="nonvisual">Time</dt>
+
+          <dd className="_time">
+            <Icon name="timeFlash"></Icon>
+
+            <dd>{isOpen ? "دریافت در سریعترین زمان ممکن" : "بسته"}</dd>
+          </dd>
+
+          <dt className="nonvisual">Time</dt>
+
+          <dd className="_time">
+            <Icon name="delivery"></Icon>
 
             <dd>
-              <img
-                width={50}
-                height={50}
-                alt=""
-                loading="lazy"
-                role="presentation"
-                src={logo ?? DEFAULT_IMG_PLACEHOLDER}
-              ></img>
+              ارسال اکسپرس
+              {deliveryPrice > 0
+                ? " " + deliveryPrice.toLocaleString("fa") + "  " + DEFAULT_CURRENCY
+                : "  " + "رایگان"}
             </dd>
-          </dl>
-        </dd>
-      </div>
+          </dd>
 
-      <div>
-        <dt className="nonvisual">Information</dt>
-
-        <dd>
-          <Button
-            variant="primary"
-            type="button"
-            rounding="full"
-            icon={{ name: "info", color: "action" }}
-          >
-            <Link to={routes.storeInfo(store.id)}>اطلاعات و نظرات</Link>
-          </Button>
-        </dd>
-
-        <ol className="_categories">
-          {categories
-            ? categories.map((category, index) => (
-                <li
-                  key={index}
-                  className={
-                    decodeURI(location.hash) === `#__${category}`
-                      ? "_choosed-link"
-                      : undefined
-                  }
-                >
-                  <a href={`#__${category}`}>{category}</a>
-                </li>
-              ))
-            : null}
-        </ol>
-      </div>
-    </dl>
-  )
+          <ol className="_categories">
+            {categories
+              ? categories.map((category, index) => (
+                  <li
+                    key={index}
+                    className={
+                      decodeURI(location.hash) === `#__${category}`
+                        ? "_choosed-link"
+                        : undefined
+                    }
+                  >
+                    <a href={`#__${category}`}>{category}</a>
+                  </li>
+                ))
+              : null}
+          </ol>
+        </div>
+      </dl>
+    </>
+  ) : null
 }

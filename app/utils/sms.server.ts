@@ -15,5 +15,7 @@ export async function sendSMS({ to, text }: { to: string; text: string }) {
 
   const id = await sms.send(to, from, text, isflash)
 
+  console.log(id, "SMS")
+
   return id
 }

@@ -6,6 +6,11 @@
   color: var(--color-text-2);
 }
 
+:where(._no-store) {
+  text-align: center;
+  margin-block: var(--length-10);
+}
+
 :where(.no-where) {
   display: flex;
   justify-content: center;

@@ -3,6 +3,7 @@
   inline-size: 100%;
   border: solid var(--color-faded-4) var(--border-extra-thin);
   color: var(--color-text-2);
+  border-radius: 6px;
 }
 
 :where(.order ul) {
@@ -12,6 +13,7 @@
   justify-content: center;
   align-items: center;
   padding-block: var(--length-10);
+  margin-block: var(--length-24);
   padding-inline: 10px;
 }
 
@@ -50,6 +52,7 @@
 }
 
 :where(.order ._count) {
+  margin-inline-end: 3px;
   margin-inline-start: auto;
 }
 
@@ -68,31 +71,13 @@
   aspect-ratio: 1/1;
 }
 
-:where(.order ._comment p *) {
-  display: block;
-  margin-inline: 8px;
-}
-
-:where(.order ._comment) {
-  display: flex;
-  align-self: start;
-  justify-content: center;
-  inline-size: 100%;
-  font-size: var(--length-10);
-  font-weight: 400;
-}
-
-:where(.order ._comment p) {
-  display: flex;
-  inline-size: 100%;
-  justify-content: space-between;
-}
-
 :where(.order ._error) {
   color: var(--color-error);
 }
 
 :where(.order ._comment) {
+  align-self: start;
+  inline-size: 100%;
   display: flex;
   justify-content: flex-start;
   padding-inline: 8px;
@@ -102,6 +87,18 @@
   background-color: var(--color-action-4);
   border-radius: 4px;
   white-space: nowrap;
+  font-weight: 400;
+}
+
+:where(.order ._comment p *) {
+  display: block;
+  margin-inline: 8px;
+}
+
+:where(.order ._comment p) {
+  display: flex;
+  inline-size: 100%;
+  justify-content: space-between;
 }
 
 :where(.order ._comment > span) {
@@ -126,6 +123,10 @@
   text-align: center;
   justify-content: center;
   margin-inline: auto;
+}
+
+:where(.order ._order-button button) {
+  border-radius: 6px;
 }
 
 @media (max-width: 34.5rem) {

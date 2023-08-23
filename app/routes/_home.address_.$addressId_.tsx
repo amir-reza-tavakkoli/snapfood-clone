@@ -44,6 +44,7 @@ import {
   DEFAULT_CITY,
   DEFAULT_COORDINATIONS,
   DEFAULT_MIN_ADDRESS_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
 } from "../constants"
 
 import pageCss from "./styles/address-page.css"
@@ -279,6 +280,9 @@ export default function AddressPage() {
           <label htmlFor="address">نشانی</label>
 
           <textarea
+            required
+            minLength={DEFAULT_MIN_ADDRESS_LENGTH}
+            maxLength={MAX_DESCRIPTION_LENGTH}
             autoComplete="street-address"
             name="address"
             id="address"
@@ -328,11 +332,13 @@ export default function AddressPage() {
           <label htmlFor="unit">واحد</label>
 
           <input
+            required
             autoComplete="unit"
             type="text"
             name="unit"
             inputMode="numeric"
             id="unit"
+            minLength={1}
             value={unit}
             onChange={e => {
               e.preventDefault()
@@ -366,11 +372,13 @@ export default function AddressPage() {
           variant="accent"
           type="submit"
           disabled={!unit || !address || addressState === ""}
+          spining={true}
+          reactTo={[result]}
         >
           ثبت
         </Button>
 
-        <output aria-label="error" role="alert" aria-aria-live="assertive">
+        <output aria-label="error" role="alert" aria-live="assertive">
           {result && result.isSuccessful ? (
             <p className="_success">تغییرات ثبت شد</p>
           ) : undefined}

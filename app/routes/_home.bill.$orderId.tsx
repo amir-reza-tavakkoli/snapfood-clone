@@ -112,6 +112,10 @@ export const action = async ({
       throw new Response("فروشگاه آفلاین نیست")
     }
 
+    if (!isOffline && order.priceToPay && order.priceToPay > user.credit) {
+      throw new Response("اعتبار شما کافی نیست")
+    }
+
     const address = await getAddressById({ addressId: order.addressId })
 
     const schedules = await getStoreSchedule({ store })
@@ -218,7 +222,7 @@ export default function BillPage() {
       <h1> پرداخت سفارش </h1>
 
       {!order.isBilled ? (
-        <div>
+        <div className="_price">
           <p>
             اعتبار مانده :
             {" " + user.credit.toLocaleString("fa") + " " + DEFAULT_CURRENCY}
@@ -226,10 +230,10 @@ export default function BillPage() {
 
           <p>
             هزینه سفارش
-            {" " + price.toLocaleString("fa") + " " + DEFAULT_CURRENCY}
+            {" " + (order.priceToPay!.toLocaleString("fa")) + " " + DEFAULT_CURRENCY}
           </p>
 
-          <Link to={routes.wallet}>افزایش اعتبار</Link>
+          <Link to={routes.wallet} className="_wallet">افزایش اعتبار</Link>
         </div>
       ) : null}
 
@@ -240,7 +244,7 @@ export default function BillPage() {
           <Button
             variant="accent"
             type="submit"
-            disabled={user.credit < price || order.isBilled}
+            disabled={user.credit < (order.priceToPay ?? order.totalPrice) || order.isBilled}
           >
             پرداخت سفارش از اعتبار
           </Button>
@@ -272,7 +276,7 @@ export default function BillPage() {
             مشکلی پیش آمد
             <span>
               {actionData.error
-                ? actionData.error.status.toLocaleString("fa")
+                ? actionData?.error?.status?.toLocaleString("fa")
                 : null}
             </span>
           </p>

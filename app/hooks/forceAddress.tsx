@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "@remix-run/react"
 
 import type { Address, User } from "@prisma/client"
 
-import { isUnAuthenticated } from "~/utils/utils"
+import { isUnAuthenticated } from "../utils/utils"
 
 import { routes } from "../routes"
 

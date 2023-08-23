@@ -13,6 +13,17 @@
   font-weight: 500;
 }
 
+:where(.bill-page ._price) {
+  display: flex;
+  flex-direction: column;
+}
+
+:where(.bill-page ._wallet) {
+  margin-block: var(--length-6);
+  margin-inline: auto;
+  color: var(--color-action);
+}
+
 :where(.bill-page > *) {
   margin-block: var(--length-10);
 }

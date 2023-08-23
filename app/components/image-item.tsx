@@ -1,9 +1,10 @@
+import { DEFAULT_IMG_PLACEHOLDER } from "../constants"
 import { Icon } from "./icon"
 
 type ImageItemProps = {
   title: string
   type?: string
-  image: string
+  image?: string
   dir?: "rtl" | "lrt"
 }
 
@@ -14,9 +15,9 @@ export const ImageItem = ({
   dir,
 }: ImageItemProps) => {
   return (
-    <div className="image-item" aria-label={type ?? undefined} dir={dir}>
+    <div className="image-item" aria-label={type} dir={dir}>
       <img
-        src={image}
+        src={image ?? DEFAULT_IMG_PLACEHOLDER}
         alt=""
         role="presentation"
         loading="lazy"
@@ -24,13 +25,15 @@ export const ImageItem = ({
         height={80}
       />
 
-      <p>
-        {title}
+      {title ? (
+        <p>
+          {title}
 
-        <span role="presentation">
-          <Icon name="flash" color="accent" role="presentation" />
-        </span>
-      </p>
+          <span role="presentation">
+            <Icon name="flash" color="accent" role="presentation" />
+          </span>
+        </p>
+      ) : null}
     </div>
   )
 }

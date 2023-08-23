@@ -20,7 +20,6 @@ import {
   VERIFICATION_CODE_FIGURES,
 } from "../constants"
 import { sendSMS } from "./sms.server"
-import { redirect } from "@remix-run/server-runtime"
 
 export function checkPhoneNumber(phoneNumber: string) {
   if (
@@ -55,7 +54,7 @@ export async function checkCity({ cityName }: { cityName: string }) {
     throw new Response("مشکلی پیش آمده", { status: 404 })
   }
 
-  if (!cities.find(city => city.name === cityName)) {
+  if (!cities.find(city => city.name === cityName || cityName === city.latinName)) {
     throw new Response("این شهر پشتیبانی نمی شود", { status: 404 })
   }
 

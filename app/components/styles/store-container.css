@@ -21,7 +21,7 @@
 :where(.store-container > div:first-of-type > a) {
   display: flex;
   align-items: center;
-  font-size: var(--length-20);
+  font-size: var(--length-16);
   color: var(--color-action);
   text-decoration: none;
 }
@@ -56,6 +56,10 @@
   text-decoration: none;
 }
 
+:where(.store-container > div:last-of-type > a:nth-of-type(n + 5)) {
+  display: none;
+}
+
 :where(.store-container > div:last-of-type > a > li) {
   inline-size: 100%;
   flex-shrink: 0;
@@ -77,13 +81,16 @@
   :where(.store-container > div:first-of-type > p) {
     font-size: var(--length-16);
   }
+
   :where(.store-container > div:first-of-type > a) {
     font-size: var(--length-14);
   }
+
   :where(.store-container > div:last-of-type) {
     display: flex;
     overflow-x: auto;
   }
+
   :where(.store-container > div:last-of-type > a) {
     flex-basis: 200px;
   }

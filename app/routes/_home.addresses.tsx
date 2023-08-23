@@ -26,11 +26,11 @@ import { requireValidatedUser } from "../utils/validate.server"
 import { Addresses } from "../components/addresses"
 import { GlobalErrorBoundary } from "../components/error-boundary"
 
-import { CLIENT_CACHE_DURATION } from "~/constants"
+import { CLIENT_CACHE_DURATION } from "../constants"
 
-import { requirePhoneNumber } from "~/utils/session.server"
+import { requirePhoneNumber } from "../utils/session.server"
 
-import { routes } from "~/routes"
+import { routes } from "../routes"
 
 import pageCss from "./../components/styles/addresses.css"
 

@@ -180,6 +180,8 @@ export const FoodCard = ({
                     onClick={() => {
                       reRender({})
                     }}
+                    spining={true}
+                    reactTo={[count]}
                   >
                     افزودن
                   </Button>
